@@ -59,7 +59,7 @@ services:
     build: ./backend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+      - "traefik.http.services.backend.loadbalancer.server.port=${BACKEND_PORT:-8080}"
       - "traefik.http.routers.backend.rule=Host(`localhost`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.middlewares=backend-strip"
       - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/api"
@@ -68,8 +68,8 @@ services:
     ports:
       - mode: host
         protocol: tcp
-        published: 8080
-        target: 8080
+        published: ${BACKEND_PORT:-8080}
+        target: ${BACKEND_PORT:-8080}
     networks:
       - dream-team
     environment:
@@ -106,15 +106,15 @@ services:
     build: ./frontend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_PORT:-3000}"
       - "traefik.http.routers.frontend.rule=Host(`localhost`) && !PathPrefix(`/ml`) && !PathPrefix(`/api`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       # TODO: HTTPS - "traefik.http.routers.frontend.entrypoints=websecure"
     ports:
       - mode: host
         protocol: tcp
-        published: 3000
-        target: 3000
+        published: ${FRONTEND_PORT:-3000}
+        target: ${FRONTEND_PORT:-3000}
     networks:
       - dream-team
     depends_on:
@@ -125,7 +125,7 @@ services:
     build: ./ml
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.ml.loadbalancer.server.port=9696"
+      - "traefik.http.services.ml.loadbalancer.server.port=${ML_PORT:-9696}"
       - "traefik.http.routers.ml.rule=Host(`localhost`) && PathPrefix(`/ml`)"
       - "traefik.http.routers.ml.middlewares=ml-strip"
       - "traefik.http.middlewares.ml-strip.stripprefix.prefixes=/ml"
@@ -134,8 +134,8 @@ services:
     ports:
       - mode: host
         protocol: tcp
-        published: 9696
-        target: 9696
+        published: ${ML_PORT:-9696}
+        target: ${ML_PORT:-9696}
     networks:
       - dream-team
 
@@ -144,7 +144,7 @@ networks:
   dream-team:
     driver: bridge
 
-# The necessary volumes (think persistance)
+# The necessary volumes (persistance)
 volumes:
   db-data:
   # TODO: HTTPS letsencrypt:
