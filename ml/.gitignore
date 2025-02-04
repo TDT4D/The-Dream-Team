@@ -1,0 +1,4 @@
+data/*
+!data/placeholder.md
+models/*
+!models/placeholder.md
