@@ -24,11 +24,27 @@
 #             curl -H "Content-Type: application/json" -d "{}" http://localhost:9696/predict
 
 services:
+  socketproxy:
+    image: tecnativa/docker-socket-proxy:edge
+    networks:
+      - docker-socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - LOG_LEVEL=warning
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      - CONTAINERS=1
+
   traefik:
     image: traefik:v3.1
     command:
       - "--providers.docker"
+      - "--providers.docker.endpoint=tcp://socketproxy:2375"
+      - "--providers.docker.network=dream-team"
       - "--providers.docker.exposedbydefault=false"
+      - "--accesslog=true"
       - "--entryPoints.websecure.address=:443"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.http.redirections.entrypoint.to=web"         # TODO: HTTPS
@@ -48,11 +64,14 @@ services:
         protocol: tcp
         published: 443
         target: 443
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    #volumes:
+      #- /var/run/docker.sock:/var/run/docker.sock
       # TODO: HTTPS - letsencrypt:/letsencrypt
     networks:
+      - docker-socket-proxy
       - dream-team
+    #depends_on: TODO? 
+    #  - socketproxy
       
   backend:
     # Backend service for handling requests to ml and db
@@ -82,7 +101,7 @@ services:
   db:
     # The database for the backend (and potentially ml)
     image: postgres
-    restart: always
+    restart: unless-stopped
     user: postgres
     secrets:
       - db-password
@@ -118,7 +137,8 @@ services:
     networks:
       - dream-team
     depends_on:
-      - backend
+      backend:
+        condition: service_started
 
   ml:
     # The machine learning service used for ranking and team forming
@@ -143,6 +163,7 @@ services:
 networks:
   dream-team:
     driver: bridge
+  docker-socket-proxy:
 
 # The necessary volumes (persistance)
 volumes:
