@@ -1,17 +1,31 @@
-FROM python:3.13-slim
+FROM python:3.13-slim AS base
 
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONFAULTHANDLER 1
+
+FROM base AS installer
 RUN pip install pipenv
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
-WORKDIR /app
+COPY requirements.txt .
+RUN pipenv install -r requirements.txt
 
-# COPY ["requirements.txt", "./"]
-COPY ["Pipfile", "Pipfile.lock", "./"]
-# RUN pipenv install -r requirements.txt
-RUN pipenv install --system --deploy
+FROM installer AS deps
+COPY --from=installer Pipfile .
+COPY --from=installer Pipfile.lock .
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
-# COPY ["*.py", "churn_model.pkl", "./"]
-# COPY ["*.py", "./"]
-COPY ["./", "./"]
+FROM base AS runtime
+COPY --from=deps /.venv /.venv
+ENV PATH="/.venv/bin:$PATH"
+
+RUN useradd --create-home appuser
+WORKDIR /home/appuser
+USER appuser
+
+COPY . .
 
 EXPOSE 9696
 
