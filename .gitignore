@@ -5,3 +5,5 @@ venv/
 # to the file you want to add.
 *.json
 *.csv
+
+**/node_modules
