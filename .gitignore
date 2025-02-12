@@ -1,1 +1,7 @@
 venv/
+
+# Just in case. If trying to add the following filetype,
+# it will have to be forced by manually entering the path
+# to the file you want to add.
+*.json
+*.csv
