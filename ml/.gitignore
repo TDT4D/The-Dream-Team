@@ -1,4 +1,6 @@
 data/*
 !data/placeholder.md
+!data/*.dvc
 models/*
 !models/placeholder.md
+!data/*.dvc
