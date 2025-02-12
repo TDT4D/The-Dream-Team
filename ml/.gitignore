@@ -1,9 +1,7 @@
+489-tampere-autumn 2024.json
 data/*
 !data/placeholder.md
-
+!data/*.dvc
 models/*
 !models/placeholder.md
-
-__pycache__/*
-
-.vscode/*
+!models/*.dvc
