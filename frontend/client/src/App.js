@@ -1,6 +1,12 @@
 import logo from './logo.svg';
 import './App.css';
 
+const apiCall = () => {
+  fetch('http://localhost:8080').then(d => d.text()).then((data) => {
+    console.log(data)
+  })
+}
+
 function App() {
   return (
     <div className="App">
@@ -17,6 +23,7 @@ function App() {
         >
           Learn React
         </a>
+        <button onClick={apiCall}>Make API Call</button>
       </header>
     </div>
   );
