@@ -14,6 +14,6 @@ app.get('**', (req, res) => {
     res.redirect("/")
 })
 
-app.listen(8080, () => {
+app.listen(3000, () => {
     console.log('server listening on port 8080')
 })
