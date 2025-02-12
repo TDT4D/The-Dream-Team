@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 
 const apiCall = () => {
-  fetch('http://localhost:8080').then(d => d.text()).then((data) => {
+  fetch('/api').then(d => d.text()).then((data) => {
     console.log(data)
   })
 }
