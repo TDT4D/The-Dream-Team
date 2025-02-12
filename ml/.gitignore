@@ -1,4 +1,9 @@
 data/*
 !data/placeholder.md
+
 models/*
 !models/placeholder.md
+
+__pycache__/*
+
+.vscode/*
