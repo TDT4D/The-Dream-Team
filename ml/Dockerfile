@@ -29,4 +29,8 @@ COPY . .
 
 EXPOSE 9696
 
-ENTRYPOINT ["python", "-m", "gunicorn", "--bind=0.0.0.0:9696", "churn_predict:app"]
+#Old entrypoint
+#ENTRYPOINT ["python", "-m", "gunicorn", "--bind=0.0.0.0:9696", "churn_predict:app"]
+
+#New entrypoint
+ENTRYPOINT ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "9696"]
