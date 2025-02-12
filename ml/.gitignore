@@ -12,7 +12,9 @@ models/*
 !models/*.dvc
 
 #Pythin cache files
+__pycache__/
 __pycache__/*
 
 #VS code
+.vscode/
 .vscode/*
