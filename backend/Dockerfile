@@ -36,4 +36,4 @@ ARG DEPENDENCY=/workdir/server/target/dependency
 COPY --from=prepare-production ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=prepare-production ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=prepare-production ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.company.project.Application"]
+ENTRYPOINT ["java","-cp","app:app/lib/*","com.github.dreamteam.DreamteamApplication"]
