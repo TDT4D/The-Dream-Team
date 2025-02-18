@@ -18,7 +18,7 @@ COPY server/package*.json .
 RUN npm install
 COPY server .
 
-RUN echo BUILD_PATH=./client/build > .env 
+ENV BUILD_PATH ./client/build
 CMD ["npm", "start"]
 
 EXPOSE 3000
