@@ -1,0 +1,36 @@
+header {
+    display: flex;
+    padding-inline: 16px;
+    padding-block: 8px;
+    background-color: black;
+    color: azure;
+    align-items: center;
+    justify-content: space-between;
+    width: auto;
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        .link {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            &:hover {
+                color: darkgray;
+            }
+        }
+
+        ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            
+            > li {
+                margin-left: 10px;
+            }
+        }
+    }
+}

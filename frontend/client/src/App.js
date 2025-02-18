@@ -1,31 +1,25 @@
 import logo from './logo.svg';
 import './App.css';
 
-const apiCall = () => {
-  fetch('/api').then(d => d.text()).then((data) => {
-    console.log(data)
-  })
-}
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Base from "./pages/base/base.page";
+import Sort from "./pages/sort/sort.page";
+import Select from './pages/select/select.page';
+import Error from "./pages/error/error.page";
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <button onClick={apiCall}>Make API Call</button>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Base />}>
+        <Route index element={<Select />} />
+        <Route path="sort/:id" element={<Sort />} />
+        <Route path="sort" element={<Error reason={"sort without ID!"} />} />
+        <Route path="*" element={<Error reason={"Check path!"} />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

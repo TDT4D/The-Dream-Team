@@ -1,0 +1,13 @@
+
+.column {
+    width: 30%;
+    
+    background-color: gray;
+    padding: 10px;
+    
+    &>.drag-area {
+        border-style: dotted;
+        border-color: rgb(39, 39, 39);
+        min-height: 10em;
+    }
+}
