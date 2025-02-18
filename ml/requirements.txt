@@ -1,9 +1,10 @@
 fastapi
-uvicorn
 Flask
 gunicorn
 joblib
+json
 numpy
 packaging
 scikit-learn
 scipy
+uvicorn
