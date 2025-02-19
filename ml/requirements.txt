@@ -2,7 +2,6 @@ fastapi
 Flask
 gunicorn
 joblib
-json
 numpy
 packaging
 scikit-learn
