@@ -1,15 +1,14 @@
 #Individual file
 489-tampere-autumn 2024.json
 
+#Ignore all JSON files
+*.json
+
 #Data
-data/*
-!data/placeholder.md
-!data/*.dvc
+
 
 #ML Models
-models/*
-!models/placeholder.md
-!models/*.dvc
+
 
 #Pythin cache files
 __pycache__/

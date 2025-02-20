@@ -3,8 +3,8 @@ import json
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 
-
 encoders = {}
+
 
 # luetaan dataa ja tehdään tauluja (lisää myös koodaus)
 def clean_data():
@@ -60,11 +60,13 @@ def clean_data():
     final_merge_df = pd.merge(merged_df, dfpro, on='projectId', how='left')
     final_merge_df = final_merge_df[['tags','themes','homeUniversity', 'degreeLevelType', 'studiesField', 'relation']]
 
+
     alternative_encode(final_merge_df)
     save_data(final_merge_df)
     return final_merge_df
 
     """
+
     final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
     final_merge_df['themes'] = final_merge_df['themes'].apply(lambda d: d if isinstance(d, list) else [])
 
@@ -73,7 +75,9 @@ def clean_data():
     final_merge_df = final_merge_df.astype(int)
     #print(final_merge_df)
     save_data(final_merge_df)
+
     """
+
 # tallennetaan käytettävä data
 def save_data(table):
     dir = os.path.dirname(__file__)
@@ -100,6 +104,7 @@ def one_hot_encode(fdf):
     fdf = fdf.drop('relation', axis=1).join(one_hot)
 
     return fdf
+
 
 """
 Toinen enkoodaus funktio, koska piti saada yhteen sarakkeeseen tässä vaiheessa
@@ -129,3 +134,6 @@ def alternative_encode(final_merge_df):
 
     return final_merge_df, encoders
 #clean_data()
+
+clean_data()
+

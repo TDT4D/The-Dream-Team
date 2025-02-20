@@ -1,0 +1,11 @@
+.student-card {
+    background-color: rgb(201, 201, 201);
+    margin: 5px;
+    padding: 5px;
+
+    &>.labels {
+        background-color: rgb(143, 143, 143);
+        border-radius: 5px;
+        padding: 2px;
+    }
+}
