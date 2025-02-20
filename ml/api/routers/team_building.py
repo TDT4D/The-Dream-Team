@@ -13,4 +13,6 @@ def build_team(projectId: int):
     Returns:
         dict: A list of team members.
     """
+    print(f"Received projectId: {projectId}")
+    
     return {"message:" "Team building not implemented"}

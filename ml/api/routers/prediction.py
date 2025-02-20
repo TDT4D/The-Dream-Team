@@ -1,5 +1,6 @@
 from fastapi import APIRouter, BackgroundTasks
 from typing import Optional
+import logging
 
 router = APIRouter()
 
@@ -22,6 +23,7 @@ def get_scores(projectId: Optional[int] = None):
         dict: A list of scores.
 
     """
+    logging.info(f"Received project id {projectId}")
     print(f"Received projectId: {projectId}")
     if projectId:
         return {"message": f"fetching scores for {projectId} not implemented"}
