@@ -6,14 +6,12 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collection;
 
-
 @RestController
 @RequestMapping("/scores")
 public class ScoreSearchController {
 
     @Autowired
     private ScoreSearchService scoreSearchService;
-
 
     @GetMapping("/")
     public String index() {
