@@ -1,6 +1,5 @@
-from fastapi import APIRouter, BackgroundTasks
-from typing import Optional
-import logging
+from fastapi import APIRouter, BackgroundTasks, Query
+
 
 router = APIRouter()
 
@@ -11,20 +10,23 @@ def start_prediction(background_task: BackgroundTasks):
 
 
 @router.get("/scores")
-def get_scores(projectId: Optional[int] = None):
+def get_scores(
+    projectId: int | None = Query(default=None, description="ID of the project to fetch scores for")
+
+):
     """
-    Fetches scores from database (placeholder, might not be used)
+    Fetches scores for a specific project if projectId is provided,
+    otherwise fetches all scores
 
     Args:
         projectId (int): id for project which scores are wanted
-        default None: returns all scores
+                         default=None: returns all scores
 
     Returns:
         dict: A list of scores.
 
     """
-    logging.info(f"Received project id {projectId}")
-    print(f"Received projectId: {projectId}")
+
     if projectId:
         return {"message": f"fetching scores for {projectId} not implemented"}
     return {"message": "fetching scores not implemented"}
