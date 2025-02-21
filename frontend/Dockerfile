@@ -3,6 +3,7 @@ FROM node:23-alpine AS build
 WORKDIR /app
 
 COPY client/package*.json ./
+COPY client/tsconfig* ./
 RUN npm install
 COPY client .
 RUN npm run build
