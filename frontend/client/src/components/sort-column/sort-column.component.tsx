@@ -1,16 +1,18 @@
 import { useDroppable } from "@dnd-kit/core";
+
 import StudentCard from "../student-card/student-card.component";
+import { Student } from "../../types/Student";
 
 import "./sort-column.component.scss";
-import { Student } from "../../services/student/student.service";
+
 
 type SortColumnProps = {
     id: number,
     name: string,
-    items: Array<Student>
+    students: Array<Student>
 }
 
-const SortColumn = ({ id, name, items }: SortColumnProps) => {
+const SortColumn = ({ id, name, students }: SortColumnProps) => {
     const { setNodeRef } = useDroppable({
         id
     });
@@ -20,7 +22,7 @@ const SortColumn = ({ id, name, items }: SortColumnProps) => {
             <span> { name } </span>
             <div ref={setNodeRef} className="drag-area">
                 {
-                    items.map((student, idx) => <StudentCard key={idx} student={student} />)
+                    students.map((student, idx) => <StudentCard key={idx} student={student} />)
                 }
             </div>
         </div>

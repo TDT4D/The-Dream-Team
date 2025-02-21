@@ -1,4 +1,5 @@
 import { Outlet } from "react-router";
+
 import Header from "../../components/header/header.component";
 
 const APP_TITLE = "The Dream Team"

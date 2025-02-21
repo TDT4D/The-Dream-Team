@@ -1,6 +1,6 @@
-import { Student } from "../../services/student/student.service";
 import { useDraggable } from "@dnd-kit/core";
 
+import { Student } from "../../types/Student";
 import Label from "../label/label.component";
 
 import "./student-card.component.scss";

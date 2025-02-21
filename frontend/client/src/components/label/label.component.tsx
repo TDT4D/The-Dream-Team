@@ -1,7 +1,7 @@
 import "./label.component.scss";
 
 type LabelProps = {
-    name: String,
+    name: string,
     colour: string
 }
 

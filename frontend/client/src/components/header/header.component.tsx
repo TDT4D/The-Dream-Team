@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+
 import "./header.component.scss";
 
 type HeaderProps = {
