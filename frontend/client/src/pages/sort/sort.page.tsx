@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 
-import { getStudents, getStudentStatus, Student } from "../../services/student/student.service";
-
+import { getStudents, getStudentStatus } from "../../services/student/student.service";
 import SortColumn from "../../components/sort-column/sort-column.component";
+import { Student } from "../../types/Student";
 
 import "./sort.page.scss";
 
@@ -14,7 +14,7 @@ const COLUMNS = [
 
 type StudentWithCol = {
     student: Student,
-    column?: String
+    column?: number
 }
 
 const wrapStudent = (student: Student): StudentWithCol => {
@@ -37,11 +37,13 @@ const Sort = () => {
     
         if (!over) return;
     
-        const taskId = active.id as String;
-        const newColumn = over.id as String;
-    
+        const taskId = active.id as number;
+        const newColumn = over.id as number;
+
         setStudents(
-            () => students.map((wrapped) => wrapped.student.id === taskId ? { ...wrapped, column: newColumn } : wrapped)
+            () => students.map(
+                (wrapped) => wrapped.student.id === taskId ? { ...wrapped, column: newColumn } : wrapped
+            )
         );
       }
 
@@ -53,7 +55,13 @@ const Sort = () => {
                 <DndContext onDragEnd={handleDragEnd}>
                     {
                         COLUMNS.map((col, idx) => 
-                            <SortColumn key={idx} id={idx} name={col} items={students.filter((wrapped) => wrapped.column ? +wrapped.column === idx : 0).map((wrapped) => wrapped.student)} />
+                            <SortColumn key={idx} id={idx} name={col}
+                                students={
+                                    students
+                                        .filter((wrapped) => wrapped.column != null ? +wrapped.column === idx : 0)
+                                        .map((wrapped) => wrapped.student)
+                                } 
+                            />
                         )
                     }
                 </DndContext>
