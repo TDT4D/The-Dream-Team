@@ -1,10 +1,18 @@
 import { useState } from "react";
+import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import StudentCard from "../student-card/student-card.component";
 
 import "./sort-column.component.scss";
+import { Student } from "../../services/student/student.service";
 
-const SortColumn = ({ id, name, items }) => {
+type SortColumnProps = {
+    id: number,
+    name: string,
+    items: Array<Student>
+}
+
+const SortColumn = ({ id, name, items }: SortColumnProps) => {
     const { setNodeRef } = useDroppable({
         id
     });

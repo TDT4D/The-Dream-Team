@@ -1,4 +1,10 @@
-const Error = ({ reason }) => {
+import React from "react";
+
+type ErrorProps = {
+    reason?: string
+}
+
+const Error = ({ reason }: ErrorProps) => {
     return (
         <>
             <h1>Error</h1>

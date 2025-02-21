@@ -1,6 +1,12 @@
+import React from "react";
 import "./label.component.scss";
 
-const Label = ({ name, colour }) => {
+type LabelProps = {
+    name: String,
+    colour: string
+}
+
+const Label = ({ name, colour }: LabelProps) => {
     
     return (
         <>

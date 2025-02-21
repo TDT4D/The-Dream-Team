@@ -1,11 +1,16 @@
-import { getStudent } from "../../services/student/student.service";
+import React from "react";
+import { Student, getStudent } from "../../services/student/student.service";
 import { useDraggable } from "@dnd-kit/core";
 
 import Label from "../label/label.component";
 
 import "./student-card.component.scss";
 
-const StudentCard = ({ student }) => {    
+type StudentCardProps = {
+    student: Student
+}
+
+const StudentCard = ({ student }: StudentCardProps) => {    
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: student.id,
     });

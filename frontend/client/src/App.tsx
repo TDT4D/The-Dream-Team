@@ -1,12 +1,12 @@
-import logo from './logo.svg';
-import './App.css';
 
+import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Base from "./pages/base/base.page";
 import Sort from "./pages/sort/sort.page";
 import Select from './pages/select/select.page';
 import Error from "./pages/error/error.page";
 
+import './App.css';
 
 function App() {
   return (
