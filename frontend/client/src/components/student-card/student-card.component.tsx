@@ -1,5 +1,4 @@
-import React from "react";
-import { Student, getStudent } from "../../services/student/student.service";
+import { Student } from "../../services/student/student.service";
 import { useDraggable } from "@dnd-kit/core";
 
 import Label from "../label/label.component";

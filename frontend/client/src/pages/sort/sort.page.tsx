@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router";
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 
 import { getStudents, getStudentStatus, Student } from "../../services/student/student.service";

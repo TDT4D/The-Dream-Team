@@ -1,5 +1,3 @@
-import { useState } from "react";
-import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import StudentCard from "../student-card/student-card.component";
 

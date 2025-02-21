@@ -1,4 +1,3 @@
-import React from "react";
 import ProjectSelect from "../../components/project-select/project-select.component";
 
 const testProjects = [
