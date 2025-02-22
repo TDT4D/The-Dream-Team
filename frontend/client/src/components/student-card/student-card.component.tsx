@@ -1,30 +1,37 @@
-import { useDraggable } from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 
+import { DragID } from "../../types/Dragging";
 import { Student } from "../../types/Student";
 import Label from "../label/label.component";
 
 import "./student-card.component.scss";
 
 type StudentCardProps = {
-    student: Student
+    student: Student,
+    columnId: number
 }
 
-const StudentCard = ({ student }: StudentCardProps) => {    
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
-        id: student.id,
-    });
+const StudentCard = ({ student, columnId }: StudentCardProps) => {    
+    const dragId: DragID = {
+        columnId,
+        cardId: student.id
+    };
     
-    const style = transform
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-        }
-    : undefined;
-    
+    const draggable = useDraggable({ id: JSON.stringify(dragId), });
+    const droppable = useDroppable({ id: JSON.stringify(dragId), });
+
+    const refs = (e: HTMLElement | null) => {
+        draggable.setNodeRef(e);
+        droppable.setNodeRef(e);
+    }
+
+    const style = draggable.transform ? { transform: `translate(${draggable.transform.x}px, ${draggable.transform.y}px)`, } : undefined;
+
     return (
         <div className="student-card"
-        ref={setNodeRef}
-        {...listeners}
-        {...attributes}
+        ref={refs}
+        {...draggable.listeners}
+        {...draggable.attributes}
         style={style}>
             <span>
                 { student.name }
