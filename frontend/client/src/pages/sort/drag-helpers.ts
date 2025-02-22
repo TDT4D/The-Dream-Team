@@ -1,5 +1,7 @@
+/* Lib imports */
 import { DragEndEvent } from "@dnd-kit/core";
 
+/* Types */
 import { DragID } from "../../types/Dragging";
 import { StudentWithLocation } from "../../types/Student";
 
@@ -16,14 +18,15 @@ export const handleDragEnd = (students: StudentWithLocation[], setStudents: Func
 
         const card = students.filter((student) => student.student.id === dragging.cardId!)[0];
 
-
         setStudents(
-            () => students.map(createNewStudentWithLoc(dragging, target, card.row)).map(handleOtherRowUpdates(dragging, target, card.row))
+            () => students
+                .map(createNewStudentWithLoc(dragging, target, card.row))
+                .map(handleOtherRowUpdates(dragging, target, card.row))
         );
     }
 }
 
-export const handleOtherRowUpdates = (dragging: DragID, target: DragID, old_row: number) => {
+const handleOtherRowUpdates = (dragging: DragID, target: DragID, old_row: number) => {
     return (current: StudentWithLocation, _: number, arr: StudentWithLocation[]): StudentWithLocation => {
         const newRow = arr.filter(w => w.student.id === dragging.cardId)[0].row;
 
@@ -42,14 +45,13 @@ export const handleOtherRowUpdates = (dragging: DragID, target: DragID, old_row:
             current.row >= newRow &&
             (dragging.columnId != target.columnId || current.row <= old_row) ) {
             return { ...current, row: current.row + 1 };
-            
         }
         // Yeah... I hate this too...
         return current;
     }
 }
 
-export const createNewStudentWithLoc = (dragging: DragID, target: DragID, old_row: number) => {
+const createNewStudentWithLoc = (dragging: DragID, target: DragID, old_row: number) => {
     return (current: StudentWithLocation, _: number, arr: StudentWithLocation[]): StudentWithLocation => {
         // Case: Not the card we are moving
         if (current.student.id != dragging.cardId!) return { ...current };

@@ -1,3 +1,4 @@
+/* Types */
 import { Student } from "../../types/Student";
 
 const students: Array<Student>  = [

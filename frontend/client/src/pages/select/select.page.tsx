@@ -1,6 +1,8 @@
-import ProjectSelect from "../../components/project-select/project-select.component";
+/* Types */
 import { Project } from "../../types/Project";
 
+/* Components, services & etc. */
+import ProjectSelect from "../../components/project-select/project-select.component";
 
 const testProjects: Array<Project> = [
     {

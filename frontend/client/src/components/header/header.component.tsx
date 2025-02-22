@@ -1,5 +1,7 @@
+/* Lib imports */
 import { Link } from "react-router";
 
+/* Styling */
 import "./header.component.scss";
 
 type HeaderProps = {

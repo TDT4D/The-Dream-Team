@@ -1,13 +1,16 @@
+/* Lib imports */
 import { useDroppable } from "@dnd-kit/core";
 
+/* Types */
 import { Student, StudentWithRow } from "../../types/Student";
 import { StudentSorter } from "../../types/SortMethods";
-
 import { DragID } from "../../types/Dragging";
+
+/* Components, services & etc. */
 import StudentCard from "../student-card/student-card.component";
 
+/* Styling */
 import "./sort-column.component.scss";
-
 
 type SortColumnProps = {
     id: number,

@@ -1,14 +1,18 @@
+/* Lib imports */
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { DndContext } from '@dnd-kit/core';
 
+/* Types */
 import { Student, StudentWithColumn, StudentWithLocation } from "../../types/Student";
 
+/* Components, services & etc. */
 import { getStudents, getStudentStatus } from "../../services/student/student.service";
 import SortColumn from "../../components/sort-column/sort-column.component";
 import { handleDragEnd } from "./drag-helpers";
 import { sortFunc } from "./sorting";
 
+/* Styling */
 import "./sort.page.scss";
 
 const COLUMNS = [

@@ -1,9 +1,14 @@
+/* Lib imports */
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 
+/* Types */
 import { DragID } from "../../types/Dragging";
 import { Student } from "../../types/Student";
+
+/* Components, services & etc. */
 import Label from "../label/label.component";
 
+/* Styling */
 import "./student-card.component.scss";
 
 type StudentCardProps = {

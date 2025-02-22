@@ -1,3 +1,4 @@
+/* Lib imports */
 import { Link } from "react-router";
 
 type ProjectSelectProps = {
@@ -7,7 +8,7 @@ type ProjectSelectProps = {
 
 const ProjectSelect = ({id, name}: ProjectSelectProps) => {
     return (
-        <Link to={"/sort/" + id}>
+        <Link to={`/sort/${id}`}>
             <span>{ id }</span>
             <span>{ name } </span>
         </Link>

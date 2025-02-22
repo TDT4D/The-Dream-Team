@@ -1,3 +1,4 @@
+/* Styling */
 import "./label.component.scss";
 
 type LabelProps = {
