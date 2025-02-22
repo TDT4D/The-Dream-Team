@@ -1,66 +1,55 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { DndContext } from '@dnd-kit/core';
+
+import { Student, StudentWithColumn, StudentWithLocation } from "../../types/Student";
 
 import { getStudents, getStudentStatus } from "../../services/student/student.service";
 import SortColumn from "../../components/sort-column/sort-column.component";
-import { Student } from "../../types/Student";
+import { handleDragEnd } from "./drag-helpers";
+import { sortFunc } from "./sorting";
 
 import "./sort.page.scss";
 
 const COLUMNS = [
-    "All", "Potential", "Selected"
+    "Applied", "Potential", "Selected"
 ];
 
-type StudentWithCol = {
-    student: Student,
-    column?: number
-}
-
-const wrapStudent = (student: Student): StudentWithCol => {
-    return { student }
-}
 
 const Sort = () => {
-    const [ students, setStudents ] = useState<Array<StudentWithCol>>(getStudents().map(wrapStudent))
+    const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
 
     useEffect(() => {
+        const addCol = (student: Student): StudentWithColumn => { return { student, column: getStudentStatus(student.id) }};
+        
+        const numPerCol: Array<number> = [0, 0, 0];
+        const addRow = (studentW: StudentWithColumn): StudentWithLocation => {
+            const row = numPerCol[studentW.column!];
+            numPerCol[studentW.column!]++;
+            return { ...studentW, row };
+        }
+
         setStudents(
-            students.map((wrapped) => { return { student: wrapped.student, column: getStudentStatus(wrapped.student.id)}})
+            getStudents().map(addCol).map(addRow)
         )
     }, [])
 
     let { id } = useParams();
-    
-    function handleDragEnd(event: DragEndEvent) {
-        const { active, over } = event;
-    
-        if (!over) return;
-    
-        const taskId = active.id as number;
-        const newColumn = over.id as number;
-
-        setStudents(
-            () => students.map(
-                (wrapped) => wrapped.student.id === taskId ? { ...wrapped, column: newColumn } : wrapped
-            )
-        );
-      }
 
     return (
         <>
             <h1>Sorting { id }</h1>
 
             <div id="columns">
-                <DndContext onDragEnd={handleDragEnd}>
+                <DndContext onDragEnd={handleDragEnd(students, setStudents)}>
                     {
                         COLUMNS.map((col, idx) => 
-                            <SortColumn key={idx} id={idx} name={col}
+                            <SortColumn key={idx} id={idx} name={col} sorter={sortFunc("default")}
                                 students={
                                     students
                                         .filter((wrapped) => wrapped.column != null ? +wrapped.column === idx : 0)
-                                        .map((wrapped) => wrapped.student)
-                                } 
+                                        .map(wrapped => { return { student: wrapped.student, row: wrapped.row }})
+                                }
                             />
                         )
                     }
