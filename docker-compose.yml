@@ -92,7 +92,7 @@ services:
     networks:
       - dream-team
     environment:
-      - POSTGRES_DB=example
+      - CONN_STR=mongodb://user:pass@mongodb
     depends_on:
       ml:
         condition: service_started
@@ -100,25 +100,24 @@ services:
         condition: service_healthy
   db:
     # The database for the backend (and potentially ml)
-    image: postgres
-    restart: unless-stopped
-    user: postgres
-    secrets:
-      - db-password
-    volumes:
-      - db-data:/var/lib/postgresql/data
+    image: mongodb/mongodb-community-server:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
     networks:
       - dream-team
-    environment:
-      - POSTGRES_DB=example
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
     healthcheck:
-      test: [ "CMD", "pg_isready"]
-      interval: 10s
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 5s
 
   frontend:
     # Frontend service for demo purposes
