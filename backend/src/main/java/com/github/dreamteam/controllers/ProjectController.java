@@ -1,6 +1,6 @@
 package com.github.dreamteam.controllers;
 
-import com.github.dreamteam.services.ProjectService;
+import com.github.dreamteam.services.ProjectServiceImpl;
 import com.github.dreamteam.services.StudentService;
 import com.github.dreamteam.models.Project;
 import com.github.dreamteam.models.Student;
@@ -15,7 +15,7 @@ import java.util.List;
 public class ProjectController {
 
     @Autowired
-    private ProjectService projectService;
+    private ProjectServiceImpl projectService;
 
     @Autowired
     private StudentService studentService;

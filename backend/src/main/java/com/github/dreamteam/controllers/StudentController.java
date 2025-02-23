@@ -13,6 +13,7 @@ public class StudentController {
     @Autowired
     private StudentService service;
 
+    // TODO: Delete this
     @GetMapping("/{studentId}")
     public ResponseEntity<Student> getStudentById(@PathVariable Long studentId) {
         Student student = service.getStudentById(studentId);
