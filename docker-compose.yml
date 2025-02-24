@@ -92,7 +92,7 @@ services:
     networks:
       - dream-team
     environment:
-      - CONN_STR=mongodb://user:pass@mongodb
+      - CONN_STR=mongodb://user:pass@db
     depends_on:
       ml:
         condition: service_started
@@ -100,17 +100,17 @@ services:
         condition: service_healthy
   db:
     # The database for the backend (and potentially ml)
-    image: mongodb/mongodb-community-server:latest
+    image: mongodb/mongodb-community-server:7.0.16-ubi9
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=user
-      - MONGO_INITDB_ROOT_PASSWORD=pass
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
     networks:
       - dream-team
-    expose:
-      - 5432
+    # expose:
+    #   - 27017
     volumes:
       - type: bind
-        source: ./data
+        source: ./db/data
         target: /data/db
     healthcheck:
       test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
@@ -118,6 +118,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    command: 
+      - '--logpath'
+      - '/var/log/mongodb/mongod.log'
 
   frontend:
     # Frontend service for demo purposes
