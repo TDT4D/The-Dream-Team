@@ -1,6 +1,7 @@
 from utils import storage
 
-#needs to be run from ml with: python -m scripts.storage_test
+#called from The-Dream-Team\ml>python -m scripts.storage_test
+#expects test.json to be in local storage (data)
 
 print(storage.load_json("test"))
 
@@ -10,4 +11,4 @@ print(storage.load_json("test.json"))
 print("now try saveing \n")
 
 data = storage.load_json("test")
-print(storage.save_json("test_save", data))
+print(storage.save_json(data, "test_save"))

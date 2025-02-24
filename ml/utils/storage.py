@@ -5,7 +5,8 @@ import json
 """For loading and saving data (locally)"""
 
 this_dir  = Path(__file__).resolve().parent
-data_dir = this_dir.parent/"data"
+load_dir = this_dir.parent/"data"   #Directory where to load data
+save_dir = this_dir.parent/"data"   #Directory to save data
 
 
 def load_json(file_name:str) -> dict:
@@ -23,14 +24,14 @@ def load_json(file_name:str) -> dict:
     if not file_name.endswith(".json"):
         file_name += ".json"
     
-    data_file = data_dir/file_name
+    data_file = load_dir/file_name
     with data_file.open("r") as file:
         data = json.load(file)
 
     return data
 
 
-def save_json(file_name:str, data:dict) -> bool:
+def save_json(data:dict, file_name:str) -> bool:
     """
     Saves a json file to local storage
 
@@ -46,7 +47,7 @@ def save_json(file_name:str, data:dict) -> bool:
     if not file_name.endswith(".json"):
         file_name += ".json"
     
-    data_file = data_dir/file_name
+    data_file = save_dir/file_name
 
     try:
         with data_file.open("w") as file:
