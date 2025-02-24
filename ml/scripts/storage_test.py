@@ -6,3 +6,8 @@ print(storage.load_json("test"))
 
 print("\n")
 print(storage.load_json("test.json"))
+
+print("now try saveing \n")
+
+data = storage.load_json("test")
+print(storage.save_json("test_save", data))
