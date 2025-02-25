@@ -27,12 +27,12 @@ def load_json(file_name:str) -> dict:
     data_file = load_dir/file_name
 
     try:
-        with data_file.open("r") as file:
+        with data_file.open("r", encoding="utf-8") as file:
             data = json.load(file)
         return data
     
     except Exception as e:
-        print(f"ERROR: {e}")
+        print(f"ERROR WHILE LOADING DATA : {e}")
         return []
 
 
@@ -56,13 +56,13 @@ def save_json(data:dict, file_name:str) -> bool:
     data_file = save_dir/file_name
 
     try:
-        with data_file.open("w") as file:
-            json.dump(data, file)
+        with data_file.open("w", encoding="utf-8") as file:
+            json.dump(data, file, ensure_ascii=False)
 
         return True
     
     except Exception as e:
-        print(f"ERROR: {e}")
+        print(f"ERROR WHILE SAVING DATA: {e}")
         return False
 
 

@@ -1,11 +1,11 @@
 
-from ml.data import data_cleaning
+from data_handling import data_cleaning
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 # Random Forest -malli
 def randomforest():
-    data = siivooja.clean_data()
+    data = data_cleaning.clean_data()
     data['tags'] = data['tags'].apply(lambda x: len(x) if isinstance(x, list) else 0)
     data['themes'] = data['themes'].apply(lambda x: len(x) if isinstance(x, list) else 0)
 
