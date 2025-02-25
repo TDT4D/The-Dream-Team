@@ -31,7 +31,7 @@ def randomforest():
     # piakkoin eri funktiot eri palautuksille
     return int(test_results.iloc[0]['Predicted_Relation'])
 
-def randomforest_v2(save_name="student_scores"):
+def randomforest_v2(load="rawData", save_name="student_scores", cleaning:bool=True):
     """
     Trains a Random Forest model to predict the 'relation' of a student to a project.
 
@@ -44,8 +44,10 @@ def randomforest_v2(save_name="student_scores"):
     Returns:
         dict: A dictionary containing test predictions and their scores.
     """
-
-    data = data_cleaning.clean_data_v2()
+    if cleaning:
+        data = data_cleaning.clean_data_v2(load)
+    else:
+        data=load
 
     #Check if data was loaded correctly
     if data is None or len(data) == 0:

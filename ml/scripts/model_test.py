@@ -2,7 +2,7 @@ from models import random_forest
 import json
 
 print("Begin model testing")
-scores = random_forest.randomforest_v2("score_test")
+scores = random_forest.randomforest_v2(load="rawData", save_name="score_test")
 print("scores done \n\n")
 
 #Extract only relevant fields: projectId, studentId, and Score
