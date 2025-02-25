@@ -21,7 +21,7 @@ def build_team(
         saveFile (String): Name of the file team is saved
 
     Returns:
-        dict/json response: A list of team members.
+        JSONResponse: A list of team members.
 
 
     Expected return format:
