@@ -4,6 +4,7 @@ gunicorn
 joblib
 numpy
 packaging
+pandas
 scikit-learn
 scipy
 uvicorn
