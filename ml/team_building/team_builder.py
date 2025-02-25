@@ -1,28 +1,27 @@
 from utils import storage
 
 
-def build_team(n:int, load_name:str="student_score_example", save_name:str="team_example") -> bool:
+def build_team(n:int, project_id:int=998, load_name:str="score_test", save_name:str="team_example") -> dict:
     """
     A simple baseline for team building.
-    Loads score data from local storage
-    Creates a team of people with top n scores and saves it to local directory
+    Builds a team of top 'n' students for a given project based on their scores
+
+    - Loads student scores from local storage
+    - Filters for a specific 'projectId'
+    - Sorts by 'Score' (descending order)
+    - Selects the top 'n' students
+    - Saves the final team to local storage
     
-    Example structure for scores
-    {
-        "student": 
-        [
-            {
-                "id": 1,
-                "score": 90
-            },
-            {
-                "id": 2,
-                "score": 65
-            }
-        ]
-    }
-    ___________________________________
-    Expected format:
+    Args:
+        n (int): Number of students to include in the team.
+        project_id (int): The project ID for which the team is being formed.
+        load_name (str): Name of the JSON file containing scores.
+        save_name (str): Name of the JSON file to save the created team.
+
+    Returns:
+        dict: ProjectID and the selected team of students.
+
+    Expected input format:
     [
         {
             "projectId": 998,
@@ -35,25 +34,35 @@ def build_team(n:int, load_name:str="student_score_example", save_name:str="team
             "Score": 0.0
         }
     ]
-    ___________________________________
-
-
-
-    Args:
-        n (int): Team size
-        load_name (string): file containing the scores.
-        save_name (string): file containing the created team
-
-    Returns:
-        Confirmation of the team creation
+   
     """
     data = storage.load_json(load_name)
 
-    #Sort data to descending order
-    data["student"].sort(key=lambda x: x["score"], reverse=True)
+    if not isinstance(data, list):
+        print("ERROR: Invalid data format. Expected a list.")
+        return None
 
-    team = {"student": data["student"][:n]}
-    storage.save_json(team, save_name) #saves a copy to local storage
+    #Filter students for the specified `projectId`
+    project_students = [student for student in data if student["projectId"] == project_id]
+
+    if not project_students:
+        print(f"WARNING: No students found for project ID {project_id}.")
+        return {"projectId": project_id, "team": []}
+
+
+    #Sort students by highest Score
+    project_students.sort(key=lambda x: x["Score"], reverse=True)
+
+    #Select top `n` students
+    selected_team = project_students[:n]
+
+    #Structure the response as a dictionary
+    team = {"projectId": project_id, "team": selected_team}
+
+    #Save the selected team to storage
+    storage.save_json(team, save_name)
+
+    print(f"Team of {len(selected_team)} students for project {project_id} saved as '{save_name}.json'")
 
     return team
 
