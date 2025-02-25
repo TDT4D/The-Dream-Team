@@ -25,10 +25,16 @@ def load_json(file_name:str) -> dict:
         file_name += ".json"
     
     data_file = load_dir/file_name
-    with data_file.open("r") as file:
-        data = json.load(file)
 
-    return data
+    try:
+        with data_file.open("r") as file:
+            data = json.load(file)
+        return data
+    
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return []
+
 
 
 def save_json(data:dict, file_name:str) -> bool:

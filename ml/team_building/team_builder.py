@@ -36,6 +36,8 @@ def build_team(n:int, load_name:str="student_score_example", save_name:str="team
     #Sort data to descending order
     data["student"].sort(key=lambda x: x["score"], reverse=True)
 
-    team = {"stundet": data["student"][:n]}
-    return storage.save_json(team, save_name)
+    team = {"student": data["student"][:n]}
+    storage.save_json(team, save_name) #saves a copy to local storage
+
+    return team
 
