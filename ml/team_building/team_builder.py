@@ -21,6 +21,22 @@ def build_team(n:int, load_name:str="student_score_example", save_name:str="team
             }
         ]
     }
+    ___________________________________
+    Expected format:
+    [
+        {
+            "projectId": 998,
+            "studentId": 22058,
+            "Score": 0.0
+        },
+        {
+            "projectId": 1046,
+            "studentId": 22306,
+            "Score": 0.0
+        }
+    ]
+    ___________________________________
+
 
 
     Args:
