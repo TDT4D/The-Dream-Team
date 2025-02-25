@@ -47,6 +47,7 @@ def build_team(
     """n projectId loadName saveName"""
 
     try:
+        #Builds and saves team
         team_data = team_builder.build_team(size, projectId, data, saveFile)
 
         if not team_data.get("team"):
