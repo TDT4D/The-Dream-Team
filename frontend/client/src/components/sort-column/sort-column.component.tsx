@@ -32,10 +32,12 @@ const SortColumn = ({ id, name, students, sorter }: SortColumnProps) => {
 
     return (
         <div className="column">
-            <span> { name } </span>
+            <div className="column-name"> { name } </div>
             <div ref={setNodeRef} className="drag-area">
                 {
-                    students.sort(sorter).map((student, idx) => <StudentCard key={idx} student={studentExtractor(student)} columnId={id} />)
+                    students
+                        .sort(sorter)
+                        .map((student, idx) => <StudentCard key={idx} student={studentExtractor(student)} columnId={id} />)
                 }
             </div>
         </div>

@@ -1,11 +1,29 @@
 .student-card {
-    background-color: rgb(201, 201, 201);
     margin: 5px;
-    padding: 5px;
+    padding: 1rem;
+    
+    background-image: linear-gradient(to top right, rgba(93, 93, 93, 0.8), rgba(137, 137, 137, 0.8));
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.15);
 
-    &>.labels {
-        background-color: rgb(143, 143, 143);
-        border-radius: 5px;
-        padding: 2px;
+    cursor: pointer;
+
+    border-radius: 1rem;
+    border: solid 1px;
+    border-color: black;
+    overflow: hidden;
+
+    &>.card-header {
+        display: flex;
+        gap: 3px;
     }
+
+    &>.card-body {
+        &>.labels {
+            background-color: rgba(109, 109, 109, 0.566);
+            border: solid 1px rgb(75, 75, 75);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+    }
+    
 }

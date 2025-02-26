@@ -1,13 +1,21 @@
 
 .column {
     width: 30%;
+
+    background-color: rgb(218, 218, 218);
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.15);
     
-    background-color: gray;
     padding: 10px;
     
+    border: solid 1px black;
+    border-radius: 0.25rem;
+
+    &>.column-name {
+        font-size: larger;
+        padding-left: 1rem;
+    }
+
     &>.drag-area {
-        border-style: dotted;
-        border-color: rgb(39, 39, 39);
         min-height: 10em;
     }
 }
