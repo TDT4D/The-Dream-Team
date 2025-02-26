@@ -175,7 +175,7 @@ def clean_data_v2(load_name="rawData", save_name="cleaned_data"):
 # tallennetaan käytettävä data
 def save_data(table):
     dir = os.path.dirname(__file__)
-    location = os.path.join(dir, 'data\cleaned_data.csv')
+    location = os.path.join(dir, 'data/cleaned_data.csv')
     table.to_csv(location)
 
 def one_hot_encode(fdf):
