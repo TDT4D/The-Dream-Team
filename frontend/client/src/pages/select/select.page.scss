@@ -1,0 +1,42 @@
+.select {
+    margin: auto;
+    width: 50%;
+    justify-content: center;
+    align-content: center;
+    
+    padding-top: 5rem;
+
+    &>h1 {
+        width: 100%;
+        text-align: center;
+        font-size: 4em;
+    }
+
+    &>.project-select {
+        margin: auto;
+        width: 30%;
+        
+        .drop {
+            width: 100%;
+            display: flex;
+            gap: 3px;
+
+            .icon {
+                margin-left: auto;
+            }
+        }
+
+        
+    }
+}
+
+.dropdown {
+    border: solid 1px rgb(0, 0, 0);
+    border-radius: 1em;
+    background-color: rgba(130, 130, 130, 0.396);
+
+    padding-left: 3em;
+    padding-right: 3em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}

@@ -1,6 +1,9 @@
 /* Lib imports */
 import { Link } from "react-router";
 
+/* Styling */
+import "./project-select.component.scss";
+
 type ProjectSelectProps = {
     id: number,
     name: string
@@ -8,10 +11,11 @@ type ProjectSelectProps = {
 
 const ProjectSelect = ({id, name}: ProjectSelectProps) => {
     return (
-        <Link to={`/sort/${id}`}>
-            <span>{ id }</span>
-            <span>{ name } </span>
-        </Link>
+        <div className="project-select-element">
+            <Link className="link" to={`/sort/${id}`}>
+                <span>{ name } </span>
+            </Link>
+        </div>
     );
 };
 
