@@ -1,7 +1,7 @@
 /* Lib imports */
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { DndContext } from '@dnd-kit/core';
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
 
 /* Types */
 import { Student, StudentWithColumn, StudentWithLocation } from "../../types/Student";
@@ -21,7 +21,10 @@ const COLUMNS = [
 
 
 const Sort = () => {
+    let { id } = useParams();
+    
     const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
+    const [ isDragging, setDragging ] = useState<boolean>(false);
 
     useEffect(() => {
         const addCol = (student: Student): StudentWithColumn => { return { student, column: getStudentStatus(student.id) }};
@@ -38,17 +41,21 @@ const Sort = () => {
         )
     }, [])
 
-    let { id } = useParams();
+    
+    const onDragEnd = (event: DragEndEvent) => {
+        setDragging(false);
+        handleDragEnd(students, setStudents)(event);
+    }
 
     return (
         <>
             <h1>Sorting { id }</h1>
 
             <div id="columns">
-                <DndContext onDragEnd={handleDragEnd(students, setStudents)}>
+                <DndContext onDragEnd={onDragEnd} onDragStart={() => setDragging(true)}>
                     {
                         COLUMNS.map((col, idx) => 
-                            <SortColumn key={idx} id={idx} name={col} sorter={sortFunc("default")}
+                            <SortColumn key={idx} id={idx} name={col} sorter={sortFunc("default")} isDragging={isDragging}
                                 students={
                                     students
                                         .filter((wrapped) => wrapped.column != null ? +wrapped.column === idx : 0)
