@@ -16,6 +16,8 @@
     }
 
     &>.drag-area {
+        margin-top: 5px;
         min-height: 10em;
+        border-radius: 0.5rem;
     }
 }
