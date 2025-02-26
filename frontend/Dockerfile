@@ -12,13 +12,13 @@ FROM node:23-alpine
 WORKDIR /express-app
 
 RUN mkdir client
-COPY --from=build /app/build client/build/
+COPY --from=build /app/dist client/build/
 
 COPY server/package*.json .
 RUN npm install
 COPY server .
 
-ENV BUILD_PATH ./client/build
+ENV BUILD_PATH=./client/build
 CMD ["npm", "start"]
 
 EXPOSE 3000
