@@ -23,9 +23,11 @@ ENV PATH="/.venv/bin:$PATH"
 
 RUN useradd --create-home appuser
 WORKDIR /home/appuser
-USER appuser
 
 COPY . .
+
+RUN chown -R appuser:appuser /home/appuser
+USER appuser
 
 EXPOSE 9696
 
