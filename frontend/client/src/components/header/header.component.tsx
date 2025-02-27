@@ -22,10 +22,9 @@ const Header = ({ title }: HeaderProps) => {
                     <li>
                         <Link className="link" to="/">Home</Link>
                     </li>
-                    <li>
-                        <Link className="link" to="/sort">Sort</Link>
-                    </li>
                 </ul>
+
+                <Link className="login" to="/login">Login</Link>
             </nav>
         </header>
     );

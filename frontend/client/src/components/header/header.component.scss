@@ -9,17 +9,22 @@ header {
     width: auto;
 
     nav {
+        width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
         
-        .link {
+        .link, .login {
             color: white;
             text-decoration: none;
             cursor: pointer;
             &:hover {
                 color: darkgray;
             }
+        }
+
+        .login {
+            margin-left: auto;
         }
 
         ul {
@@ -32,5 +37,7 @@ header {
                 margin-left: 10px;
             }
         }
+        
+
     }
 }
