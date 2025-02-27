@@ -2,18 +2,16 @@ import os
 import json
 import pandas as pd
 from io import StringIO
+from utils import storage
+from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 
-# luetaan dataa ja tehdään tauluja (lisää myös koodaus)
+# luetaan dataa ja tehdään tauluja
 # sama kuin versio 1, mutta tiivistetty tagit uudella scoring systeemillä
 # systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
-def clean_data_ev3():
-    #luetaan data (muokattava sit ku tiedetään miten se saapuu, mistä ja milloin)
-    dir = os.path.dirname(__file__)
-    filename = "489-tampere-autumn 2024.json"
-    location = os.path.join(dir, filename)
-    bronze_file = open(location, encoding='utf8')
-    bronze_data = json.load(bronze_file)
-    bronze_file.close()
+def clean_data_v3(load_name="rawData", save_name="cleaned_data"):
+
+    #luetaan data
+    bronze_data = storage.load_json(load_name)
 
     if not bronze_data:
         print("ERROR: Failed to load data.")
@@ -60,37 +58,43 @@ def clean_data_ev3():
     # yhdistetään aikaisempitaulu ja projektit viimeiseksi tauluksi
     # (kaikkia projekteja ei mainittu projekteissa)
     final_merge_df = pd.merge(merged_df, dfpro, on='projectId', how='left')
-    final_merge_df = final_merge_df[['tags','themes', 'degreeLevelType', 'studiesField', 'relation']]
+    final_merge_df_copy = final_merge_df[['tags','themes', 'degreeLevelType', 'studiesField', 'relation']]
+
+    cleaned_data_copy = final_merge_df_copy.to_dict(orient="records")
+
+    #storage.save_json(cleaned_data_copy, 'test')
 
     final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
-    final_merge_df['themes'] = final_merge_df['themes'].apply(lambda d: d if isinstance(d, list) else [])
 
+    # tagien tiivistys
     bigdict = tag_per_studyfield(final_merge_df)
     final_merge_df=tag_condenser(final_merge_df, bigdict)
 
+    final_merge_df, encoders = alternative_encode(
+        final_merge_df)
+
     final_merge_df = one_hot_encode(final_merge_df)
+
     final_merge_df.fillna(0, inplace=True)
     final_merge_df = final_merge_df.astype(float)
-    #print(final_merge_df)
-    save_data(final_merge_df)
 
-# tallennetaan käytettävä data
-def save_data(table):
-    dir = os.path.dirname(__file__)
-    location = os.path.join(dir, 'data\cleaned_data.csv')
-    table.to_csv(location)
+    cleaned = final_merge_df.to_dict(orient="records")
+    
+    # tallennetaan käytettävä data
+    storage.save_json(cleaned, save_name)
+
 
 def one_hot_encode(fdf):
-    one_hot = pd.get_dummies(fdf['themes'].apply(pd.Series).stack()).groupby(level=0).sum()
+    one_hot = pd.get_dummies(fdf['themes'].apply(pd.Series).stack(), prefix="theme").groupby(level=0).sum()
     fdf = fdf.drop('themes', axis=1).join(one_hot)
 
-    one_hot = pd.get_dummies(fdf['degreeLevelType'].apply(pd.Series).stack()).groupby(level=0).sum()
+    one_hot = pd.get_dummies(fdf['degreeLevelType'].apply(pd.Series).stack(), prefix="degree").groupby(level=0).sum()
     fdf = fdf.drop('degreeLevelType', axis=1).join(one_hot)
 
-    one_hot = pd.get_dummies(fdf['studiesField'].apply(pd.Series).stack()).groupby(level=0).sum()
+    one_hot = pd.get_dummies(fdf['studiesField'].apply(pd.Series).stack(),  prefix="field").groupby(level=0).sum()
     fdf = fdf.drop('studiesField', axis=1).join(one_hot)
 
-    one_hot = pd.get_dummies(fdf['relation'].apply(pd.Series).stack()).groupby(level=0).sum()
+    one_hot = pd.get_dummies(fdf['relation'].apply(pd.Series).stack(), prefix="relation").groupby(level=0).sum()
     fdf = fdf.drop('relation', axis=1).join(one_hot)
 
     return fdf
@@ -180,5 +184,29 @@ def tag_per_studyfield(df):
             smalldict.update({j:bigdict[i][j] / t2dict[i]})
         smalldict.update({'percentage_of_chosen': appearance[i]})
     return bigdict
+
+def alternative_encode(final_merge_df):
+    encoders = {}
+
+    for column in ['themes']:
+        # Flatten the lists, ensuring we skip any non-list values (e.g., NaN)
+        flat_list = [item for sublist in final_merge_df[column] if isinstance(sublist, list) for item in sublist]
+
+        le = LabelEncoder()
+        le.fit(flat_list)
+
+        # Fit on the unique values and transform
+        final_merge_df[column] = final_merge_df[column].apply(
+            lambda x: le.transform(x) if isinstance(x, list) else 0 if pd.isna(x) else x)
+
+        # Store the encoder
+        encoders[column] = le
+
+    for column in ['degreeLevelType', 'studiesField', 'relation']:
+        le = LabelEncoder()
+        final_merge_df[column] = le.fit_transform(final_merge_df[column])  # Muuntaa tekstin numeroiksi
+        encoders[column] = le
+
+    return final_merge_df, encoders
 
 #clean_data_v3()
