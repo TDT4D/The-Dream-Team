@@ -1,6 +1,5 @@
 package com.github.dreamteam;
 
-// TODO: imports
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 import com.mongodb.MongoClientSettings;
@@ -18,9 +17,10 @@ public class MongoClientConfig extends AbstractMongoClientConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientConfig.class);
 
-    @Value("${spring.data.mongodb.database}")
+    @Value("${MONGO_DB}")
     private String databaseName;
 
+    
     @Value("${spring.data.mongodb.uri}")
     private String connectionString;
 
