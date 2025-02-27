@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from utils import storage
 from io import StringIO
-from data_cleaning_version3 import clean_data_ev3
+from data_handling import data_cleaning_version3 as dc3
 
 encoders = {}
 
@@ -178,7 +178,7 @@ def clean_data_v2(load_name="rawData", save_name="cleaned_data"):
     return cleaned_data  #Return cleaned data as a Python dictionary
 
 def clean_data_v3():
-    clean_data_ev3()
+    dc3.clean_data_ev3()
 
 # tallennetaan käytettävä data
 def save_data(table):
