@@ -1,0 +1,1 @@
+projekteja joihin ei tehty yhtään hakemusta ei ole mukana testeissä (1069).
