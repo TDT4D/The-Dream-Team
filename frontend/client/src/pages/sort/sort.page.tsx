@@ -35,10 +35,7 @@ const Sort = () => {
             numPerCol[studentW.column!]++;
             return { ...studentW, row };
         }
-
-        setStudents(
-            getStudents().map(addCol).map(addRow)
-        )
+        getStudents(+id!).then(stds => stds.map(addCol).map(addRow)).then(setStudents);
     }, [])
 
     

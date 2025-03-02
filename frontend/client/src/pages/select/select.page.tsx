@@ -1,5 +1,9 @@
 /* Lib imports */
+import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
+
+/* Types */
+import { Project } from "../../types/Project";
 
 /* Components, services & etc. */
 import ProjectSelect from "../../components/project-select/project-select.component";
@@ -9,6 +13,12 @@ import { getProjects } from "../../services/project/project.service";
 import "./select.page.scss";
 
 const Select = () => {
+    const [ projects, setProjects ] = useState<Project[]>([]);
+
+    useEffect(() => {
+        getProjects().then(setProjects);
+    }, []);
+
     return (
         <div className="select">
             <h1>
@@ -25,7 +35,7 @@ const Select = () => {
                     <PopoverContent>
                         <div className="dropdown">
                             {
-                                getProjects().map((proj, index) => (
+                                projects.map((proj, index) => (
                                     <ProjectSelect key={index} id={proj.id} name={proj.name}/>
                                 ))
                             }
