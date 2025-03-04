@@ -163,6 +163,28 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
     smote = SMOTE(random_state=42)
     X, y = smote.fit_resample(X, y)
 
+    """
+    Model parameters:
+
+    XGBoost:
+        n_estimators - Bigger values makes the models more complex and slower, but too big values lead to overlearning
+        max_depth    - Lower value helps to avoid overlearning, but too small makes it hard to learn complex
+                       relations
+    AdaBoost:
+        n_estimators - Bigger values makes the models more complex and slower, but too big values lead to overlearning
+        random_state - If it's predefined to for example 42, the results are always the same with same data
+    
+    KNN:
+        n_neighbours - Smaller amount of neighbours lead to overlearnign and too many neighbours can make the model 
+                       too simple
+
+    NaiveBayes       - Based on Gaussian normal distribution
+
+    K-fold:
+        n_splits     - To how many folds data is divided to. Bigger value is slower to count, but also more 
+                       reliable than smaller
+        shuffle      - Is data shuffled before use
+    """
     base_models = {
         "XGBoost": XGBClassifier(n_estimators=50, max_depth=3),
         "AdaBoost": AdaBoostClassifier(n_estimators=50, random_state=42),
@@ -172,8 +194,7 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
     meta_model = XGBClassifier(n_estimators=50, max_depth=3)
 
     # K-fold for base-models
-    K = 5
-    skf = StratifiedKFold(n_splits=K, shuffle=True, random_state=42)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 
     stacked_X = np.zeros((len(y), len(base_models)))
