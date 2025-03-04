@@ -4,19 +4,24 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from utils import storage
 from io import StringIO
+from data_handling import data_cleaning_version3 as dc3
 
 encoders = {}
 
 
 # luetaan dataa ja tehdään tauluja (lisää myös koodaus)
 def clean_data():
-    #luetaan data (muokattava sit ku tiedetään miten se saapuu, mistä ja milloin)
+    #luetaan data (poistettu yliopisto)
     dir = os.path.dirname(__file__)
     filename = "489-tampere-autumn 2024.json"
     location = os.path.join(dir, filename)
     bronze_file = open(location, encoding='utf8')
     bronze_data = json.load(bronze_file)
     bronze_file.close()
+
+    if not bronze_data:
+        print("ERROR: Failed to load data.")
+        return None
 
     official_fields = ['Performing arts','Visual arts', 'History', 'Languages and literature', 'Law','Philosophy', 'Theology',
                        'Anthropology','Economics','Geography','Political science','Psychology','Sociology','Social Work',
@@ -26,7 +31,7 @@ def clean_data():
 
     # tehdään opiskelijoiden talu ja muokataan sitä paremmaks
     temp = json.dumps(bronze_data['students'])
-    df = pd.read_json(temp)
+    df = pd.read_json(StringIO(temp))
     dfstu= df[['id', 'homeUniversity','attendingUniversity', 'degreeLevelType', 'studiesField']]
     dfstu.loc[dfstu["attendingUniversity"].notna(), "homeUniversity"] = dfstu['attendingUniversity']
     dfstu.loc[dfstu["degreeLevelType"] == 'Other', "degreeLevelType"] = 'Other_degree'
@@ -36,7 +41,7 @@ def clean_data():
 
     # tehdään projektien talu ja muokataan sitä paremmaks
     temp = json.dumps(bronze_data['projects'])
-    dfpro = pd.read_json(temp)
+    dfpro = pd.read_json(StringIO(temp))
     dfpro = dfpro[['id','themes', 'tags']]
     dfpro.rename(columns={'id':'projectId'}, inplace=True)
 
@@ -47,9 +52,9 @@ def clean_data():
         temp = json.dumps(application_set)
         if first:
             first = False
-            dfapp = pd.read_json(temp)
+            dfapp = pd.read_json(StringIO(temp))
         else:
-            dftemp = pd.read_json(temp)
+            dftemp = pd.read_json(StringIO(temp))
             dfapp = pd.concat([dfapp, dftemp])
     dfapp = dfapp[['projectId', 'studentId', 'relation']]
     dfapp.loc[dfapp["relation"] == 'Dropout', "relation"] = 'Selected'
@@ -60,7 +65,7 @@ def clean_data():
     # yhdistetään aikaisempitaulu ja projektit viimeiseksi tauluksi
     # (kaikkia projekteja ei mainittu projekteissa)
     final_merge_df = pd.merge(merged_df, dfpro, on='projectId', how='left')
-    final_merge_df = final_merge_df[['tags','themes','homeUniversity', 'degreeLevelType', 'studiesField', 'relation']]
+    final_merge_df = final_merge_df[['tags','themes', 'degreeLevelType', 'studiesField', 'relation']]
 
 
     alternative_encode(final_merge_df)
@@ -171,6 +176,9 @@ def clean_data_v2(load_name="rawData", save_name="cleaned_data"):
     storage.save_json(cleaned_data, save2)
 
     return cleaned_data  #Return cleaned data as a Python dictionary
+
+def clean_data_v3():
+    dc3.clean_data_ev3()
 
 # tallennetaan käytettävä data
 def save_data(table):
