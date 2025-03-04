@@ -1,6 +1,9 @@
 /* Types */
 import { Project } from "../../types/Project";
 
+/* Components, services & etc. */
+import { callAPI, USE_SERVER } from "../api/api.service";
+
 const testProjects: Array<Project> = [
     {
         id: 1,
@@ -16,6 +19,6 @@ const testProjects: Array<Project> = [
     }
 ];
 
-export const getProjects = (): Array<Project> => {
-    return testProjects
+export const getProjects = async (): Promise<Project[]> => {
+    return USE_SERVER ? callAPI<Project[]>("/projects") : Promise.resolve(testProjects);
 }

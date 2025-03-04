@@ -1,5 +1,7 @@
 /* Types */
+import { Project } from "../../types/Project";
 import { Student } from "../../types/Student";
+import { callAPI, USE_SERVER } from "../api/api.service";
 
 const students: Array<Student>  = [
     {
@@ -47,6 +49,6 @@ export const getStudent = (id: number): Student => {
     return students.filter(stud => stud.id === id)[0];
 }
 
-export const getStudents = (): Array<Student> => {
-    return students;
+export const getStudents = (projectID: Project["id"]): Promise<Student[]> => {
+    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/applicants`) : Promise.resolve(students);
 }
