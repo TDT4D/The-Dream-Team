@@ -105,6 +105,7 @@ services:
   db:
     # The database for the backend (and potentially ml)
     image: mongodb/mongodb-community-server:7.0.16-ubi9
+    restart: unless-stopped
     environment:
       - MONGODB_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo-root-user
       - MONGODB_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo-root-pass

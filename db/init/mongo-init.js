@@ -3,7 +3,7 @@ const password = fs.readFileSync(process.env.MONGODB_PASSWORD_FILE, 'utf8').trim
 
 // Create connection to mongo
 const conn = new Mongo();
-const db = conn.getDB('admin');
+const db = conn.getDB(process.env.MONGODB_INITDB_DATABASE);
 
 // Auth as the root user
 db.auth({
