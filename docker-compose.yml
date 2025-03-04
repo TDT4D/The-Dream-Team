@@ -92,7 +92,11 @@ services:
     networks:
       - dream-team
     environment:
-      - POSTGRES_DB=example
+      MONGO_DB: tdt
+    secrets:
+      - mongo-user
+      - mongo-pass
+    #   - CONN_STR=mongodb://user:pass@db
     depends_on:
       ml:
         condition: service_started
@@ -100,25 +104,36 @@ services:
         condition: service_healthy
   db:
     # The database for the backend (and potentially ml)
-    image: postgres
+    image: mongodb/mongodb-community-server:7.0.16-ubi9
     restart: unless-stopped
-    user: postgres
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo-root-user
+      - MONGODB_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo-root-pass
+      - MONGODB_INITDB_DATABASE=admin
+      - MONGODB_USERNAME_FILE=/run/secrets/mongo-user
+      - MONGODB_PASSWORD_FILE=/run/secrets/mongo-pass
+      - MONGODB_DATABASE=tdt
     secrets:
-      - db-password
-    volumes:
-      - db-data:/var/lib/postgresql/data
+      - mongo-root-user
+      - mongo-root-pass
+      - mongo-user
+      - mongo-pass
     networks:
       - dream-team
-    environment:
-      - POSTGRES_DB=example
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-    expose:
-      - 5432
+    # expose:
+    #   - 27017
+    volumes: 
+      - db-data:/data/db
+      - ./db/init:/docker-entrypoint-initdb.d/:ro
     healthcheck:
-      test: [ "CMD", "pg_isready"]
-      interval: 10s
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 5s
+    command:
+      - "--logpath"
+      - "/var/log/mongodb/mongod.log"
 
   frontend:
     # Frontend service for demo purposes
@@ -172,5 +187,11 @@ volumes:
 
 # The necessary secrets
 secrets:
-  db-password:
-    file: db/password.txt
+  mongo-root-pass:
+    file: db/mongo_root_pw.txt
+  mongo-root-user:
+    file: db/mongo_root_uname.txt
+  mongo-user:
+    file: db/mongo_uname.txt
+  mongo-pass:
+    file: db/mongo_pw.txt
