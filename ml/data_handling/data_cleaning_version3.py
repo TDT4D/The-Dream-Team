@@ -16,6 +16,8 @@ def clean_data_ev3(load_name="rawData", save_name="cleaned_data"):
         print("ERROR: Failed to load data.")
         return None
 
+    # studyfieldit joita ei valittu yhteenkään projektiin eivät ole mukana lopullisessa json tiedostossa
+    
     official_fields = ['Performing arts','Visual arts', 'History', 'Languages and literature', 'Law','Philosophy', 'Theology',
                        'Anthropology','Economics','Geography','Political science','Psychology','Sociology','Social Work',
                        'Biology','Chemistry','Earth science','Space sciences','Physics','Computer Science','Mathematics','Business',
@@ -38,7 +40,6 @@ def clean_data_ev3(load_name="rawData", save_name="cleaned_data"):
     dfpro.rename(columns={'id':'projectId'}, inplace=True)
 
     # haetaan kaikki hakemukset (applications) ja tehdään niistä yksi taulu
-    temp=''
     first = True
     for application_set in df['applications']:
         temp = json.dumps(application_set)
@@ -57,14 +58,12 @@ def clean_data_ev3(load_name="rawData", save_name="cleaned_data"):
     # yhdistetään aikaisempitaulu ja projektit viimeiseksi tauluksi
     # (kaikkia projekteja ei mainittu projekteissa)
     final_merge_df = pd.merge(merged_df, dfpro, on='projectId', how='left')
-    final_merge_df_copy = final_merge_df[['tags','themes', 'degreeLevelType', 'studiesField', 'relation']]
 
-    cleaned_data_copy = final_merge_df_copy.to_dict(orient="records")
-
+    #final_merge_df_copy = final_merge_df[['tags','themes', 'degreeLevelType', 'studiesField', 'relation']]
+    #cleaned_data_copy = final_merge_df_copy.to_dict(orient="records")
     #storage.save_json(cleaned_data_copy, 'test')
 
     final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
-
     # tagien tiivistys
     bigdict = tag_per_studyfield(final_merge_df)
     final_merge_df=tag_condenser(final_merge_df, bigdict)
@@ -81,6 +80,8 @@ def clean_data_ev3(load_name="rawData", save_name="cleaned_data"):
     
     # tallennetaan käytettävä data
     storage.save_json(cleaned, save_name)
+
+    return cleaned
 
 
 def one_hot_encode(fdf):
@@ -208,4 +209,4 @@ def alternative_encode(final_merge_df):
 
     return final_merge_df, encoders
 
-#clean_data_v3()
+#clean_data_ev3()
