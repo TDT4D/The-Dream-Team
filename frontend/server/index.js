@@ -42,43 +42,28 @@ app.get("/api/projects", (req, res) => {
     );
 });
 
-app.get("/api/projects/:id/applicants", (req, res) => {
+app.get("/api/projects/:id/students", (req, res) => {
     console.log(req.headers)
     res.send([
         {
             id: 0,
             name: "Student Test 0" + req.params.id,
-            labels: [
-                "x"
-            ],
         },
         {
             id: 1,
             name: "Student Test 1" + req.params.id,
-            labels: [
-                "x", "y"
-            ],
         },
         {
             id: 2,
             name: "Student Test 2" + req.params.id,
-            labels: [
-                "y"
-            ],
         },
         {
             id: 3,
             name: "Student Test 3" + req.params.id,
-            labels: [
-                "x", "z"
-            ],
         },
         {
             id: 4,
             name: "Student Test 4" + req.params.id,
-            labels: [
-                "x", "y", "z"
-            ],
         },
     ]);
 })
