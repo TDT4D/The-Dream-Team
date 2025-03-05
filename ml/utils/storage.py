@@ -40,7 +40,6 @@ def load_json(file_name:str) -> dict:
         return []
 
 
-
 def save_json(data:dict, file_name:str) -> bool:
     """
     Saves a json file to local storage
@@ -68,6 +67,7 @@ def save_json(data:dict, file_name:str) -> bool:
     except Exception as e:
         print(f"ERROR WHILE SAVING DATA: {e}")
         return False
+
 
 def save_model(model, file_name:str) -> bool:
     """
