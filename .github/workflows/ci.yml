@@ -20,10 +20,10 @@ jobs:
       uses: actions/checkout@v4
     - name: Add secrets to environment
       run: |
-        echo -n ${{ secrets.MONGO_ROOT_USER }} > /run/secrets/mongo-root-user
-        echo -n ${{ secrets.MONGO_ROOT_PASS }} > /run/secrets/mongo-root-pass
-        echo -n ${{ secrets.MONGO_USER }} > /run/secrets/mongo-user
-        echo -n ${{ secrets.MONGO_PASS }} > /run/secrets/mongo-pass
+        echo -n ${{ secrets.MONGO_ROOT_USER }} > ./db/mongo_root_uname.txt
+        echo -n ${{ secrets.MONGO_ROOT_PASS }} > ./db/mongo_root_pw.txt
+        echo -n ${{ secrets.MONGO_USER }} > ./db/mongo_uname.txt
+        echo -n ${{ secrets.MONGO_PASS }} > ./db/mongo_pw.txt
 
   build:
     runs-on: ubuntu-latest
