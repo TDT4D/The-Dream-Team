@@ -28,7 +28,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Deploy the Docker image
-      run: docker compose f docker-compose.yml -f docker-compose.override.yml up -d
+      run: docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
     - name: Check running containers
       run: docker ps
     - name: Shutdown the Docker image
