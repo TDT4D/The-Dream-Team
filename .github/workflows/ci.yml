@@ -7,12 +7,30 @@ on:
     branches: [ "staging" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: Build the Docker image
-      run: docker compose build
+      run: docker compose -f docker-compose.yml -f docker-compose.override.yml build
+
+  local_deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: ${{github.event.pull_request.head.ref}}
+        repository: ${{github.event.pull_request.head.repo.full_name}}
+    - name: Deploy the Docker image
+      run: docker compose f docker-compose.yml -f docker-compose.override.yml up -d
+    - name: Check running containers
+      run: docker ps
+    - name: Shutdown the Docker image
+      run: docker compose down
+    

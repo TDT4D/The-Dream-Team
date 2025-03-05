@@ -1,0 +1,7 @@
+services:
+  db:
+      environment:
+        - MONGODB_INITDB_ROOT_USERNAME=${{ secrets.MONGO_ROOT_USER }}
+        - MONGODB_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_ROOT_PASS }}
+        - MONGODB_USERNAME=${{ secrets.MONGO_USER }}
+        - MONGODB_PASSWORD=${{ secrets.MONGO_PASS }}
