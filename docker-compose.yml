@@ -175,14 +175,3 @@ networks:
 volumes:
   db-data:
   # TODO: HTTPS letsencrypt:
-
-# The necessary secrets
-secrets:
-  mongo-root-pass:
-    file: db/mongo_root_pw.txt
-  mongo-root-user:
-    file: db/mongo_root_uname.txt
-  mongo-user:
-    file: db/mongo_uname.txt
-  mongo-pass:
-    file: db/mongo_pw.txt
