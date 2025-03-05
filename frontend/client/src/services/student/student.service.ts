@@ -1,52 +1,34 @@
 /* Types */
+import { ColumnType } from "../../types/Columns";
+import { Project } from "../../types/Project";
 import { Student } from "../../types/Student";
 
-const students: Array<Student>  = [
-    {
-        id: 0,
-        name: "Student Test0",
-        labels: [
-            "x"
-        ],
-    },
-    {
-        id: 1,
-        name: "Student Test1",
-        labels: [
-            "x", "y"
-        ],
-    },
-    {
-        id: 2,
-        name: "Student Test2",
-        labels: [
-            "y"
-        ],
-    },
-    {
-        id: 3,
-        name: "Student Test3",
-        labels: [
-            "x", "z"
-        ],
-    },
-    {
-        id: 4,
-        name: "Student Test4",
-        labels: [
-            "x", "y", "z"
-        ],
-    },
-]
+/* Components, services & etc. */
+import { callAPI, USE_SERVER } from "../api/api.service";
+import { defaultStudents } from "./default-students";
 
-export const getStudentStatus = (id: number): number => {
-    return +id < 3 ? 0 : 1 + Number(+id > 3);
+// TODO: Get stuff from local storage
+export const checkStudentStatus = (student: Student): ColumnType => {
+    student;
+    return ColumnType.Applied;
+}
+
+// TODO: Request student statuses and add them to localstorage for caching
+export const getStudentStatus = (student: Student): ColumnType => {
+    student;
+
+    // Gets random column type:
+    const columnTypes = Object.keys(ColumnType)
+      .map(n => Number.parseInt(n))
+      .filter(n => !Number.isNaN(n));
+
+    return columnTypes[Math.floor(Math.random() * columnTypes.length)];
 }
 
 export const getStudent = (id: number): Student => {
-    return students.filter(stud => stud.id === id)[0];
+    return defaultStudents.filter(stud => stud.id === id)[0];
 }
 
-export const getStudents = (): Array<Student> => {
-    return students;
+export const getStudents = (projectID: Project["id"]): Promise<Student[]> => {
+    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`) : Promise.resolve(defaultStudents);
 }
