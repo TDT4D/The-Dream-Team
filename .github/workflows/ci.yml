@@ -12,9 +12,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        ref: ${{github.event.pull_request.head.ref}}
-        repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: Build the Docker image
       run: docker compose -f docker-compose.yml -f docker-compose.override.yml build
 
@@ -24,9 +21,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        ref: ${{github.event.pull_request.head.ref}}
-        repository: ${{github.event.pull_request.head.repo.full_name}}
     - name: Deploy the Docker image
       run: docker compose f docker-compose.yml -f docker-compose.override.yml up -d
     - name: Check running containers
