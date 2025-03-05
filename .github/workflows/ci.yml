@@ -6,29 +6,43 @@ on:
   pull_request:
     branches: [ "staging" ]
 
-env:
-  MONGO_ROOT_USER: ${{ secrets.MONGO_ROOT_USER }}
-  MONGO_ROOT_PASS: ${{ secrets.MONGO_ROOT_PASS }}
-  MONGO_USER: ${{ secrets.MONGO_USER }}
-  MONGO_PASS: ${{ secrets.MONGO_PASS }}
+# env:
+#   MONGO_ROOT_USER: ${{ secrets.MONGO_ROOT_USER }}
+#   MONGO_ROOT_PASS: ${{ secrets.MONGO_ROOT_PASS }}
+#   MONGO_USER: ${{ secrets.MONGO_USER }}
+#   MONGO_PASS: ${{ secrets.MONGO_PASS }}
 
 jobs:
-  build:
+  add_secrets:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Add secrets to environment
+      run: |
+        echo -n ${{ secrets.MONGO_ROOT_USER }} > /run/secrets/mongo-root-user
+        echo -n ${{ secrets.MONGO_ROOT_PASS }} > /run/secrets/mongo-root-pass
+        echo -n ${{ secrets.MONGO_USER }} > /run/secrets/mongo-user
+        echo -n ${{ secrets.MONGO_PASS }} > /run/secrets/mongo-pass
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # - name: Checkout
+    #   uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker compose -f docker-compose.yml -f docker-compose.override.yml build
+      # run: docker compose -f docker-compose.yml -f docker-compose.override.yml build
+      run: docker compose build
 
   local_deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    # - name: Checkout
+    #   uses: actions/checkout@v4
     - name: Deploy the Docker image
-      run: docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+      # run: docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+      run: docker compose up -d
     - name: Check running containers
       run: docker ps
     - name: Shutdown the Docker image
