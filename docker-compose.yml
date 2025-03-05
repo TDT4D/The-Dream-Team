@@ -106,20 +106,11 @@ services:
     # The database for the backend (and potentially ml)
     image: mongodb/mongodb-community-server:7.0.16-ubi9
     restart: unless-stopped
-    environment:
-      - MONGODB_INITDB_ROOT_USERNAME_FILE=/run/secrets/mongo-root-user
-      - MONGODB_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo-root-pass
-      - MONGODB_INITDB_DATABASE=admin
-      - MONGODB_USERNAME_FILE=/run/secrets/mongo-user
-      - MONGODB_PASSWORD_FILE=/run/secrets/mongo-pass
-      - MONGODB_DATABASE=tdt
-    secrets:
-      - mongo-root-user
-      - mongo-root-pass
-      - mongo-user
-      - mongo-pass
     networks:
       - dream-team
+    environment:
+      - MONGODB_INITDB_DATABASE=admin
+      - MONGODB_DATABASE=tdt
     # expose:
     #   - 27017
     volumes: 

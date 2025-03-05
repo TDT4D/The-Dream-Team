@@ -6,11 +6,11 @@ on:
   pull_request:
     branches: [ "staging" ]
 
-# env:
-#   MONGO_ROOT_USER: ${{ secrets.MONGO_ROOT_USER }}
-#   MONGO_ROOT_PASS: ${{ secrets.MONGO_ROOT_PASS }}
-#   MONGO_USER: ${{ secrets.MONGO_USER }}
-#   MONGO_PASS: ${{ secrets.MONGO_PASS }}
+env:
+  MONGO_ROOT_USER: ${{ secrets.MONGO_ROOT_USER }}
+  MONGO_ROOT_PASS: ${{ secrets.MONGO_ROOT_PASS }}
+  MONGO_USER: ${{ secrets.MONGO_USER }}
+  MONGO_PASS: ${{ secrets.MONGO_PASS }}
 
 jobs:
   build:
@@ -18,15 +18,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Add secrets to environment
-      run: |
-        echo -n ${{ secrets.MONGO_ROOT_USER }} > ./db/mongo_root_uname.txt
-        echo -n ${{ secrets.MONGO_ROOT_PASS }} > ./db/mongo_root_pw.txt
-        echo -n ${{ secrets.MONGO_USER }} > ./db/mongo_uname.txt
-        echo -n ${{ secrets.MONGO_PASS }} > ./db/mongo_pw.txt
     - name: Build the Docker image
-      # run: docker compose -f docker-compose.yml -f docker-compose.override.yml build
-      run: docker compose build
+      run: docker compose -f docker-compose.yml -f docker-compose.actions.yml build
 
   local_deploy:
     runs-on: ubuntu-latest
@@ -34,15 +27,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Add secrets to environment
-      run: |
-        echo -n ${{ secrets.MONGO_ROOT_USER }} > ./db/mongo_root_uname.txt
-        echo -n ${{ secrets.MONGO_ROOT_PASS }} > ./db/mongo_root_pw.txt
-        echo -n ${{ secrets.MONGO_USER }} > ./db/mongo_uname.txt
-        echo -n ${{ secrets.MONGO_PASS }} > ./db/mongo_pw.txt
     - name: Deploy the Docker image
-      # run: docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
-      run: docker compose up -d
+      run: docker compose -f docker-compose.yml -f docker-compose.actions.yml up -d
     - name: Check running containers
       run: docker ps
     - name: Shutdown the Docker image
