@@ -8,3 +8,5 @@ pandas
 scikit-learn
 scipy
 uvicorn
+xgboost
+imbalanced-learn
