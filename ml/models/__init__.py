@@ -14,6 +14,6 @@ def get_model(model_name:str):
         ValueError: If the specified model module does not exist.
     """
     try:
-        return importlib.import_module(model_name)
+        return importlib.import_module(f"models.{model_name}")
     except ModuleNotFoundError:
         raise ValueError(f"Model '{model_name}' not found")

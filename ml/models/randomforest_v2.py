@@ -74,10 +74,10 @@ def train(data="rawData", model_name="randomforest_v2", cleaning:bool=True):
     else:
         return "Error saving the model."
 
-
 def predict(data="rawData", model_name="randomforest_v2", score_name="student_scores_default", cleaning:bool=True):
     """
-    Loads a trained Random Forest model and makes predictions using the storage utility.
+    - Loads a trained Random Forest model and makes predictions using the storage utility.
+    - Saves predictions
     
     Args:
         data (str): Raw data or pre-cleaned data.
@@ -138,7 +138,7 @@ def predict(data="rawData", model_name="randomforest_v2", score_name="student_sc
 
     storage.save_json(scores, score_name)
 
-    print(f"Model trained successfully. Predictions saved as '{score_name}.json'")
+    print(f"Predictions succesfully saved as '{score_name}.json'")
     return scores  #Return predictions as a dictionary
 
 def t_predict(data="rawData", model_name="randomforest_v2_t", score_name="student_scores_t_default", cleaning:bool=True):
