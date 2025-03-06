@@ -1,23 +1,24 @@
 from fastapi import APIRouter, BackgroundTasks, Query
 from fastapi.responses import JSONResponse
 from data_handling import data_cleaning
-from models import random_forest
+from models import get_model
 from utils import storage
 from typing import Optional
 
 router = APIRouter()
 
+#ShouldWork
 @router.post("/predict")
 def start_prediction(
     background_task: BackgroundTasks,
-    model: str = Query(default="randomforest_v2", description="Model to use for predictions"),
+    model_name: str = Query(default="randomforest_v2", description="Model to use for predictions"),
     data: str = Query(default="rawData", description="Raw data file name"),
     saveFile: str = Query(default="score_api_v1", description="Name of the file to save scores")
 ):
     """
     Generates a score file from cleaned data.
 
-    - Cleans rawData
+    - Expects clean data
     - Generates scores from cleaned data  using selected model
     - BackgroundTask not implemented
 
@@ -30,8 +31,55 @@ def start_prediction(
         JSONResponse: Success or error message
     """
     try:
-        #Clean raw data
-        cleaned_data = data_cleaning.clean_data_v2(data, "cleaned_api")
+
+        #Generate and save scores
+        model = get_model(model_name)
+        model(data, model_name, saveFile, False)
+
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": "Prediction and scoring completed successfully",
+                "savedFile": f"{saveFile}.json"
+            }
+        )
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"An error occurred: {str(e)}"}
+        )
+
+    #return {"message:" "prediction and scoring not implemented"}
+
+#Doesn't fully work
+@router.post("/raw_predict")
+def start_c_prediction(
+    background_task: BackgroundTasks,
+    model_name: str = Query(default="randomforest_v2", description="Model to use for predictions"),
+    data: str = Query(default="rawData", description="Raw data file name"),
+    cleaner: str = Query(default="clean_data_v2", description="Cleaning method"),
+    saveFile: str = Query(default="score_api_v1", description="Name of the file to save scores")
+):
+    """
+    Generates a score file from raw data.
+
+    - Cleans rawData
+    - Generates scores from cleaned data using selected model
+    - BackgroundTask not implemented
+
+    Args:
+        model (str): The model used for prediction (default: "randomforest_v2")
+        data (str): Name of the raw data file to process
+        cleaner (str): Name of the method used to clean raw data
+        saveFile (str): Name of the file where scores are stored
+
+    Returns:
+        JSONResponse: Success or error message
+    """
+    try:
+        #Clean raw data //TODO
+        cleaned_data = data_cleaning.get_cleaner(data, "cleaned_api")
 
         if not cleaned_data:
             return JSONResponse(
@@ -39,8 +87,11 @@ def start_prediction(
                 content={"error": "raw data could not be cleaned"}
             )
         
+
+        #predict(data="rawData", model_name="randomforest_v2", score_name="student_scores_default", cleaning:bool=True)
         #Generate and save scores
-        random_forest.randomforest_v2(cleaned_data, saveFile, False)
+        model = get_model(model_name)
+        get_model(model_name)(cleaned_data, model_name, saveFile, False)
 
         return JSONResponse(
             status_code=200,
