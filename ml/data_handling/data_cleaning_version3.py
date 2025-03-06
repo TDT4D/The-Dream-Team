@@ -7,7 +7,7 @@ from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 # luetaan dataa ja tehdään tauluja
 # sama kuin versio 1, mutta tiivistetty tagit uudella scoring systeemillä
 # systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
-def clean_data_ev3(load_name="rawData", save_name="cleaned_data"):
+def clean_data(load_name="rawData", save_name="cleaned_data"):
 
     #luetaan data
     bronze_data = storage.load_json(load_name)
