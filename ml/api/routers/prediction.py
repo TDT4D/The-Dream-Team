@@ -25,8 +25,8 @@ def validate_model(model_type:str, model_name:str) -> bool:
 @router.post("/predict")
 def start_prediction(
     background_task: BackgroundTasks,
-    model_type: str = Query(default="randomforest_v2", description="Type of the used model"),
-    model_name: str = Query(default="", description="Name of the saved model"),
+    modelType: str = Query(default="randomforest_v2", description="Type of the used model"),
+    modelName: str = Query(default="", description="Name of the saved model"),
     data: str = Query(default="clean_v3_modular_test", description="Data file name"),
     cleaning: bool = Query(default=False, description="Does the data require cleaning"),
     saveFile: str = Query(default="score_api_v1", description="File name to save scores")
@@ -49,17 +49,16 @@ def start_prediction(
         JSONResponse: Success or error message
     """
 
-    if not validate_model(model_type, model_name):
+    if not validate_model(modelType, modelName):
         return JSONResponse(
             status_code=400,
-            content={"error": f"Model name '{model_name}' does not match model type '{model_type}.'"}
+            content={"error": f"Model name '{modelName}' does not match model type '{modelType}.'"}
         )
 
     try:
-
         #Generate and save scores
-        model = get_model(model_type)
-        model.predict(data, model_name, saveFile, cleaning)
+        model = get_model(modelType)
+        model.predict(data, modelName, saveFile, cleaning)
 
         return JSONResponse(
             status_code=200,
