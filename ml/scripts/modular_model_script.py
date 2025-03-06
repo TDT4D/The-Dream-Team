@@ -1,10 +1,27 @@
 from models import get_model
 import json
 
-#called from The-Dream-Team\ml>python -m scripts.model_modular_test
+#can be run via \ml>python -m scripts.model_modular_test
 #Models: randomforest_v2, meta_model
 
-MODEL_NAME = "meta_model"
+MODEL_NAME = "randomforest_v2"
+
+"""
+model = get_model(MODEL_NAME)
+
+print("Begin training")
+
+model.train("rawData", "randomforest_v2_test", True)
+
+print("Training completed")
+
+print("Begin scoring")
+print("____________________________________________________")
+
+scores = model.predict(data="rawData", model_name="randomforest_v2_test", score_file="randomforest_v2_test_scores", cleaning=True)
+
+print("Scoring completed")
+"""
 
 
 print("Begin model testing")
@@ -14,8 +31,8 @@ model = get_model(MODEL_NAME)
 print("Begin training")
 
 #train(data="rawData", model_name="randomforest_v2", cleaning:bool=True)
-#predict(data="rawData", model_name="randomforest_v2", score_name="student_scores_default", cleaning:bool=True)
-#t_predict(data="rawData", model_name="randomforest_v2_t", score_name="student_scores_t_default", cleaning:bool=True)
+#predict(data="rawData", model_name="randomforest_v2", score_file="student_scores_default", cleaning:bool=True)
+#t_predict(data="rawData", model_name="randomforest_v2_t", score_file="student_scores_t_default", cleaning:bool=True)
 
 model.train()
 

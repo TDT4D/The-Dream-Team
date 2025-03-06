@@ -20,6 +20,7 @@ def train(data="rawData", model_name="randomforest_v2", cleaning:bool=True):
     
     if cleaning:
         clean_data = get_cleaner("default_cleaner").clean_data(data, "train_clean")
+        print("Data cleaned, ready for training")
     else:
         clean_data = data
     
@@ -97,6 +98,7 @@ def predict(data="rawData", model_name="randomforest_v2", score_file="student_sc
 
     if cleaning:
         cleaned_data = get_cleaner("default_cleaner").clean_data(data, "predict_clean")
+        print("Data cleaned ready for scoring")
     else:
         cleaned_data=data
 

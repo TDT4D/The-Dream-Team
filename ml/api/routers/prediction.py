@@ -19,14 +19,14 @@ def validate_model(model_type:str, model_name:str) -> bool:
     Returns:
         bool: True if valid, False otherwise.
     """
-    return model_name.startswith(f"{model_type}_")
+    return model_name.startswith(f"{model_type}")
 
 #Should Work
 @router.post("/predict")
 def start_prediction(
     background_task: BackgroundTasks,
     modelType: str = Query(default="randomforest_v2", description="Type of the used model"),
-    modelName: str = Query(default="", description="Name of the saved model"),
+    modelName: str = Query(default="randomforest_v2", description="Name of the saved model"),
     data: str = Query(default="clean_v3_modular_test", description="Data file name"),
     cleaning: bool = Query(default=False, description="Does the data require cleaning"),
     saveFile: str = Query(default="score_api_v1", description="File name to save scores")
@@ -52,12 +52,13 @@ def start_prediction(
     if not validate_model(modelType, modelName):
         return JSONResponse(
             status_code=400,
-            content={"error": f"Model name '{modelName}' does not match model type '{modelType}.'"}
+            content={"error": f"Model name '{modelName}' does not match model type '{modelType}'"}
         )
 
     try:
         #Generate and save scores
         model = get_model(modelType)
+        print("Model received")
         model.predict(data, modelName, saveFile, cleaning)
 
         return JSONResponse(
@@ -103,7 +104,7 @@ def get_scores(
 
         #Filter by projectId if provided
         if projectId is not None:
-            filtered_scores = [entry for entry in filtered_scores if entry.get("projectId") == projectId]
+            filtered_scores = [entry for entry in scores if entry.get("projectId") == projectId]
             if not filtered_scores:
                 return JSONResponse(
                     status_code=404,
