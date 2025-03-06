@@ -14,7 +14,7 @@ header {
         justify-content: space-between;
         align-items: center;
         
-        .link, .login {
+        .link, .login, .logout {
             color: white;
             text-decoration: none;
             cursor: pointer;
@@ -23,8 +23,12 @@ header {
             }
         }
 
-        .login {
+        .login, .logout {
             margin-left: auto;
+            border-radius: 0.5em;
+            padding: 5px;
+            background-color: rgb(165, 165, 165);
+            cursor: pointer;
         }
 
         ul {
@@ -37,7 +41,5 @@ header {
                 margin-left: 10px;
             }
         }
-        
-
     }
 }
