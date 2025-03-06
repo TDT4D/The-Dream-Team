@@ -7,91 +7,59 @@ from typing import Optional
 
 router = APIRouter()
 
+
+def validate_model(model_type:str, model_name:str) -> bool:
+    """
+    Validates that the model_name matches the expected model_type.
+
+    Args:
+        model_type (str): The type of the model (e.g., "randomforest").
+        model_name (str): The name of the saved model (e.g., "randomforest_v1").
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
+    return model_name.startswith(f"{model_type}_")
+
 #Should Work
 @router.post("/predict")
 def start_prediction(
     background_task: BackgroundTasks,
-    model_name: str = Query(default="randomforest_v2", description="Model to use for predictions"),
-    data: str = Query(default="rawData", description="Raw data file name"),
-    saveFile: str = Query(default="score_api_v1", description="Name of the file to save scores")
+    model_type: str = Query(default="randomforest_v2", description="Type of the used model"),
+    model_name: str = Query(default="", description="Name of the saved model"),
+    data: str = Query(default="clean_v3_modular_test", description="Data file name"),
+    cleaning: bool = Query(default=False, description="Does the data require cleaning"),
+    saveFile: str = Query(default="score_api_v1", description="File name to save scores")
 ):
     """
-    Generates a score file from cleaned data.
+    Generates a score file from data.
 
-    - Expects clean data
-    - Generates scores from cleaned data  using selected model
-    - BackgroundTask not implemented
-
-    Args:
-        model (str): The model used for prediction (default: "randomforest_v2")
-        data (str): Name of the raw data file to process
-        saveFile (str): Name of the file where scores are stored
-
-    Returns:
-        JSONResponse: Success or error message
-    """
-    try:
-
-        #Generate and save scores
-        model = get_model(model_name)
-        model(data, model_name, saveFile, False)
-
-        return JSONResponse(
-            status_code=200,
-            content={
-                "message": "Prediction and scoring completed successfully",
-                "savedFile": f"{saveFile}.json"
-            }
-        )
-
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"error": f"An error occurred: {str(e)}"}
-        )
-
-    #return {"message:" "prediction and scoring not implemented"}
-
-#Doesn't fully work
-@router.post("/raw_predict")
-def start_c_prediction(
-    background_task: BackgroundTasks,
-    model_name: str = Query(default="randomforest_v2", description="Model to use for predictions"),
-    data: str = Query(default="rawData", description="Raw data file name"),
-    cleaner: str = Query(default="clean_data_v2", description="Cleaning method"),
-    saveFile: str = Query(default="score_api_v1", description="Name of the file to save scores")
-):
-    """
-    Generates a score file from raw data.
-
-    - Cleans rawData
+    - Checks if model type and name match (prevents missmatch errors)
     - Generates scores from cleaned data using selected model
     - BackgroundTask not implemented
 
     Args:
-        model (str): The model used for prediction (default: "randomforest_v2")
+        model_type (str): Type of the used model
+        model_name (str): The saved model used for prediction (default: "")
         data (str): Name of the raw data file to process
-        cleaner (str): Name of the method used to clean raw data
+        cleaning (bool): Check if cleaning is needed (uses default cleaner)
         saveFile (str): Name of the file where scores are stored
 
     Returns:
         JSONResponse: Success or error message
     """
+
+    if not validate_model(model_type, model_name):
+        return JSONResponse(
+            status_code=400,
+            content={"error": f"Model name '{model_name}' does not match model type '{model_type}.'"}
+        )
+
     try:
-        #Clean raw data //TODO
-        cleaned_data = data_cleaning.get_cleaner(data, "cleaned_api")
 
-        if not cleaned_data:
-            return JSONResponse(
-                status_code=400, 
-                content={"error": "raw data could not be cleaned"}
-            )
-        
-
-        #predict(data="rawData", model_name="randomforest_v2", score_name="student_scores_default", cleaning:bool=True)
         #Generate and save scores
-        model = get_model(model_name)
-        get_model(model_name)(cleaned_data, model_name, saveFile, False)
+        model = get_model(model_type)
+        model.predict(data, model_name, saveFile, cleaning)
 
         return JSONResponse(
             status_code=200,

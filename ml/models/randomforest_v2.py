@@ -1,4 +1,4 @@
-from data_handling import data_cleaning
+from data_handling import get_cleaner
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.ensemble import RandomForestClassifier
@@ -19,7 +19,7 @@ def train(data="rawData", model_name="randomforest_v2", cleaning:bool=True):
     """
     
     if cleaning:
-        clean_data = data_cleaning.clean_data_v2(data)
+        clean_data = get_cleaner("default_cleaner").clean_data(data, "train_clean")
     else:
         clean_data = data
     
@@ -96,7 +96,7 @@ def predict(data="rawData", model_name="randomforest_v2", score_file="student_sc
         return None
 
     if cleaning:
-        cleaned_data = data_cleaning.clean_data_v2(data)
+        clean_data = get_cleaner("default_cleaner").clean_data(data, "predict_clean")
     else:
         cleaned_data=data
 
@@ -156,8 +156,7 @@ def t_predict(data="rawData", model_name="randomforest_v2_t", score_file="studen
     """
     
     #Avoid redundant cleaning
-    if cleaning:
-        cleaned_data = data_cleaning.clean_data_v2(data)
+    if cleaning:clean_data = get_cleaner("default_cleaner").clean_data(data, "t_predict_clean")
     else:
         cleaned_data=data
 
