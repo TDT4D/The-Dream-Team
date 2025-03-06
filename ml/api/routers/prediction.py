@@ -7,7 +7,7 @@ from typing import Optional
 
 router = APIRouter()
 
-#ShouldWork
+#Should Work
 @router.post("/predict")
 def start_prediction(
     background_task: BackgroundTasks,

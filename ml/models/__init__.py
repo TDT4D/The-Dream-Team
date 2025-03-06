@@ -2,10 +2,10 @@ import importlib
 
 def get_model(model_name:str):
     """
-    Dynamically loads a model module and returns its get_model function.
+    Dynamically loads a models.
     
     Args:
-        model_name (str): The name of the model module to load (e.g., "randomforest_v2", "meta_model_v1").
+        model_name (str): The name of the model to load (e.g., "randomforest_v2", "meta_model_v1").
     
     Returns:
         A model instance from the specified module.
