@@ -5,6 +5,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { Student, StudentWithRow } from "../../types/Student";
 import { StudentSorter } from "../../types/SortMethods";
 import { DragID } from "../../types/Dragging";
+import { ColumnType } from "../../types/Columns";
 
 /* Components, services & etc. */
 import StudentCard from "../student-card/student-card.component";
@@ -14,7 +15,7 @@ import { colourer } from "./drag-area-colourer";
 import "./sort-column.component.scss";
 
 type SortColumnProps = {
-    id: number,
+    id: ColumnType,
     name: string,
     students: Array<StudentWithRow>,
     sorter: StudentSorter,
