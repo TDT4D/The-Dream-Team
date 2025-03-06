@@ -77,7 +77,6 @@ def start_prediction(
 
     #return {"message:" "prediction and scoring not implemented"}
 
-
 @router.get("/scores")
 def get_scores(
     projectId: Optional[int] = Query(default=None, description="ID of the project to fetch scores for"),

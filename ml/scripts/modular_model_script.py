@@ -2,10 +2,14 @@ from models import get_model
 import json
 
 #called from The-Dream-Team\ml>python -m scripts.model_modular_test
+#Models: randomforest_v2, meta_model
+
+MODEL_NAME = "meta_model"
+
 
 print("Begin model testing")
 
-model = get_model("randomforest_v2")
+model = get_model(MODEL_NAME)
 
 print("Begin training")
 
@@ -44,3 +48,4 @@ filtered_t_scores = [
 ]
 
 print(json.dumps(filtered_t_scores[:10], indent=4))
+
