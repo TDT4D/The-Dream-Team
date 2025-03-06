@@ -1,8 +1,9 @@
 #Individual file
 489-tampere-autumn 2024.json
 
-#Ignore all JSON files
+#Ignore all filetypes
 *.json
+*.joblib
 
 #Data
 

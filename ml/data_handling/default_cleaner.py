@@ -4,9 +4,7 @@ from io import StringIO
 from utils import storage
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 
-# luetaan dataa ja tehdään tauluja
-# sama kuin versio 1, mutta tiivistetty tagit uudella scoring systeemillä
-# systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
+# Default cleaner (copy of data_cleaning_version3)
 def clean_data(load_name="rawData", save_name="cleaned_data"):
 
     #luetaan data

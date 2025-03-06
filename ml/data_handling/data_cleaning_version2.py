@@ -4,7 +4,7 @@ from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from utils import storage
 from io import StringIO
 
-def clean_data_ev2(load_name="rawData", save_name="cleaned_data"):
+def clean_data(load_name="rawData", save_name="cleaned_data"):
     """
     Cleans the raw dataset and either saves it as JSON or returns it as a dictionary.
 
@@ -93,7 +93,7 @@ def clean_data_ev2(load_name="rawData", save_name="cleaned_data"):
     cleaned_data = final_merge_df.to_dict(orient="records")
 
     # Save cleaned data using storage utility
-    save2 = "cleaned_data_encoded"
+    save2 = f"{save_name}_encoded"
     storage.save_json(cleaned_data, save2)
 
     return cleaned_data  # Return cleaned data as list of Python dictionarys
