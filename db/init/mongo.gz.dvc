@@ -1,0 +1,5 @@
+outs:
+- md5: bf6afcece3d9283d75154284869ae933
+  size: 798788
+  hash: md5
+  path: mongo.gz

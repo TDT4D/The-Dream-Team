@@ -22,3 +22,13 @@ db.createUser({
     }
   ]
 });
+
+// Create new database
+const newDb = db.getSiblingDB(process.env.MONGODB_DATABASE);
+
+// Create collections
+newDb.createCollection('students');
+newDb.createCollection('projects');
+
+// Create indices
+// TODO: Add indices
