@@ -96,7 +96,7 @@ def predict(data="rawData", model_name="randomforest_v2", score_file="student_sc
         return None
 
     if cleaning:
-        clean_data = get_cleaner("default_cleaner").clean_data(data, "predict_clean")
+        cleaned_data = get_cleaner("default_cleaner").clean_data(data, "predict_clean")
     else:
         cleaned_data=data
 
@@ -156,7 +156,8 @@ def t_predict(data="rawData", model_name="randomforest_v2_t", score_file="studen
     """
     
     #Avoid redundant cleaning
-    if cleaning:clean_data = get_cleaner("default_cleaner").clean_data(data, "t_predict_clean")
+    if cleaning:
+        cleaned_data = get_cleaner("default_cleaner").clean_data(data, "t_predict_clean")
     else:
         cleaned_data=data
 

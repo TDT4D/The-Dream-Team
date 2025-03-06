@@ -16,6 +16,7 @@ print("Begin training")
 model.train()
 
 print("Training completed")
+#_____________________________________________________
 print("Begin scoring")
 
 scores = model.predict()
@@ -29,6 +30,7 @@ filtered_scores = [
 ]
 print(json.dumps(filtered_scores[:10], indent=4))
 
+#______________________________________________________
 
 print("\n Begin combined training and scoring")
 t_scores = model.t_predict()
