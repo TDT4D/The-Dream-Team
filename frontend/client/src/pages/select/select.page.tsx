@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 import { Project } from "../../types/Project";
 
 /* Components, services & etc. */
+import { useAuth } from "../../services/auth/auth.provider";
 import ProjectSelect from "../../components/project-select/project-select.component";
 import { getProjects } from "../../services/project/project.service";
 
@@ -13,6 +14,7 @@ import { getProjects } from "../../services/project/project.service";
 import "./select.page.scss";
 
 const Select = () => {
+    const { isLoggedIn } = useAuth();
     const [ projects, setProjects ] = useState<Project[]>([]);
 
     useEffect(() => {
@@ -25,7 +27,11 @@ const Select = () => {
                 The Dream Team
             </h1>
             <div className="project-select">
-                <Popover placement="bottom">
+            {
+                !isLoggedIn?
+                    <p>Please log in to use the App!</p>
+                :
+                    <Popover placement="bottom">
                     <PopoverTrigger>
                         <button className="drop">
                             <span>Select project</span>
@@ -42,6 +48,7 @@ const Select = () => {
                         </div>
                     </PopoverContent>
                 </Popover>
+            }
             </div>
         </div>
     )
