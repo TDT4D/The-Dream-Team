@@ -18,15 +18,22 @@ def train(data="rawData", model_name="randomforest_v2", cleaning:bool=True):
         str: Confirmation of model save.
     """
     
+    
+
     if cleaning:
         clean_data = get_cleaner("default_cleaner").clean_data(data, "train_clean")
         print("Data cleaned, ready for training")
     else:
         print("Data cleaning skipped at model")
-        clean_data = data
+        clean_data = storage.load_json(data)
     
     if clean_data is None or len(clean_data) == 0:
         print("ERROR: No data available for training.")
+        return None
+
+    #Additional check to ensure clean_data is not just a file name
+    if isinstance(clean_data, str):
+        print(f"ERROR: Expected data but received a file name: {clean_data}")
         return None
 
     #Training ___________________________________
@@ -103,10 +110,15 @@ def predict(data="rawData", model_name="randomforest_v2", score_file="student_sc
         cleaned_data = get_cleaner("default_cleaner").clean_data(data, "predict_clean")
         print("Data cleaned ready for scoring")
     else:
-        cleaned_data=data
+        cleaned_data=storage.load_json(data)
 
     if cleaned_data is None or len(cleaned_data) == 0:
         print("ERROR: No data available for prediction.")
+        return None
+
+    #Additional check to ensure clean_data is not just a file name
+    if isinstance(cleaned_data, str):
+        print(f"ERROR: Expected data but received a file name: {cleaned_data}")
         return None
 
     df = pd.DataFrame(cleaned_data)
@@ -162,11 +174,10 @@ def t_predict(data="rawData", model_name="randomforest_v2_t", score_file="studen
     
     #Avoid redundant cleaning
     if cleaning:
-        cleaned_data = get_cleaner("default_cleaner").clean_data(data, "t_predict_clean")
-    else:
-        cleaned_data=data
+        get_cleaner("default_cleaner").clean_data(data, "t_predict_clean")
+        data = "t_predict_clean" #Change to proper file name
 
-    train(cleaned_data, model_name, cleaning=False)
+    train(data, model_name, cleaning=False)
 
-    return predict(cleaned_data, model_name, score_file, cleaning=False)  #Return predictions as a dictionary
+    return predict(data, model_name, score_file, cleaning=False)  #Return predictions as a dictionary
 

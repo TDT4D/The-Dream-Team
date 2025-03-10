@@ -30,7 +30,7 @@ def load_json(file_name:str) -> dict:
     
     data_file = load_dir/file_name
 
-    # Check if the file exists
+    #Check if the file exists
     if not data_file.exists():
         print(f"ERROR: Data file '{file_name}' not found in '{load_dir}'")
         return None
@@ -116,7 +116,7 @@ def load_model(file_name:str):
     
     model_file = model_dir / file_name
 
-     # Check if the file exists
+    #Check if the file exists
     if not model_file.exists():
         print(f"ERROR: Model '{file_name}' not found in '{model_dir}'")
         return None

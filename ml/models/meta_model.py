@@ -32,11 +32,16 @@ def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
     if cleaning:
         data = get_cleaner("default_cleaner").clean_data(load)
     else:
-        data=load
+        data=storage.load_json(load)
 
     #Check if data was loaded correctly
     if data is None or len(data) == 0:
         print("ERROR: No data available for training.")
+        return None
+
+    #Additional check to ensure clean_data is not just a file name
+    if isinstance(data, str):
+        print(f"ERROR: Expected data but received a file name: {data}")
         return None
 
     df = pd.DataFrame(data)  # Convert to DataFrame
@@ -141,7 +146,12 @@ def predict(load="rawData", model_name=MODEL_NAME, score_file="student_scores_me
     if cleaning:
         data = get_cleaner("default_cleaner").clean_data(load)
     else:
-        data=load
+        data=storage.load_json(load)
+
+    #Additional check to ensure clean_data is not just a file name
+    if isinstance(data, str):
+        print(f"ERROR: Expected data but received a file name: {data}")
+        return None    
 
     df = pd.DataFrame(data)  # Convert to DataFrame
 
@@ -208,8 +218,10 @@ def t_predict(data="rawData", model_name=f"{MODEL_NAME}_t", score_file="student_
         dict: A dictionary containing predictions and scores.
     """
     
+    #Clean data and change the file name to proper
     if cleaning:
-        data = get_cleaner("default_cleaner").clean_data(data, "t_meta_predict_clean")
+        get_cleaner("default_cleaner").clean_data(data, "t_meta_predict_clean")
+        data = "t_meta_predict_clean"
 
     train(data, model_name, cleaning=False)
     return predict(data, model_name, score_file, cleaning=False)
