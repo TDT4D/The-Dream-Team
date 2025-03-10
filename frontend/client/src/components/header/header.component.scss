@@ -26,8 +26,10 @@ header {
         .login, .logout {
             margin-left: auto;
             border-radius: 0.5em;
-            padding: 5px;
-            background-color: rgb(165, 165, 165);
+            border: solid 1px;
+            padding: 7px;
+            color: azure;
+            background-color: rgba(165, 165, 165, 0);
             cursor: pointer;
         }
 
