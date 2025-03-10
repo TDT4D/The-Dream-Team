@@ -1,4 +1,5 @@
 /* Types */
+import { AuthToken } from "../../types/Auth";
 import { ColumnType } from "../../types/Columns";
 import { Project } from "../../types/Project";
 import { Student } from "../../types/Student";
@@ -29,6 +30,6 @@ export const getStudent = (id: number): Student => {
     return defaultStudents.filter(stud => stud.id === id)[0];
 }
 
-export const getStudents = (projectID: Project["id"]): Promise<Student[]> => {
-    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`) : Promise.resolve(defaultStudents);
+export const getStudents = (projectID: Project["id"], token: AuthToken): Promise<Student[]> => {
+    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token) : Promise.resolve(defaultStudents);
 }

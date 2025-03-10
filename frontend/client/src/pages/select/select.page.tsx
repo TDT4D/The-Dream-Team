@@ -14,11 +14,11 @@ import { getProjects } from "../../services/project/project.service";
 import "./select.page.scss";
 
 const Select = () => {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, token } = useAuth();
     const [ projects, setProjects ] = useState<Project[]>([]);
 
     useEffect(() => {
-        getProjects().then(setProjects);
+        getProjects(token!).then(setProjects);
     }, []);
 
     return (

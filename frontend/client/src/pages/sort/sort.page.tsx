@@ -9,6 +9,7 @@ import { ColumnCreation, ColumnType } from "../../types/Columns";
 
 /* Components, services & etc. */
 import SortColumn from "../../components/sort-column/sort-column.component";
+import { useAuth } from "../../services/auth/auth.provider";
 import { getStudents } from "../../services/student/student.service";
 import { addStudentsLocations } from "./students-to-columns";
 import { handleDragEnd } from "./drag-helpers";
@@ -20,12 +21,13 @@ import "./sort.page.scss";
 
 const Sort = () => {
     let { id } = useParams();
-    
+    const { token } = useAuth();
+
     const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
     const [ isDragging, setDragging ] = useState<boolean>(false);
 
     useEffect(() => {
-        getStudents(+id!)
+        getStudents(+id!, token!)
             .then(addStudentsLocations(ColumnCreation.Initial))
             .then(setStudents);
     }, []);
