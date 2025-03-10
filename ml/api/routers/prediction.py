@@ -1,46 +1,64 @@
 from fastapi import APIRouter, BackgroundTasks, Query
 from fastapi.responses import JSONResponse
-from data_handling import data_cleaning
-from models import random_forest
+from models import get_model
 from utils import storage
 from typing import Optional
 
 router = APIRouter()
 
+
+def validate_model(model_type:str, model_name:str) -> bool:
+    """
+    Validates that the model_name matches the expected model_type.
+
+    Args:
+        model_type (str): The type of the model (e.g., "randomforest").
+        model_name (str): The name of the saved model (e.g., "randomforest_v1").
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
+    return model_name.startswith(f"{model_type}")
+
+#Should Work
 @router.post("/predict")
 def start_prediction(
     background_task: BackgroundTasks,
-    model: str = Query(default="randomforest_v2", description="Model to use for predictions"),
-    data: str = Query(default="rawData", description="Raw data file name"),
-    saveFile: str = Query(default="score_api_v1", description="Name of the file to save scores")
+    modelType: str = Query(default="randomforest_v2", description="Type of the used model"),
+    modelName: str = Query(default="randomforest_v2_API", description="Name of the saved model"),
+    data: str = Query(default="APIclean", description="Data file name"),
+    cleaning: bool = Query(default=False, description="Does the data require cleaning"),
+    saveFile: str = Query(default="APIscore", description="File name to save scores")
 ):
     """
-    Generates a score file from cleaned data.
+    Generates a score file from data.
 
-    - Cleans rawData
-    - Generates scores from cleaned data  using selected model
+    - Checks if model type and name match (prevents missmatch errors)
+    - Generates scores from cleaned data using selected model
     - BackgroundTask not implemented
 
     Args:
-        model (str): The model used for prediction (default: "randomforest_v2")
+        model_type (str): Type of the used model
+        model_name (str): The saved model used for prediction (default: "")
         data (str): Name of the raw data file to process
+        cleaning (bool): Check if cleaning is needed (uses default cleaner)
         saveFile (str): Name of the file where scores are stored
 
     Returns:
         JSONResponse: Success or error message
     """
-    try:
-        #Clean raw data
-        cleaned_data = data_cleaning.clean_data_v2(data, "cleaned_api")
 
-        if not cleaned_data:
-            return JSONResponse(
-                status_code=400, 
-                content={"error": "raw data could not be cleaned"}
-            )
-        
+    if not validate_model(modelType, modelName):
+        return JSONResponse(
+            status_code=400,
+            content={"error": f"Model name '{modelName}' does not match model type '{modelType}'"}
+        )
+
+    try:
         #Generate and save scores
-        random_forest.randomforest_v2(cleaned_data, saveFile, False)
+        model = get_model(modelType)
+        print("Model received")
+        model.predict(data, modelName, saveFile, cleaning)
 
         return JSONResponse(
             status_code=200,
@@ -58,11 +76,10 @@ def start_prediction(
 
     #return {"message:" "prediction and scoring not implemented"}
 
-
 @router.get("/scores")
 def get_scores(
     projectId: Optional[int] = Query(default=None, description="ID of the project to fetch scores for"),
-    scoreFile: str = Query(default="score_api_v1", description="Name of the score file")
+    scoreFile: str = Query(default="APIscore", description="Name of the score file")
 
 ):
     """
@@ -86,7 +103,7 @@ def get_scores(
 
         #Filter by projectId if provided
         if projectId is not None:
-            filtered_scores = [entry for entry in filtered_scores if entry.get("projectId") == projectId]
+            filtered_scores = [entry for entry in scores if entry.get("projectId") == projectId]
             if not filtered_scores:
                 return JSONResponse(
                     status_code=404,

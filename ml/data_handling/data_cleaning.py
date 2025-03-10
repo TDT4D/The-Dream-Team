@@ -1,3 +1,6 @@
+#Commented out for now
+"""
+
 import os
 import json
 import pandas as pd
@@ -73,18 +76,18 @@ def clean_data():
     save_data(final_merge_df)
     return final_merge_df
 
-    """
+    
 
-    final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
-    final_merge_df['themes'] = final_merge_df['themes'].apply(lambda d: d if isinstance(d, list) else [])
+    #final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
+    #final_merge_df['themes'] = final_merge_df['themes'].apply(lambda d: d if isinstance(d, list) else [])
 
-    final_merge_df = one_hot_encode(final_merge_df)
-    final_merge_df.fillna(0, inplace=True)
-    final_merge_df = final_merge_df.astype(int)
+    #final_merge_df = one_hot_encode(final_merge_df)
+    #final_merge_df.fillna(0, inplace=True)
+    #final_merge_df = final_merge_df.astype(int)
     #print(final_merge_df)
-    save_data(final_merge_df)
+    #save_data(final_merge_df)
 
-    """
+    
 
 def clean_data_v2(load_name="rawData", save_name="cleaned_data"):
     # Return cleaned data as a list of Python dictionarys
@@ -151,10 +154,10 @@ def one_hot_encode_v2(fdf):
 
 
 
-"""
-Toinen enkoodaus funktio, koska piti saada yhteen sarakkeeseen tässä vaiheessa
-kaikki yhden teeman tiedot
-"""
+
+#Toinen enkoodaus funktio, koska piti saada yhteen sarakkeeseen tässä vaiheessa
+#kaikki yhden teeman tiedot
+
 def alternative_encode(final_merge_df):
     encoders = {}
 
@@ -182,3 +185,4 @@ def alternative_encode(final_merge_df):
 
 #clean_data()
 
+"""

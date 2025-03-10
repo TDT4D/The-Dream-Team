@@ -1,6 +1,8 @@
 from models import random_forest
 import json
 
+#called from The-Dream-Team\ml>python -m scripts.model_test
+
 print("Begin model testing")
 scores = random_forest.randomforest_v2(load="rawData", save_name="score_test")
 print("scores done \n\n")
