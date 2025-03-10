@@ -125,6 +125,7 @@ def predict(data="rawData", model_name="randomforest_v2", score_file="student_sc
 
     print("Columns in cleaned data:", df.columns)  #Debugging
 
+
     #Identify One-Hot Encoded `relation_*` Columns
     relation_columns = [col for col in df.columns if "relation_" in col]
 

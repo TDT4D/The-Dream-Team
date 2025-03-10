@@ -8,8 +8,8 @@ router = APIRouter()
 def build_team(
     projectId: int = Query(description="ID of the project to fetch scores for"),
     size: int = Query(default=5, description="Number of team members"),
-    data: str = Query(default="score_v1", description="Name of the score file"),
-    saveFile: str = Query(default="team_v1", description="Name of the file team is saved")
+    data: str = Query(default="APIscore", description="Name of the score file"),
+    saveFile: str = Query(default="APIteam", description="Name of the file team is saved")
 ):
     """
     Builds the team based on stored predictions/scores

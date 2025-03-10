@@ -59,7 +59,7 @@ def start_training(
 
     try:
         model = get_model(modelType)
-        confirmation = model.train(data=data, model_name=modelName, cleaning=False)
+        confirmation = model.train(data, modelName, False)
         if confirmation:
             return JSONResponse(
                 status_code=200,

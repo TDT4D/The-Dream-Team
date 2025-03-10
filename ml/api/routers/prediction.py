@@ -26,9 +26,9 @@ def start_prediction(
     background_task: BackgroundTasks,
     modelType: str = Query(default="randomforest_v2", description="Type of the used model"),
     modelName: str = Query(default="randomforest_v2_API", description="Name of the saved model"),
-    data: str = Query(default="clean_v3_modular_test", description="Data file name"),
+    data: str = Query(default="APIclean", description="Data file name"),
     cleaning: bool = Query(default=False, description="Does the data require cleaning"),
-    saveFile: str = Query(default="score_api_v1", description="File name to save scores")
+    saveFile: str = Query(default="APIscore", description="File name to save scores")
 ):
     """
     Generates a score file from data.
@@ -79,7 +79,7 @@ def start_prediction(
 @router.get("/scores")
 def get_scores(
     projectId: Optional[int] = Query(default=None, description="ID of the project to fetch scores for"),
-    scoreFile: str = Query(default="score_api_v1", description="Name of the score file")
+    scoreFile: str = Query(default="APIscore", description="Name of the score file")
 
 ):
     """
