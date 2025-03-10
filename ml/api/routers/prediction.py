@@ -25,7 +25,7 @@ def validate_model(model_type:str, model_name:str) -> bool:
 def start_prediction(
     background_task: BackgroundTasks,
     modelType: str = Query(default="randomforest_v2", description="Type of the used model"),
-    modelName: str = Query(default="randomforest_v2", description="Name of the saved model"),
+    modelName: str = Query(default="randomforest_v2_API", description="Name of the saved model"),
     data: str = Query(default="clean_v3_modular_test", description="Data file name"),
     cleaning: bool = Query(default=False, description="Does the data require cleaning"),
     saveFile: str = Query(default="score_api_v1", description="File name to save scores")
