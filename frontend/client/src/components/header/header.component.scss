@@ -1,9 +1,9 @@
 header {
     display: flex;
     padding-inline: 16px;
-    padding-block: 8px;
-    background-color: black;
-    color: azure;
+    padding-block: 2px;
+    background-color: var(--snow);
+    border-bottom: 1px solid var(--uranian);
     align-items: center;
     justify-content: space-between;
     width: auto;
@@ -15,11 +15,11 @@ header {
         align-items: center;
         
         .link, .login, .logout {
-            color: white;
+            color: var(--black);
             text-decoration: none;
             cursor: pointer;
             &:hover {
-                color: darkgray;
+                color: var(--blue);
             }
         }
 
@@ -28,7 +28,7 @@ header {
             border-radius: 0.5em;
             border: solid 1px;
             padding: 7px;
-            color: azure;
+            color: var(--black);
             background-color: rgba(165, 165, 165, 0);
             cursor: pointer;
         }
