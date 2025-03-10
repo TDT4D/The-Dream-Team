@@ -23,7 +23,7 @@ def start_training(
     background_tasks: BackgroundTasks,
     modelType: str = Query(default="randomforest_v2", description="Type of the used model"),
     modelName: str = Query(default="randomforest_v2_API", description="Name of the saved model"),
-    data: str = Query(default="clean_v3_modular_test", description="Data file name"),
+    data: str = Query(default="APIclean", description="Data file name"),
     cleaning: bool = Query(default=False, description="Does the data require cleaning")
 ):
     """

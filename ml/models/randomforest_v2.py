@@ -22,6 +22,7 @@ def train(data="rawData", model_name="randomforest_v2", cleaning:bool=True):
         clean_data = get_cleaner("default_cleaner").clean_data(data, "train_clean")
         print("Data cleaned, ready for training")
     else:
+        print("Data cleaning skipped at model")
         clean_data = data
     
     if clean_data is None or len(clean_data) == 0:

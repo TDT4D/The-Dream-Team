@@ -30,6 +30,11 @@ def load_json(file_name:str) -> dict:
     
     data_file = load_dir/file_name
 
+    # Check if the file exists
+    if not data_file.exists():
+        print(f"ERROR: Data file '{file_name}' not found in '{load_dir}'")
+        return None
+
     try:
         with data_file.open("r", encoding="utf-8") as file:
             data = json.load(file)
@@ -37,7 +42,7 @@ def load_json(file_name:str) -> dict:
     
     except Exception as e:
         print(f"ERROR WHILE LOADING DATA : {e}")
-        return []
+        return None
 
 
 def save_json(data:dict, file_name:str) -> bool:
@@ -110,6 +115,11 @@ def load_model(file_name:str):
         file_name += ".joblib"
     
     model_file = model_dir / file_name
+
+     # Check if the file exists
+    if not model_file.exists():
+        print(f"ERROR: Model '{file_name}' not found in '{model_dir}'")
+        return None
 
     try:
         model = joblib.load(model_file)
