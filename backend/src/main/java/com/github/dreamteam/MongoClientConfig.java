@@ -17,10 +17,9 @@ public class MongoClientConfig extends AbstractMongoClientConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoClientConfig.class);
 
-    @Value("${MONGO_DB}")
+    @Value("${spring.data.mongodb.database}")
     private String databaseName;
 
-    
     @Value("${spring.data.mongodb.uri}")
     private String connectionString;
 
@@ -31,9 +30,11 @@ public class MongoClientConfig extends AbstractMongoClientConfiguration {
 
     @Bean
     public MongoClientSettings mongoClientSettings() {
-        LOGGER.info("Connecting to MongoDB at {}", connectionString);
+        // Log connection string, but leave out credentials
+        String redactedString = connectionString.replaceAll("://[^:]+:([^@]+)@", "://<credentials>@");
+        LOGGER.info("Connecting to MongoDB at {}", redactedString);
         return MongoClientSettings.builder()
-            .applyConnectionString(new ConnectionString(connectionString))
-            .build();
+                .applyConnectionString(new ConnectionString(connectionString))
+                .build();
     }
 }

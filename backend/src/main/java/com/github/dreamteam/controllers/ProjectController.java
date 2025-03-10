@@ -5,20 +5,24 @@ import com.github.dreamteam.services.StudentService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import com.github.dreamteam.models.Project;
-import com.github.dreamteam.models.Student;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.github.dreamteam.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
 
     @Autowired
     private ProjectServiceImpl projectService;
@@ -27,19 +31,18 @@ public class ProjectController {
     private StudentService studentService;
 
     @GetMapping
-    public ResponseEntity<List<Project>> getProjects(@RequestParam(required = false) String status) {
-        List<Project> projects = projectService.getAllProjects();
-        return !projects.isEmpty()
-                ? ResponseEntity.ok(projects)
-                : ResponseEntity.notFound().build();
+    public Collection<Document> getProjects(@RequestParam(required = false) Optional<String> status,
+            @RequestParam(required = false) Optional<Integer> limit) {
+        if (limit.isPresent()) {
+            return projectService.getAllProjects(limit.get());
+        } else {
+            return projectService.getAllProjects(0);
+        }
     }
 
     @GetMapping("/{projectId}/students")
-    public ResponseEntity<List<Student>> getStudents(@PathVariable Long projectId) {
-        List<Student> students = studentService.getStudentsByProject(projectId);
-        return !students.isEmpty()
-                ? ResponseEntity.ok(students)
-                : ResponseEntity.notFound().build();
+    public Collection<Document> getStudents(@PathVariable Long projectId) {
+        return studentService.getStudentsByProject(projectId);
     }
 
     @PostMapping("/predict")
@@ -89,5 +92,17 @@ public class ProjectController {
             redirectUrl.append("&saveFile=").append(saveFile);
         }
         return new ModelAndView(redirectUrl.toString());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "MongoDB didn't find any document.")
+    public final void handleNotFoundExceptions(EntityNotFoundException e) {
+        LOGGER.info("=> Movie not found: {}", e.toString());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Internal Server Error")
+    public final void handleAllExceptions(RuntimeException e) {
+        LOGGER.error("=> Internal server error.", e);
     }
 }

@@ -14,19 +14,19 @@ public class StudentController {
     private StudentService service;
 
     // TODO: Delete this
-    @GetMapping("/{studentId}")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long studentId) {
-        Student student = service.getStudentById(studentId);
-        return (student != null)
-                ? ResponseEntity.ok(student)
-                : ResponseEntity.notFound().build();
-    }
+    // @GetMapping("/{studentId}")
+    // public ResponseEntity<Student> getStudentById(@PathVariable Long studentId) {
+    //     Student student = service.getStudentById(studentId);
+    //     return (student != null)
+    //             ? ResponseEntity.ok(student)
+    //             : ResponseEntity.notFound().build();
+    // }
 
-    @GetMapping("/{studentId}/name")
-    public ResponseEntity<String> getStudentName(@PathVariable Long studentId) {
-        String studentName = service.getStudentName(studentId);
-        return (studentName != null)
-                ? ResponseEntity.ok(studentName)
-                : ResponseEntity.notFound().build();
-    }
+    // @GetMapping("/{studentId}/name")
+    // public ResponseEntity<String> getStudentName(@PathVariable Long studentId) {
+    //     String studentName = service.getStudentName(studentId);
+    //     return (studentName != null)
+    //             ? ResponseEntity.ok(studentName)
+    //             : ResponseEntity.notFound().build();
+    // }
 }
