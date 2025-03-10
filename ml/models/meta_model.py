@@ -110,9 +110,11 @@ def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
     print(classification_report(y, meta_preds, zero_division=1, labels=[0, 1, 2]))
 
     if storage.save_model(meta_model, model_name):
-        return f"Model '{model_name}' trained and saved succesfully"
+        print(f"Model '{model_name}' trained and saved succesfully")
+        return True
     else:
-        return "Error saving the model"
+        print("Error saving the model")
+        return False
 
 def predict(load="rawData", model_name=MODEL_NAME, score_file="student_scores_meta_default", cleaning:bool=True):
     """

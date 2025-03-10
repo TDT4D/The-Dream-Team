@@ -71,9 +71,11 @@ def train(data="rawData", model_name="randomforest_v2", cleaning:bool=True):
     print(classification_report(y_test, y_pred, zero_division=1, labels=[0, 1, 2]))
 
     if storage.save_model(model, model_name):
-        return f"Model '{model_name}' trained with accuracy: {accuracy:.2f}% and saved successfully."
+        print(f"Model '{model_name}' trained with accuracy: {accuracy:.2f}% and saved successfully.")
+        return True
     else:
-        return "Error saving the model."
+        print("Error saving the model.")
+        return False
 
 def predict(data="rawData", model_name="randomforest_v2", score_file="student_scores_default", cleaning:bool=True):
     """
@@ -93,7 +95,7 @@ def predict(data="rawData", model_name="randomforest_v2", score_file="student_sc
     model = storage.load_model(model_name)
 
     if model is None:
-        print(f"Model '{model_name}' could not be loaded.")
+        print(f"Model '{model_name}' could not be loaded. No such model in storage")
         return None
 
     if cleaning:

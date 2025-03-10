@@ -1,6 +1,5 @@
 from fastapi import APIRouter, BackgroundTasks, Query
 from fastapi.responses import JSONResponse
-from data_handling import data_cleaning
 from models import get_model
 from utils import storage
 from typing import Optional
