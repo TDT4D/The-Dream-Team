@@ -3,7 +3,7 @@ import { AuthToken } from "../../types/Auth";
 import { ColumnType } from "../../types/Columns";
 import { Label, LabelContent, LabelType } from "../../types/Label";
 import { Project } from "../../types/Project";
-import { Student } from "../../types/Student";
+import { Student, StudentStorageItem } from "../../types/Student";
 
 /* Components, services & etc. */
 import { callAPI, USE_SERVER } from "../api/api.service";
@@ -36,20 +36,29 @@ export const getStudents = (projectID: Project["id"], token: AuthToken): Promise
     return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token) : Promise.resolve(defaultStudents);
 }
 
-const storageLabelsID = (studentId: Student["id"], labelType: LabelType): string => `s${studentId}l${labelType}`;
-
 export const getStudentLabels = (studentId: Student["id"], labelType: LabelType): LabelContent[] => {
-    const saved = storage.get<LabelContent[]>(storageLabelsID(studentId, labelType));
-    return saved ?? [];
+    const saved = storage.get<StudentStorageItem>(`s${studentId}`);
+    return saved?.labels?.filter(label => label.isType === labelType).map(label => label.contains) ?? [];
 }
 
+const labelsAreSame = (a: Label, b: Label): boolean => a.isType === b.isType && a.contains.content === b.contains.content
+
 export const addLabelIfMissing = (studentId: Student["id"], label: Label): void => {
-    const mapper = (old: LabelContent[]) => [...old.filter(lbl => lbl.content !== label.contains.content), label.contains];
-    if (!storage.update<LabelContent[]>(storageLabelsID(studentId, label.isType), mapper)) {
-        storage.save<LabelContent[]>([label.contains], storageLabelsID(studentId, label.isType));
+    const itemName = `s${studentId}`;
+    const mapper = (old: StudentStorageItem) => {
+        const oldLabels = old.labels?.filter(lbl => !labelsAreSame(lbl, label)) ?? [];
+        return { ...old, labels: [ ...oldLabels, label] }
+    }
+
+    if (!storage.update<StudentStorageItem>(itemName, mapper)) {
+        storage.save<StudentStorageItem>({ labels: [label]}, itemName);
     }
 }
 
 export const removeLabelFromStudent = (studentId: Student["id"], label: Label): void => {
-    storage.update<LabelContent[]>(storageLabelsID(studentId, label.isType), (old: LabelContent[]) => old.filter(c => c.content !== label.contains.content));
+    const mapper = (old: StudentStorageItem) => {
+        const oldLabels = old.labels?.filter(lbl => !labelsAreSame(lbl, label)) ?? [];
+        return { ...old, labels: oldLabels }
+    }
+    storage.update<StudentStorageItem>(`s${studentId}`, mapper);
 }

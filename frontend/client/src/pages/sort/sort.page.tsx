@@ -36,10 +36,8 @@ const Sort = () => {
         
         // Mark all students as applied to this project
         gotStudents.then(all => all.forEach(student => markStudentAsApplied(currentProject!.name, student.id)));
-        // Should use a lifecycle hook but can't be bothered atm :=)
     }, []);
 
-    
     const onDragEnd = (event: DragEndEvent) => {
         setDragging(false);
         updateStudentsLabels(currentProject!.name, event);
@@ -55,7 +53,7 @@ const Sort = () => {
     return (
         <div className="container">
             <div className="head">
-                <h1>{ currentProject!.name }</h1>
+                <h1>{ currentProject?.name }</h1>
                 <button className="build-team" onClick={handleTeamBuild}>Build team</button>
             </div>
             <div className="columns">
