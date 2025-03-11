@@ -37,8 +37,10 @@
     border-radius: 1em;
     background-color: rgba(130, 130, 130, 0.396);
 
-    padding-left: 3em;
-    padding-right: 3em;
+    min-width: 15vw;
+
+    padding-left: 1em;
+    padding-right: 1em;
     padding-top: 1em;
     padding-bottom: 1em;
 }
