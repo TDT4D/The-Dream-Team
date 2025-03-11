@@ -20,12 +20,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    - uses: iterative/setup-cml@v1
     - uses: iterative/setup-dvc@v1
-    - name: Train model
+    - name: Fetch data
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
       run: |
@@ -35,5 +31,5 @@ jobs:
     - name: Check running containers
       run: docker ps
     - name: Shutdown the Docker image
-      run: docker compose down
+      run: docker compose down --volumes
     
