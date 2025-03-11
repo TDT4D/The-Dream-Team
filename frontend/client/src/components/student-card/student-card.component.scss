@@ -1,16 +1,23 @@
 .student-card {
-    margin: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     padding: 1rem;
     
-    background-image: linear-gradient(to top right, rgba(93, 93, 93, 0.8), rgba(137, 137, 137, 0.8));
-    box-shadow: 2px 2px rgba(0, 0, 0, 0.15);
+    background-color: var(--light-uranian);
+    //background-image: linear-gradient(to top, rgba(var(--light-uranian), 0.8), rgba(var(--light-uranian),0.8));
+    box-shadow: var(--gray) 1px 1px 1px;
 
     cursor: pointer;
 
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     border: solid 1px;
-    border-color: black;
+    border-color: var(--light-blue);
     overflow: hidden;
+    &:hover {
+        border: solid 3px var(--blue);
+    }
 
     &>.card-header {
         display: flex;
@@ -19,10 +26,15 @@
 
     &>.card-body {
         &>.labels {
-            background-color: rgba(109, 109, 109, 0.566);
             border: solid 1px rgb(75, 75, 75);
             border-radius: 5px;
             overflow: hidden;
+        }
+        #applied {
+            background-color: var(--light-pink);
+        }
+        #selected {
+            background-color: var(--pistachio);
         }
     }
     

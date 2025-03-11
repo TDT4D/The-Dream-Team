@@ -52,13 +52,13 @@ const StudentCard = ({ student, columnId }: StudentCardProps) => {
         <Divider />
         <CardBody className="card-body">
             <span>Applied:</span>
-            <div className="labels">
+            <div className="labels" id="applied">
                 { ["x", "y", "z"].map((labl, idx) => {
                     return <Label key={idx} name={labl} colour={"green"} />
                 }) }
             </div>
             <span>Selected:</span>
-            <div className="labels">
+            <div className="labels" id="selected">
                 { ["u", "i", "p"].map((labl, idx) => {
                     return <Label key={idx} name={labl} colour={"yellow"} />
                 }) }

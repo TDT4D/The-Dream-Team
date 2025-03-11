@@ -13,6 +13,14 @@ header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        #title {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 30px;
+            padding-right: 10px;
+        }
         
         .link, .login, .logout {
             color: var(--black);

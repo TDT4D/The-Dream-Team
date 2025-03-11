@@ -10,7 +10,7 @@ const Label = ({ name, colour }: LabelProps) => {
     
     return (
         <>
-            <span className="label" style={{backgroundColor:  colour}}>
+            <span className="label">
                 { name }
             </span>  
         </>
