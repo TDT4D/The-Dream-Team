@@ -6,11 +6,11 @@ type LabelProps = {
     colour: string
 }
 
-const Label = ({ name, colour }: LabelProps) => {
+const Label = ({ name }: LabelProps) => {
     
     return (
         <>
-            <span className="label" style={{backgroundColor:  colour}}>
+            <span className="label">
                 { name }
             </span>  
         </>

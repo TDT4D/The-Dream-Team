@@ -2,17 +2,18 @@
 .column {
     width: 30%;
 
-    background-color: rgb(218, 218, 218);
+    background-color: var(--snow);
     box-shadow: 2px 2px rgba(0, 0, 0, 0.15);
     
     padding: 10px;
     
-    border: solid 1px black;
-    border-radius: 0.25rem;
+    border: solid 1px var(--light-blue);
+    border-radius: 0.5rem;
 
     &>.column-name {
         font-size: larger;
-        padding-left: 1rem;
+        padding: 0.5rem;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
 
     &>.drag-area {
