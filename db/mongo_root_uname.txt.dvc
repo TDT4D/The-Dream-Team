@@ -1,0 +1,5 @@
+outs:
+- md5: 4f5cec75c744bd39b5126debbb7cffb8
+  size: 9
+  hash: md5
+  path: mongo_root_uname.txt

@@ -7,12 +7,29 @@ on:
     branches: [ "staging" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Build the Docker image
       run: docker compose build
+
+  local_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - uses: iterative/setup-dvc@v2
+    - name: Fetch data
+      env:
+        GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+      run: |
+        dvc pull -r gd-service
+    - name: Deploy the Docker image
+      run: docker compose up -d
+    - name: Check running containers
+      run: docker ps
+    - name: Shutdown the Docker image
+      run: docker compose down --volumes
+    

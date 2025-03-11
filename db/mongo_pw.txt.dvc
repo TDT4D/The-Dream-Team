@@ -1,0 +1,5 @@
+outs:
+- md5: ae2b1fca515949e5d54fb22b8ed95575
+  size: 7
+  hash: md5
+  path: mongo_pw.txt
