@@ -1,0 +1,5 @@
+outs:
+- md5: 70e76a15da00e6301ade718cc9416f79
+  size: 7
+  hash: md5
+  path: mongo_root_pw.txt
