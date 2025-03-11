@@ -1,5 +1,5 @@
-const user = process.env.MONGODB_USERNAME ?? fs.readFileSync(process.env.MONGODB_USERNAME_FILE, 'utf8').trim();
-const password = process.env.MONGODB_PASSWORD ?? fs.readFileSync(process.env.MONGODB_PASSWORD_FILE, 'utf8').trim();
+const user = fs.readFileSync(process.env.MONGODB_USERNAME_FILE, 'utf8').trim();
+const password = fs.readFileSync(process.env.MONGODB_PASSWORD_FILE, 'utf8').trim();
 
 // Create connection to mongo
 const conn = new Mongo();
