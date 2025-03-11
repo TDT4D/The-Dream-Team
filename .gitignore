@@ -6,4 +6,7 @@ venv/
 *.json
 *.csv
 
+# Stuff from DVC
+ml/data/example.txt
+
 **/node_modules
