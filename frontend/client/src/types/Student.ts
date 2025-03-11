@@ -1,3 +1,8 @@
+/* Types */
+import { ColumnType } from "./Columns"
+import { Label } from "./Label"
+import { Project } from "./Project"
+
 export type Student = {
     id: number,
     name: string,
@@ -43,4 +48,14 @@ export type ApplicationData = {
     dropoutExplanation: string,
     whyExperience: string,
     whyProject: string,
+}
+
+export type StudentProjectStatus = {
+    projectId: Project["id"],
+    status: ColumnType
+}
+
+export type StudentStorageItem = {
+    labels?: Label[],
+    projects?: StudentProjectStatus[]
 }
