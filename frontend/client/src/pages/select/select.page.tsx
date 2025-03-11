@@ -42,7 +42,7 @@ const Select = () => {
                         <div className="dropdown">
                             {
                                 projects.map((proj, index) => (
-                                    <ProjectSelect key={index} id={proj.id} name={proj.name}/>
+                                    <ProjectSelect key={index} project={proj}/>
                                 ))
                             }
                         </div>

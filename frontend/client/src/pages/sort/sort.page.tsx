@@ -10,6 +10,7 @@ import { ColumnCreation, ColumnType } from "../../types/Columns";
 /* Components, services & etc. */
 import SortColumn from "../../components/sort-column/sort-column.component";
 import { markStudentAsApplied, updateStudentsLabels } from "./label-updater";
+import { useProjectContext } from "../../services/project/project.provider";
 import { addStudentsLocations } from "./students-to-columns";
 import { useAuth } from "../../services/auth/auth.provider";
 import { getStudents } from "../../services/student/student.service";
@@ -23,6 +24,7 @@ import "./sort.page.scss";
 const Sort = () => {
     let { id } = useParams();
     const { token } = useAuth();
+    const { currentProject } = useProjectContext();
 
     const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
     const [ isDragging, setDragging ] = useState<boolean>(false);
@@ -33,14 +35,14 @@ const Sort = () => {
                    .then(setStudents);
         
         // Mark all students as applied to this project
-        gotStudents.then(all => all.forEach(student => markStudentAsApplied(id!, student.id)));
+        gotStudents.then(all => all.forEach(student => markStudentAsApplied(currentProject!.name, student.id)));
         // Should use a lifecycle hook but can't be bothered atm :=)
     }, []);
 
     
     const onDragEnd = (event: DragEndEvent) => {
         setDragging(false);
-        updateStudentsLabels(id!, event);
+        updateStudentsLabels(currentProject!.name, event);
         handleDragEnd(students, setStudents)(event);
     }
 
@@ -53,7 +55,7 @@ const Sort = () => {
     return (
         <div className="container">
             <div className="head">
-                <h1>Sorting { id }</h1>
+                <h1>{ currentProject!.name }</h1>
                 <button className="build-team" onClick={handleTeamBuild}>Build team</button>
             </div>
             <div className="columns">

@@ -1,4 +1,5 @@
 /* Components, services & etc. */
+import { ProjectProvider } from "./services/project/project.provider";
 import { AuthProvider } from "./services/auth/auth.provider";
 import { Routes } from "./services/router/router.provider";
 
@@ -9,7 +10,9 @@ import './App.scss';
 function App() {
   return (
     <AuthProvider>
-      <Routes />
+      <ProjectProvider>
+        <Routes />
+      </ProjectProvider>
     </AuthProvider>
   );
 }

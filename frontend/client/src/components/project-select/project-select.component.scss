@@ -1,6 +1,11 @@
 .project-select-element {
-    &>.link {
-        text-decoration: none;
+    &>.select-button {
+        width: 100%;
+        border: 1px solid black;
+        border-radius: 0.25em;
+        cursor: pointer;
+        text-align: left;
+        padding: 2px;
     }
     
 }
