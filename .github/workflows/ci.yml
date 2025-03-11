@@ -25,6 +25,7 @@ jobs:
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
       run: |
+        dvc remote modify gd-service --local gdrive_service_account_json_file_path /dev/null
         dvc pull -r gd-service
     - name: Deploy the Docker image
       run: docker compose up -d
