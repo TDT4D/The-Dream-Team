@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [ "staging" ]
 
-env:
-  MONGO_ROOT_USER: ${{ secrets.MONGO_ROOT_USER }}
-  MONGO_ROOT_PASS: ${{ secrets.MONGO_ROOT_PASS }}
-  MONGO_USER: ${{ secrets.MONGO_USER }}
-  MONGO_PASS: ${{ secrets.MONGO_PASS }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,16 +13,22 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker compose -f docker-compose.yml -f docker-compose.actions.yml build
+      run: docker compose build
 
   local_deploy:
     runs-on: ubuntu-latest
+    container: docker://dvcorg/cml-py3:latest
     needs: build
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Fetch DVC data
+      env:
+       GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+      run: |
+        dvc pull
     - name: Deploy the Docker image
-      run: docker compose -f docker-compose.yml -f docker-compose.actions.yml up -d
+      run: docker compose up -d
     - name: Check running containers
       run: docker ps
     - name: Shutdown the Docker image
