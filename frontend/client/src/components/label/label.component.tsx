@@ -6,7 +6,7 @@ type LabelProps = {
     colour: string
 }
 
-const Label = ({ name, colour }: LabelProps) => {
+const Label = ({ name }: LabelProps) => {
     
     return (
         <>
