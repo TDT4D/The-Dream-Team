@@ -40,7 +40,7 @@ const SortColumn = ({ id, name, students, sorter, isDragging }: SortColumnProps)
                 {
                     students
                         .sort(sorter)
-                        .map((student, idx) => <StudentCard key={idx} student={studentExtractor(student)} columnId={id} />)
+                        .map((student, idx) => <StudentCard key={idx} student={studentExtractor(student)} columnId={id} columnName={name}/>)
                 }
             </div>
         </div>

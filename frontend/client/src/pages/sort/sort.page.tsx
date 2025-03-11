@@ -9,9 +9,10 @@ import { ColumnCreation, ColumnType } from "../../types/Columns";
 
 /* Components, services & etc. */
 import SortColumn from "../../components/sort-column/sort-column.component";
+import { markStudentAsApplied, updateStudentsLabels } from "./label-updater";
+import { addStudentsLocations } from "./students-to-columns";
 import { useAuth } from "../../services/auth/auth.provider";
 import { getStudents } from "../../services/student/student.service";
-import { addStudentsLocations } from "./students-to-columns";
 import { handleDragEnd } from "./drag-helpers";
 import { sortFunc } from "./sorting";
 
@@ -27,14 +28,19 @@ const Sort = () => {
     const [ isDragging, setDragging ] = useState<boolean>(false);
 
     useEffect(() => {
-        getStudents(+id!, token!)
-            .then(addStudentsLocations(ColumnCreation.Initial))
-            .then(setStudents);
+        const gotStudents = getStudents(+id!, token!);
+        gotStudents.then(addStudentsLocations(ColumnCreation.Initial))
+                   .then(setStudents);
+        
+        // Mark all students as applied to this project
+        gotStudents.then(all => all.forEach(student => markStudentAsApplied(id!, student.id)));
+        // Should use a lifecycle hook but can't be bothered atm :=)
     }, []);
 
     
     const onDragEnd = (event: DragEndEvent) => {
         setDragging(false);
+        updateStudentsLabels(id!, event);
         handleDragEnd(students, setStudents)(event);
     }
 

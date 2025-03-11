@@ -4,6 +4,6 @@ export type DragID = {
 }
 
 export type DragAreaStyle = {
-    "background-color"?: string
+    "backgroundColor"?: string
     "border"?: string
 }
