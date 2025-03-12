@@ -1,5 +1,4 @@
-
-from data_handling import data_cleaning
+from data_handling import data_cleaning_version3
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.ensemble import RandomForestClassifier
@@ -12,11 +11,12 @@ from sklearn.ensemble import AdaBoostClassifier
 from xgboost import XGBClassifier
 from sklearn.model_selection import StratifiedKFold, KFold
 from imblearn.over_sampling import SMOTE
+from sklearn.preprocessing import MinMaxScaler
 
 
 # Random Forest -malli
 def randomforest():
-    data = data_cleaning.clean_data_v2()
+    data = data_cleaning_version3.clean_data_ev3()
     data['tags'] = data['tags'].apply(lambda x: len(x) if isinstance(x, list) else 0)
     data['themes'] = data['themes'].apply(lambda x: len(x) if isinstance(x, list) else 0)
 
@@ -53,7 +53,7 @@ def randomforest_v2(load="rawData", save_name="student_scores", cleaning:bool=Tr
         dict: A dictionary containing test predictions and their scores.
     """
     if cleaning:
-        data = data_cleaning.clean_data_v2(load)
+        data = data_cleaning_version3.clean_data_ev3()
     else:
         data=load
 
@@ -104,7 +104,6 @@ def randomforest_v2(load="rawData", save_name="student_scores", cleaning:bool=Tr
     test_results['Predicted_Relation'] = y_pred
     test_results['Score'] = (y_pred / y_pred.max()) * 100  #Normalize scores to 0-100
 
-
     #Save results to storage
     storage.save_json(test_results.to_dict(orient="records"), save_name)
 
@@ -112,7 +111,8 @@ def randomforest_v2(load="rawData", save_name="student_scores", cleaning:bool=Tr
 
     return test_results.to_dict(orient="records")  #Return predictions as a dictionary
 
-def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True):
+
+def meta_model_v1(load="rawData", save_name="student_scores", cleaning: bool = True):
     """
     Trains a Random Forest model to predict the 'relation' of a student to a project.
 
@@ -128,7 +128,7 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
         dict: A dictionary containing test predictions and their scores.
     """
     if cleaning:
-        data = data_cleaning.clean_data_v2(load)
+        data = data_cleaning_version3.clean_data_ev3()
     else:
         data=load
 
@@ -163,6 +163,28 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
     smote = SMOTE(random_state=42)
     X, y = smote.fit_resample(X, y)
 
+    """
+    Model parameters:
+
+    XGBoost:
+        n_estimators - Bigger values makes the models more complex and slower, but too big values lead to overlearning
+        max_depth    - Lower value helps to avoid overlearning, but too small makes it hard to learn complex
+                       relations
+    AdaBoost:
+        n_estimators - Bigger values makes the models more complex and slower, but too big values lead to overlearning
+        random_state - If it's predefined to for example 42, the results are always the same with same data
+
+    KNN:
+        n_neighbours - Smaller amount of neighbours lead to overlearnign and too many neighbours can make the model 
+                       too simple
+
+    NaiveBayes       - Based on Gaussian normal distribution
+
+    K-fold:
+        n_splits     - To how many folds data is divided to. Bigger value is slower to count, but also more 
+                       reliable than smaller
+        shuffle      - Is data shuffled before use
+    """
     base_models = {
         "XGBoost": XGBClassifier(n_estimators=50, max_depth=3),
         "AdaBoost": AdaBoostClassifier(n_estimators=50, random_state=42),
@@ -172,9 +194,7 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
     meta_model = XGBClassifier(n_estimators=50, max_depth=3)
 
     # K-fold for base-models
-    K = 5
-    skf = StratifiedKFold(n_splits=K, shuffle=True, random_state=42)
-
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
     stacked_X = np.zeros((len(y), len(base_models)))
 
@@ -187,12 +207,14 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
             model.fit(X_train, y_train)
             stacked_X[test_idx, model_idx] = model.predict(X_test)
 
+    #K-fold for meta-model
+    kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
-    # K-fold for meta-model
-    kf = KFold(n_splits=K, shuffle=True, random_state=42)
+    #Predicted relations and scores
     meta_preds = np.zeros(len(y))
+    probabilities_list = np.zeros(len(y))
 
-    # Meta-model training
+    #Meta-model training
     for fold_idx, (train_idx, test_idx) in enumerate(kf.split(stacked_X, y)):
         X_meta_train, X_meta_test = stacked_X[train_idx], stacked_X[test_idx]
         y_meta_train, y_meta_test = y.iloc[train_idx], y.iloc[test_idx]
@@ -200,7 +222,16 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
         meta_model.fit(X_meta_train, y_meta_train)
         meta_preds[test_idx] = meta_model.predict(X_meta_test)
 
-    #Compute accuracy
+        # Get scores from predict_proba (better than it's now but still not good)
+        probabilities = meta_model.predict_proba(X_meta_test)
+        probabilities = np.max(probabilities, axis=1)
+        probabilities_list[test_idx] = probabilities
+
+    # Scale scores
+    scaler = MinMaxScaler(feature_range=(0, 100))
+    probabilities_scaled = scaler.fit_transform(probabilities_list.reshape(-1, 1)).flatten()
+
+    # Meta-model accuracy
     accuracy = accuracy_score(y, meta_preds) * 100
     print(f"\nModel Training Accuracy: {accuracy:.2f}%\n")
 
@@ -209,13 +240,11 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning:bool=True
 
     # Create test results dataframe so that predicted relation can be estimated
     test_results = pd.DataFrame(stacked_X)
-
     test_results['Predicted_Relation'] = meta_preds
-    test_results['Score'] = (meta_preds / meta_preds.max()) * 100  #Normalize scores to 0-100
+    test_results['Score'] = probabilities_scaled
 
-    #Save results to storage
+    # Save results to storage
     storage.save_json(test_results.to_dict(orient="records"), save_name)
 
     print(f"Model trained successfully. Predictions saved as '{save_name}.json'")
-
-    return test_results.to_dict(orient="records")  #Return predictions as a dictionary
+    return test_results.to_dict(orient="records")  # Return predictions as a dictionary
