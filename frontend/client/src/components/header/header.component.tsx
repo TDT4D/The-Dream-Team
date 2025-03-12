@@ -3,7 +3,6 @@ import { Link } from "react-router";
 
 /* Components, services & etc. */
 import { useAuth } from "../../services/auth/auth.provider";
-import logo from "../../../public/TheDreamTeamLogo.svg";
 
 /* Styling */
 import "./header.component.scss";
@@ -18,7 +17,7 @@ const Header = ({ title }: HeaderProps) => {
         <header>
             <nav>
                 <Link className="link" to={"/"} id="title">
-                    <img className="logo" src = {logo}/>
+                    <img className="logo" src="/TheDreamTeamLogo.svg"/>
                     <span id="header.title">
                         { title }
                     </span>
