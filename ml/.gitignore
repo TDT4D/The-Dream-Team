@@ -6,7 +6,7 @@
 *.joblib
 
 #Data
-
+data/example.txt
 
 #ML Models
 

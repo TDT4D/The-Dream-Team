@@ -1,0 +1,5 @@
+outs:
+- md5: 4e484133b40260a925d131569ec8ce80
+  size: 3407298
+  hash: md5
+  path: rawData.json
