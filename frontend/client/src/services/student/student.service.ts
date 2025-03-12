@@ -55,6 +55,13 @@ export const addLabelIfMissing = (studentId: Student["id"], label: Label): void 
     }
 }
 
+export const removeAllLabelsByType = (studentId: Student["id"], labelType: LabelType): void => {
+    const mapper = (old: StudentStorageItem) => {
+        return { ...old, labels: old.labels?.filter(lbl => lbl.isType !== labelType) ?? [] }
+    }
+    storage.update<StudentStorageItem>(`s${studentId}`, mapper);
+}
+
 export const removeLabelFromStudent = (studentId: Student["id"], label: Label): void => {
     const mapper = (old: StudentStorageItem) => {
         const oldLabels = old.labels?.filter(lbl => !labelsAreSame(lbl, label)) ?? [];
