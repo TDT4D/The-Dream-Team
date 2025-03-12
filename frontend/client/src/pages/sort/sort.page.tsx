@@ -1,6 +1,6 @@
 /* Lib imports */
 import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 
 /* Types */
@@ -9,7 +9,7 @@ import { ColumnCreation, ColumnType } from "../../types/Columns";
 
 /* Components, services & etc. */
 import SortColumn from "../../components/sort-column/sort-column.component";
-import { markStudentAsApplied, updateStudentsLabels } from "./label-updater";
+import { updateStudentsLabels } from "./label-updater";
 import { useProjectContext } from "../../services/project/project.provider";
 import { addStudentsLocations } from "./students-to-columns";
 import { useAuth } from "../../services/auth/auth.provider";
@@ -25,17 +25,18 @@ const Sort = () => {
     let { id } = useParams();
     const { token } = useAuth();
     const { currentProject } = useProjectContext();
+    
+    if (id === undefined || token === undefined || currentProject === undefined) {
+        useNavigate()("/");
+    }
 
     const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
     const [ isDragging, setDragging ] = useState<boolean>(false);
 
     useEffect(() => {
-        const gotStudents = getStudents(+id!, token!);
-        gotStudents.then(addStudentsLocations(ColumnCreation.Initial))
-                   .then(setStudents);
-        
-        // Mark all students as applied to this project
-        gotStudents.then(all => all.forEach(student => markStudentAsApplied(currentProject!.name, student.id)));
+        getStudents(+id!, token!)
+            .then(addStudentsLocations(ColumnCreation.Initial))
+            .then(setStudents);
     }, []);
 
     const onDragEnd = (event: DragEndEvent) => {
