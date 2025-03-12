@@ -10,6 +10,7 @@ export default (token: AuthToken) => {
     return (projects: Project[]): Project[] => {
 
         // Pair all projects with the applied students
+        // TODO: This currently bombs the backend with a bunch of requests. Maybe do smt else in the future? :D
         const intermediary = projects.map(project => { return { project, students: getStudents(project.id, token) }});
 
         // Remove all "Applied" labels from all students (just in case)
