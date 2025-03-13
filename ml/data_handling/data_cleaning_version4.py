@@ -3,11 +3,14 @@ import pandas as pd
 from io import StringIO
 from utils import storage
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from scipy.spatial import distance
+from sentence_transformers import SentenceTransformer
 
 # luetaan dataa ja tehdään tauluja
-# sama kuin versio 2, mutta tiivistetty tagit uudella scoring systeemillä
+# sama kuin versio 3, mutta lisätty samanlaisuuden testaus projektin kuvauksen
+# ja hakemusten whyProject sekä whyExperience kohtien kanssa.
 # systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
-def clean_data(load_name="rawData", save_name="cleaned_data"):
+def clean_data(load_name="rawData", save_name="cleaned_data_old"):
 
     #luetaan data
     bronze_data = storage.load_json(load_name)
@@ -36,7 +39,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     # tehdään projektien talu ja muokataan sitä paremmaks
     temp = json.dumps(bronze_data['projects'])
     dfpro = pd.read_json(StringIO(temp))
-    dfpro = dfpro[['id','themes', 'tags']]
+    dfpro = dfpro[['id','description', 'themes', 'tags']]
     dfpro.rename(columns={'id':'projectId'}, inplace=True)
 
     # haetaan kaikki hakemukset (applications) ja tehdään niistä yksi taulu
@@ -49,7 +52,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
         else:
             dftemp = pd.read_json(StringIO(temp))
             dfapp = pd.concat([dfapp, dftemp])
-    dfapp = dfapp[['projectId', 'studentId', 'relation']]
+    dfapp = dfapp[['projectId', 'studentId','whyProject','whyExperience', 'relation']]
     dfapp.loc[dfapp["relation"] == 'Dropout', "relation"] = 'Selected'
 
     # yhdistetään hakemukset ja opiskelijat
@@ -59,14 +62,17 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     # (kaikkia projekteja ei mainittu projekteissa)
     final_merge_df = pd.merge(merged_df, dfpro, on='projectId', how='left')
 
-    #final_merge_df_copy = final_merge_df[['tags','themes', 'degreeLevelType', 'studiesField', 'relation']]
-    #cleaned_data_copy = final_merge_df_copy.to_dict(orient="records")
-    #storage.save_json(cleaned_data_copy, 'test')
-
     final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
+
     # tagien tiivistys
     bigdict = tag_per_studyfield(final_merge_df)
     final_merge_df=tag_condenser(final_merge_df, bigdict)
+
+    # samanlaisuuden testaus ja vaihetaan samanlaisuus scoreksi
+    temporary_df = similaritytest(final_merge_df)
+    final_merge_df['whyProject'] = temporary_df['whyProject']
+    final_merge_df['whyExperience'] = temporary_df['whyExperience']
+    final_merge_df = final_merge_df[['projectId','studentId','whyProject','whyExperience','relation','degreeLevelType','studiesField','themes','tags']]
 
     final_merge_df, encoders = alternative_encode(
         final_merge_df)
@@ -82,7 +88,6 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     storage.save_json(cleaned, save_name)
 
     return cleaned
-
 
 def one_hot_encode(fdf):
     one_hot = pd.get_dummies(fdf['themes'].apply(pd.Series).stack(), prefix="theme").groupby(level=0).sum()
@@ -209,4 +214,35 @@ def alternative_encode(final_merge_df):
 
     return final_merge_df, encoders
 
-#clean_data_ev3()
+def similaritytest_helper(model, df):
+    r = 0
+    indexes = df.index
+    for row in df.itertuples():
+        sentences = [row.whyProject, row.whyExperience]
+
+        desc = row.description
+
+        desc_vec = model.encode([desc])[0]
+
+        whyProject_score = 1 - distance.cosine(desc_vec, model.encode([sentences[0]])[0])
+        df.loc[indexes[r], 'whyProject'] = whyProject_score
+
+        whyExperience_score = 1 - distance.cosine(desc_vec,model.encode([sentences[1]])[0])
+        df.loc[indexes[r], 'whyExperience'] = whyExperience_score
+
+        r +=1
+
+    return df
+
+def similaritytest(df):
+    df = df[['whyProject','whyExperience', 'relation', 'description']]
+    df.dropna(subset=['description'], inplace=True)
+    df['whyProject'] = df['whyProject'].fillna("")
+    df['whyExperience'] = df['whyExperience'].fillna("")
+
+    #SBERT
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    return similaritytest_helper(model, df)
+
+#clean_data()
