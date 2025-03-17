@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from imblearn.ensemble import BalancedBaggingClassifier
 from sklearn.preprocessing import MinMaxScaler
 
-MODEL_NAME = "meta_model"
+MODEL_NAME = "stacking_model"
 
 def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
     """
