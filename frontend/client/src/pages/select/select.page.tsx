@@ -22,7 +22,8 @@ const Select = () => {
         if (token === undefined) return;
         getProjects(token!)
             .then(studentLabeler(token!)) // This just passes the projects through and labels as a side-effect
-            .then(setProjects);
+            .then(setProjects)
+            .catch(e => console.log(e));
     }, [token]);
 
     return (

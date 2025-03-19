@@ -28,12 +28,13 @@ export const getStudentStatus = (student: Student): ColumnType => {
     return columnTypes[Math.floor(Math.random() * columnTypes.length)];
 }
 
-export const getStudent = (id: number): Student => {
-    return defaultStudents.filter(stud => stud.id === id)[0];
+const errorHandler = (reason: any): Student[] => {
+    console.log("[GET STUDENTS ERROR] --- " + reason);
+    return [];
 }
 
 export const getStudents = (projectID: Project["id"], token: AuthToken): Promise<Student[]> => {
-    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token) : Promise.resolve(defaultStudents);
+    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token).catch(errorHandler) : Promise.resolve(defaultStudents);
 }
 
 export const getStudentLabels = (studentId: Student["id"], labelType: LabelType): LabelContent[] => {

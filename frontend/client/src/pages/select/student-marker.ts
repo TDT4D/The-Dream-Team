@@ -18,14 +18,15 @@ export default (token: AuthToken) => {
             // In an own scope to release the "students" variable
             const students: Set<Student> = new Set<Student>();
             intermediary.forEach(value => {
-                value.students.then(_students => _students.forEach(student => students.add(student)))
+                value.students
+                    .then(_students => _students.forEach(student => students.add(student)), e => console.log(e));
             });
             students.forEach(student => removeAllLabelsByType(student.id, LabelType.Applied));
         }
         
         // Go through each project and mark all students that have applied as "Applied"
         intermediary.forEach(pairing => {
-            pairing.students.then(students => students.forEach(student => markStudentAsApplied(pairing.project.name, student.id)));
+            pairing.students.then(students => students.forEach(student => markStudentAsApplied(pairing.project.name, student.id)), e => console.log(e));
         });
 
         return projects;
