@@ -28,12 +28,13 @@ export const getStudentStatus = (student: Student): ColumnType => {
     return columnTypes[Math.floor(Math.random() * columnTypes.length)];
 }
 
-const errorHandler = (reason: any): Student[] => {
-    console.log("[GET STUDENTS ERROR] --- " + reason);
-    return [];
-}
-
 export const getStudents = (projectID: Project["id"], token: AuthToken): Promise<Student[]> => {
+    
+    const errorHandler = (reason: any): Student[] => {
+        console.log("[GET STUDENTS ERROR] --- " + reason);
+        return [];
+    }
+
     return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token).catch(errorHandler) : Promise.resolve(defaultStudents);
 }
 
