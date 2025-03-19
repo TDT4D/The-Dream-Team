@@ -1,6 +1,6 @@
 /* Lib imports */
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 
 /* Types */
@@ -25,16 +25,14 @@ const Sort = () => {
     let { id } = useParams();
     const { token } = useAuth();
     const { currentProject } = useProjectContext();
-    
-    if (id === undefined || token === undefined || currentProject === undefined) {
-        useNavigate()("/");
-    }
 
     const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
     const [ isDragging, setDragging ] = useState<boolean>(false);
 
     useEffect(() => {
-        getStudents(+id!, token!)
+        if (token === undefined) return;
+
+        getStudents(+id!, token)
             .then(addStudentsLocations(ColumnCreation.Initial))
             .then(setStudents);
     }, []);
