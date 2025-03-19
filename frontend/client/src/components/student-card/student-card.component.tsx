@@ -4,11 +4,13 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 
 /* Types */
+import { LabelType } from "../../types/Label";
 import { DragID } from "../../types/Dragging";
 import { Student } from "../../types/Student";
 
 /* Components, services & etc. */
-import Label from "../label/label.component";
+import { getStudentLabels } from "../../services/student/student.service";
+import LabelComponent from "../label/label.component";
 import Score from "../score/score.component";
 
 /* Styling */
@@ -53,15 +55,19 @@ const StudentCard = ({ student, columnId }: StudentCardProps) => {
         <CardBody className="card-body">
             <span>Applied:</span>
             <div className="labels" id="applied">
-                { ["x", "y", "z"].map((labl, idx) => {
-                    return <Label key={idx} name={labl} colour={"green"} />
-                }) }
+                {
+                    getStudentLabels(student.id, LabelType.Applied).map((labl, idx) => {
+                        return <LabelComponent key={idx} name={labl.content} colour={"green"} />
+                    })
+                }
             </div>
             <span>Selected:</span>
             <div className="labels" id="selected">
-                { ["u", "i", "p"].map((labl, idx) => {
-                    return <Label key={idx} name={labl} colour={"yellow"} />
-                }) }
+                {
+                    getStudentLabels(student.id, LabelType.Selected).map((labl, idx) => {
+                        return <LabelComponent key={idx} name={labl.content} colour={"yellow"} />
+                    })
+                }
             </div>
         </CardBody>
         </Card>

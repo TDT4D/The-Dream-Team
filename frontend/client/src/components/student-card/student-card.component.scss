@@ -29,6 +29,10 @@
             border: solid 1px rgb(75, 75, 75);
             border-radius: 5px;
             overflow: hidden;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
         }
         #applied {
             background-color: var(--light-pink);

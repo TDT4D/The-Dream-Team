@@ -9,9 +9,11 @@ import { ColumnCreation, ColumnType } from "../../types/Columns";
 
 /* Components, services & etc. */
 import SortColumn from "../../components/sort-column/sort-column.component";
+import { updateStudentsLabels } from "./label-updater";
+import { useProjectContext } from "../../services/project/project.provider";
+import { addStudentsLocations } from "./students-to-columns";
 import { useAuth } from "../../services/auth/auth.provider";
 import { getStudents } from "../../services/student/student.service";
-import { addStudentsLocations } from "./students-to-columns";
 import { handleDragEnd } from "./drag-helpers";
 import { sortFunc } from "./sorting";
 
@@ -22,19 +24,22 @@ import "./sort.page.scss";
 const Sort = () => {
     let { id } = useParams();
     const { token } = useAuth();
+    const { currentProject } = useProjectContext();
 
     const [ students, setStudents ] = useState<Array<StudentWithLocation>>([]);
     const [ isDragging, setDragging ] = useState<boolean>(false);
 
     useEffect(() => {
-        getStudents(+id!, token!)
+        if (token === undefined) return;
+
+        getStudents(+id!, token)
             .then(addStudentsLocations(ColumnCreation.Initial))
             .then(setStudents);
     }, []);
 
-    
     const onDragEnd = (event: DragEndEvent) => {
         setDragging(false);
+        updateStudentsLabels(currentProject!.name, event);
         handleDragEnd(students, setStudents)(event);
     }
 
@@ -47,7 +52,7 @@ const Sort = () => {
     return (
         <div className="container">
             <div className="head">
-                <h1>Sorting { id }</h1>
+                <h1>{ currentProject?.name }</h1>
                 <button className="build-team" onClick={handleTeamBuild}>Build team</button>
             </div>
             <div className="columns">

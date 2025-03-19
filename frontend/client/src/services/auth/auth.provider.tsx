@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (token) {
             localStorage.setItem('token', token.Authorization);
         } else {
-            localStorage.removeItem('token')
+            localStorage.removeItem('token');
         }
     }, [token]);
 
