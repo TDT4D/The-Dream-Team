@@ -16,7 +16,7 @@ export async function callAPI<T>(path: string, token: AuthToken, method: HTTP_Me
     );
     
     if (!response.ok) {
-      throw new Error(response.statusText);
+        return Promise.reject("[API CALL !OK] -- " + response.statusText);
     }
 
     return await response.json() as T;

@@ -9,6 +9,7 @@ import { Project } from "../../types/Project";
 import { useAuth } from "../../services/auth/auth.provider";
 import ProjectSelect from "../../components/project-select/project-select.component";
 import { getProjects } from "../../services/project/project.service";
+import studentLabeler from "./student-marker";
 
 /* Styling */
 import "./select.page.scss";
@@ -18,8 +19,12 @@ const Select = () => {
     const [ projects, setProjects ] = useState<Project[]>([]);
 
     useEffect(() => {
-        getProjects(token!).then(setProjects);
-    }, []);
+        if (token === undefined) return;
+        getProjects(token!)
+            .then(studentLabeler(token!)) // This just passes the projects through and labels as a side-effect
+            .then(setProjects)
+            .catch(e => console.log(e));
+    }, [token]);
 
     return (
         <div className="select">
@@ -42,7 +47,7 @@ const Select = () => {
                         <div className="dropdown">
                             {
                                 projects.map((proj, index) => (
-                                    <ProjectSelect key={index} id={proj.id} name={proj.name}/>
+                                    <ProjectSelect key={index} project={proj}/>
                                 ))
                             }
                         </div>
