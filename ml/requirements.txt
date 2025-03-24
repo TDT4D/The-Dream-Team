@@ -10,4 +10,5 @@ scipy
 uvicorn
 xgboost
 imbalanced-learn
-sentence_transformers
+torch
+transformers[torch]

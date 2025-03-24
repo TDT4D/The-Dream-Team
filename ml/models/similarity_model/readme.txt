@@ -1,0 +1,1 @@
+SBERT model from huggingface. used in testing similarities between sentences. This model is used in for example: data_cleaning_version4.py.

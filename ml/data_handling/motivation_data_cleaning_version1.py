@@ -4,10 +4,13 @@ from io import StringIO
 from utils import storage
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from scipy.spatial import distance
-from sentence_transformers import SentenceTransformer
+
+from transformers import AutoTokenizer, AutoModel
+import torch
+import torch.nn.functional as F
 
 # luetaan dataa ja tehdään tauluja motivaatiolle versio 1
-def clean_data(load_name="rawData", save_name="cleaned_data_motivation"):
+def clean_data(load_name="rawData", save_name="cleaned_data_motivation2"):
     # luetaan data
     bronze_data = storage.load_json(load_name)
 
@@ -160,7 +163,37 @@ def application_similarity(df):
     df['whyExperience'] = df['whyExperience'].fillna("")
     studentIds = df['studentId'].values.tolist()
     studentIds = list(set(studentIds))
-    model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    tokenizer = AutoTokenizer.from_pretrained("../models/similarity_tokenizer")
+    model = AutoModel.from_pretrained("../models/similarity_model")
+
+    def shortcut(model, tokenizer, word):
+
+        def mean_pooling(model_output, attention_mask):
+            token_embeddings = model_output[
+                0]  # First element of model_output contains all token embeddings
+            input_mask_expanded = attention_mask.unsqueeze(-1).expand(
+                token_embeddings.size()).float()
+            return torch.sum(token_embeddings * input_mask_expanded,
+                             1) / torch.clamp(input_mask_expanded.sum(1),
+                                              min=1e-10)
+
+        # Tokenize sentences
+        encoded_input = tokenizer([word][0], padding=True, truncation=True,
+                                  return_tensors='pt')
+
+        # Compute token embeddings
+        with torch.no_grad():
+            model_output = model(**encoded_input)
+
+        # Perform pooling
+        sentence_embeddings = mean_pooling(model_output,
+                                           encoded_input['attention_mask'])
+
+        # Normalize embeddings
+        sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
+        return sentence_embeddings[0]
+
     for i in studentIds:
         locations = df.index[df['studentId'] == i].tolist()
         for j in locations:
@@ -172,12 +205,14 @@ def application_similarity(df):
 
             jbatch = row['chosenBatch']
             whyProject = row['whyProject']
-            test_vec = model.encode([whyProject])[0]
+
+            test_vec = shortcut(model, tokenizer, whyProject)
+
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
                     row2 = df.iloc[j2]
                     whyProject2 = row2['whyProject']
-                    temp = 1 - distance.cosine(test_vec, model.encode([whyProject2])[0])
+                    temp = 1 - distance.cosine(test_vec, shortcut(model, tokenizer, whyProject2))
                     similarity_score_avg_pro += temp
                     if temp > similarity_score_max_pro:
                         similarity_score_max_pro = temp
@@ -187,12 +222,12 @@ def application_similarity(df):
             df.loc[j, 'similarity_score_max_whyProject'] = similarity_score_max_pro
 
             whyExperience = row['whyExperience']
-            test_vec = model.encode([whyExperience])[0]
+            test_vec = shortcut(model, tokenizer, whyExperience)
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
                     row2 = df.iloc[j2]
                     whyExperience2 = row2['whyExperience']
-                    temp = 1 - distance.cosine(test_vec, model.encode([whyExperience2])[0])
+                    temp = 1 - distance.cosine(test_vec, shortcut(model, tokenizer, whyExperience2))
                     similarity_score_avg_exp += temp
                     if temp > similarity_score_max_exp:
                         similarity_score_max_exp = temp
@@ -203,4 +238,4 @@ def application_similarity(df):
                 j, 'similarity_score_max_whyExperience'] = similarity_score_max_exp
     return df
 
-#clean_data()
+clean_data()
