@@ -4,7 +4,7 @@ from io import StringIO
 from utils import storage
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from scipy.spatial import distance
-from sentence_transformers import SentenceTransformer
+#from sentence_transformers import SentenceTransformer
 
 # luetaan dataa ja tehdään tauluja
 # sama kuin versio 3, mutta lisätty samanlaisuuden testaus projektin kuvauksen
@@ -235,6 +235,7 @@ def similaritytest_helper(model, df):
     return df
 
 def similaritytest(df):
+    from sentence_transformers import SentenceTransformer # type: ignore
     df = df[['whyProject','whyExperience', 'relation', 'description']]
     df.dropna(subset=['description'], inplace=True)
     df['whyProject'] = df['whyProject'].fillna("")

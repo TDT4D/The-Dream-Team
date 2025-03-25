@@ -5,11 +5,14 @@ ENV LC_ALL C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 
+ARG ML_REQ=requirements.txt
+
 FROM base AS installer
 RUN pip install pipenv
 RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
-COPY requirements.txt .
+#COPY requirements.txt .
+COPY ${ML_REQ} ./requirements.txt
 RUN pipenv install -r requirements.txt
 
 FROM installer AS deps

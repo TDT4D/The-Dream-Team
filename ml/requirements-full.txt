@@ -8,4 +8,4 @@ scipy
 uvicorn
 xgboost
 imbalanced-learn
-#Sentence transformers missing
+sentence_transformers
