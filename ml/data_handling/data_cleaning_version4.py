@@ -4,7 +4,13 @@ from io import StringIO
 from utils import storage
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from scipy.spatial import distance
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+except ModuleNotFoundError:
+    import sys
+    def sentence_transformers(reqModel: str) -> None:
+        print(f"SentenceTransformer package not imported! Tried loading model {reqModel}", file=sys.stderr)
+        raise
 
 # luetaan dataa ja tehdään tauluja
 # sama kuin versio 3, mutta lisätty samanlaisuuden testaus projektin kuvauksen
