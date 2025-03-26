@@ -4,17 +4,19 @@ from io import StringIO
 from utils import storage
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from scipy.spatial import distance
-
-from transformers import AutoTokenizer, AutoModel
-import torch
-import torch.nn.functional as F
+try:
+    from sentence_transformers import SentenceTransformer
+except ModuleNotFoundError:
+    import sys
+    def sentence_transformers(reqModel: str) -> None:
+        print(f"SentenceTransformer package not imported! Tried loading model {reqModel}", file=sys.stderr)
+        raise
 
 # luetaan dataa ja tehdään tauluja
 # sama kuin versio 3, mutta lisätty samanlaisuuden testaus projektin kuvauksen
 # ja hakemusten whyProject sekä whyExperience kohtien kanssa.
 # systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
-# 2025-02-26 oikee rawData
-def clean_data(load_name="2025-02-26", save_name="cleaned_data"):
+def clean_data(load_name="rawData", save_name="cleaned_data_old"):
 
     #luetaan data
     bronze_data = storage.load_json(load_name)
@@ -218,35 +220,7 @@ def alternative_encode(final_merge_df):
 
     return final_merge_df, encoders
 
-def similaritytest_helper(model, tokenizer, df):
-
-    def shortcut(model, tokenizer, word):
-
-        def mean_pooling(model_output, attention_mask):
-            token_embeddings = model_output[
-                0]  # First element of model_output contains all token embeddings
-            input_mask_expanded = attention_mask.unsqueeze(-1).expand(
-                token_embeddings.size()).float()
-            return torch.sum(token_embeddings * input_mask_expanded,
-                             1) / torch.clamp(input_mask_expanded.sum(1),
-                                              min=1e-10)
-
-        # Tokenize sentences
-        encoded_input = tokenizer([word][0], padding=True, truncation=True,
-                                  return_tensors='pt')
-
-        # Compute token embeddings
-        with torch.no_grad():
-            model_output = model(**encoded_input)
-
-        # Perform pooling
-        sentence_embeddings = mean_pooling(model_output,
-                                           encoded_input['attention_mask'])
-
-        # Normalize embeddings
-        sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
-        return sentence_embeddings[0]
-
+def similaritytest_helper(model, df):
     r = 0
     indexes = df.index
     for row in df.itertuples():
@@ -254,12 +228,12 @@ def similaritytest_helper(model, tokenizer, df):
 
         desc = row.description
 
-        desc_vec = shortcut(model, tokenizer, desc)
+        desc_vec = model.encode([desc])[0]
 
-        whyProject_score = 1 - distance.cosine(desc_vec, shortcut(model, tokenizer, sentences[0]))
+        whyProject_score = 1 - distance.cosine(desc_vec, model.encode([sentences[0]])[0])
         df.loc[indexes[r], 'whyProject'] = whyProject_score
 
-        whyExperience_score = 1 - distance.cosine(desc_vec, shortcut(model, tokenizer, sentences[1]))
+        whyExperience_score = 1 - distance.cosine(desc_vec,model.encode([sentences[1]])[0])
         df.loc[indexes[r], 'whyExperience'] = whyExperience_score
 
         r +=1
@@ -272,10 +246,9 @@ def similaritytest(df):
     df['whyProject'] = df['whyProject'].fillna("")
     df['whyExperience'] = df['whyExperience'].fillna("")
 
-    #SBERT this will take some time
-    tokenizer = AutoTokenizer.from_pretrained("../models/similarity_tokenizer")
-    model = AutoModel.from_pretrained("../models/similarity_model")
+    #SBERT
+    model = SentenceTransformer('all-MiniLM-L6-v2')
 
-    return similaritytest_helper(model, tokenizer, df)
+    return similaritytest_helper(model, df)
 
-clean_data()
+#clean_data()
