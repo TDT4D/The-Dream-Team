@@ -1,25 +1,15 @@
-import os
 import pytest
 from data_handling import get_cleaner
+from utils.testing_utils import get_all
 
 CLEANER_DIRECTORY = "data_handling"
 REQUIRED_FUNCTIONS = ["clean_data"]
+EXCLUDE = ["data_cleaning"]
 
-def get_all_cleaners():
-    base_path = os.path.join(os.path.dirname(__file__), "..", CLEANER_DIRECTORY)
-    files = os.listdir(base_path)
-
-    cleaners = []
-    for file in files:
-        if file.endswith(".py") and not file.startswith("__"):
-            name = file[:-3]
-            cleaners.append(name)
-    return cleaners
-
-@pytest.mark.parametrize("cleaner_name", get_all_cleaners())
+@pytest.mark.parametrize("cleaner_name", get_all(CLEANER_DIRECTORY, __file__, EXCLUDE))
 def test_cleaner_has_required_functions(cleaner_name):
-    cleaner = get_cleaner("data_cleaning_version3")
+    cleaner = get_cleaner(cleaner_name)
     
     for func in REQUIRED_FUNCTIONS:
-        assert hasattr(cleaner, func), f"Missing function: {func}"
-        assert callable(getattr(cleaner, func)), f"{func} is not callable"
+        assert hasattr(cleaner, func), f"{cleaner_name} is missing function: {func}"
+        assert callable(getattr(cleaner, func)), f"{cleaner_name}.{func} is not callable"

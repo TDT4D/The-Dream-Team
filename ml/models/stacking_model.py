@@ -1,5 +1,5 @@
-import data_cleaning_version4
-import storage
+from data_handling import data_cleaning_version4
+from utils import storage
 from sklearn.metrics import accuracy_score, classification_report
 import pandas as pd
 import numpy as np
