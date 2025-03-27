@@ -1,11 +1,11 @@
-// package com.github.dreamteam;
+package com.github.dreamteam;
 
-// import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplication;
 
-// public class TestDreamteamApplication {
+public class TestDreamteamApplication {
 
-// 	public static void main(String[] args) {
-// 		SpringApplication.from(DreamteamApplication::main).with(TestcontainersConfiguration.class).run(args);
-// 	}
+	public static void main(String[] args) {
+        SpringApplication.run(DreamteamApplication.class, args);
+	}
 
-// }
+}
