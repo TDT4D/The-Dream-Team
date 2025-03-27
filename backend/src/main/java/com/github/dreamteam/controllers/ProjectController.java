@@ -77,7 +77,7 @@ public class ProjectController {
 
     @PostMapping("{projectId}/team")
     public ModelAndView buildTeam(HttpServletRequest request, @PathVariable Long projectId,
-            @RequestParam(required = false) Optional<String> size, @RequestParam(required = false) Optional<String> dataFile,
+            @RequestParam(required = false) Optional<Integer> size, @RequestParam(required = false) Optional<String> dataFile,
             @RequestParam(required = false) Optional<String> saveFile) {
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
