@@ -42,7 +42,7 @@ def clean(
     except ValueError as ve:
         return JSONResponse(
             status_code=400,
-            content={"error": f"Error {str(ve)}"}
+            content={"error": f"ValueError: {str(ve)}"}
         )
 
     except Exception as e:
