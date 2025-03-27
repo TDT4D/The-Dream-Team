@@ -2,12 +2,35 @@ name: DreamTeam CI
 
 on:
   push:
-    branches: [ "staging" ]
+    #branches: [ "staging" ]
   pull_request_target:
-    branches: [ "staging" ]
+    #branches: [ "staging" ]
 
 jobs:
+  test_ml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        working-directory: ./ml
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-full.txt
+      
+      - name: Run ML tests
+        working-directory: ./ml
+        run: pytest -v tests/
+        #continue-on-error: true
+
   local_deploy:
+    if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
