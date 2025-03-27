@@ -54,22 +54,22 @@ public class ProjectController {
 
     @GetMapping("/{projectId}/scores")
     public ModelAndView getScores(HttpServletRequest request, @PathVariable Long projectId,
-            @RequestParam(required = false) String scoreFile) {
+            @RequestParam(required = false) Optional<String> scoreFile) {
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores?projectId=").append(projectId);
-        if (scoreFile != null) {
+        if (scoreFile.isPresent()) {
             redirectUrl.append("&scoreFile=").append(scoreFile);
         }
         return new ModelAndView(redirectUrl.toString());
     }
 
     @GetMapping("/scores")
-    public ModelAndView getAllScores(HttpServletRequest request, @RequestParam(required = false) String scoreFile) {
+    public ModelAndView getAllScores(HttpServletRequest request, @RequestParam(required = false) Optional<String> scoreFile) {
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores");
-        if (scoreFile != null) {
+        if (scoreFile.isPresent()) {
             redirectUrl.append("?scoreFile=").append(scoreFile);
         }
         return new ModelAndView(redirectUrl.toString());
@@ -77,18 +77,18 @@ public class ProjectController {
 
     @PostMapping("{projectId}/team")
     public ModelAndView buildTeam(HttpServletRequest request, @PathVariable Long projectId,
-            @RequestParam(required = false) Integer size, @RequestParam(required = false) String dataFile,
-            @RequestParam(required = false) String saveFile) {
+            @RequestParam(required = false) Optional<String> size, @RequestParam(required = false) Optional<String> dataFile,
+            @RequestParam(required = false) Optional<String> saveFile) {
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/team/build-team?projectId=").append(projectId);
-        if (size != null) {
+        if (size.isPresent()) {
             redirectUrl.append("&size=").append(size);
         }
-        if (dataFile != null) {
+        if (dataFile.isPresent()) {
             redirectUrl.append("&data=").append(dataFile);
         }
-        if (saveFile != null) {
+        if (saveFile.isPresent()) {
             redirectUrl.append("&saveFile=").append(saveFile);
         }
         return new ModelAndView(redirectUrl.toString());
