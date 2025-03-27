@@ -6,6 +6,14 @@ from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from scipy.spatial import distance
 #from sentence_transformers import SentenceTransformer
 
+try:
+    from sentence_transformers import SentenceTransformer # type: ignore
+except ModuleNotFoundError:
+    import sys
+    def sentence_transformers(reqModel: str) -> None:
+        print(f"SentenceTransformer package not imported! Tried loading model {reqModel}", file=sys.stderr)
+        raise
+
 # luetaan dataa ja tehdään tauluja
 # sama kuin versio 3, mutta lisätty samanlaisuuden testaus projektin kuvauksen
 # ja hakemusten whyProject sekä whyExperience kohtien kanssa.
@@ -235,7 +243,7 @@ def similaritytest_helper(model, df):
     return df
 
 def similaritytest(df):
-    from sentence_transformers import SentenceTransformer # type: ignore
+    #from sentence_transformers import SentenceTransformer # type: ignore
     df = df[['whyProject','whyExperience', 'relation', 'description']]
     df.dropna(subset=['description'], inplace=True)
     df['whyProject'] = df['whyProject'].fillna("")
