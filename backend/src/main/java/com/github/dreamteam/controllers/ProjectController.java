@@ -59,7 +59,7 @@ public class ProjectController {
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores?projectId=").append(projectId);
         if (scoreFile.isPresent()) {
-            redirectUrl.append("&scoreFile=").append(scoreFile);
+            redirectUrl.append("&scoreFile=").append(scoreFile.get());
         }
         return new ModelAndView(redirectUrl.toString());
     }
@@ -70,7 +70,7 @@ public class ProjectController {
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores");
         if (scoreFile.isPresent()) {
-            redirectUrl.append("?scoreFile=").append(scoreFile);
+            redirectUrl.append("?scoreFile=").append(scoreFile.get());
         }
         return new ModelAndView(redirectUrl.toString());
     }
@@ -83,13 +83,13 @@ public class ProjectController {
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/team/build-team?projectId=").append(projectId);
         if (size.isPresent()) {
-            redirectUrl.append("&size=").append(size);
+            redirectUrl.append("&size=").append(size.get());
         }
         if (dataFile.isPresent()) {
-            redirectUrl.append("&data=").append(dataFile);
+            redirectUrl.append("&data=").append(dataFile.get());
         }
         if (saveFile.isPresent()) {
-            redirectUrl.append("&saveFile=").append(saveFile);
+            redirectUrl.append("&saveFile=").append(saveFile.get());
         }
         return new ModelAndView(redirectUrl.toString());
     }
