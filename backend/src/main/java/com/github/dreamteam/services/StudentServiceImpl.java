@@ -34,13 +34,4 @@ public class StudentServiceImpl implements StudentService {
                 return students;
         }
 
-        // TODO: Clean up
-        // public Student getStudentById(Long studentId) {
-        // return studentMap.get(studentId);
-        // }
-
-        // public String getStudentName(Long studentId) {
-        // Student student = studentMap.get(studentId);
-        // return (student != null) ? student.getName() : null;
-        // }
 }

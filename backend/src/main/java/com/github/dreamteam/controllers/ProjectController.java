@@ -54,42 +54,42 @@ public class ProjectController {
 
     @GetMapping("/{projectId}/scores")
     public ModelAndView getScores(HttpServletRequest request, @PathVariable Long projectId,
-            @RequestParam(required = false) String scoreFile) {
+            @RequestParam(required = false) Optional<String> scoreFile) {
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores?projectId=").append(projectId);
-        if (scoreFile != null) {
-            redirectUrl.append("&scoreFile=").append(scoreFile);
+        if (scoreFile.isPresent()) {
+            redirectUrl.append("&scoreFile=").append(scoreFile.get());
         }
         return new ModelAndView(redirectUrl.toString());
     }
 
     @GetMapping("/scores")
-    public ModelAndView getAllScores(HttpServletRequest request, @RequestParam(required = false) String scoreFile) {
+    public ModelAndView getAllScores(HttpServletRequest request, @RequestParam(required = false) Optional<String> scoreFile) {
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/score/scores");
-        if (scoreFile != null) {
-            redirectUrl.append("?scoreFile=").append(scoreFile);
+        if (scoreFile.isPresent()) {
+            redirectUrl.append("?scoreFile=").append(scoreFile.get());
         }
         return new ModelAndView(redirectUrl.toString());
     }
 
     @PostMapping("{projectId}/team")
     public ModelAndView buildTeam(HttpServletRequest request, @PathVariable Long projectId,
-            @RequestParam(required = false) Integer size, @RequestParam(required = false) String dataFile,
-            @RequestParam(required = false) String saveFile) {
+            @RequestParam(required = false) Optional<Integer> size, @RequestParam(required = false) Optional<String> dataFile,
+            @RequestParam(required = false) Optional<String> saveFile) {
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.PERMANENT_REDIRECT);
         StringBuilder redirectUrl = new StringBuilder("redirect:/ml/team/build-team?projectId=").append(projectId);
-        if (size != null) {
-            redirectUrl.append("&size=").append(size);
+        if (size.isPresent()) {
+            redirectUrl.append("&size=").append(size.get());
         }
-        if (dataFile != null) {
-            redirectUrl.append("&data=").append(dataFile);
+        if (dataFile.isPresent()) {
+            redirectUrl.append("&data=").append(dataFile.get());
         }
-        if (saveFile != null) {
-            redirectUrl.append("&saveFile=").append(saveFile);
+        if (saveFile.isPresent()) {
+            redirectUrl.append("&saveFile=").append(saveFile.get());
         }
         return new ModelAndView(redirectUrl.toString());
     }
