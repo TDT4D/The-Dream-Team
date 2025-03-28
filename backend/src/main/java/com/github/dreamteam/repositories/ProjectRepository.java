@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.github.dreamteam.models.Project;
 
 @Repository
-public interface ProjectRepository extends MongoRepository<Project, Long> {
+public interface ProjectRepository extends MongoRepository<Project, String> {
 }

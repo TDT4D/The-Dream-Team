@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Project {
     @Id
-    private Long id;
+    private String id;
     private String name;
     private String description;
     private List<Long> batchesIds;

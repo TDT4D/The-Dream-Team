@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ApplicationData {
-    private Long projectId;
+    private String projectId;
     private String projectName;
-    private Long studentId;
+    private String studentId;
     private Long chosenBatch;
     private String relation;
     private boolean staffInsertion;

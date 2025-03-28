@@ -13,7 +13,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class Student {
     @Id
-    private Long id;
+    private String id;
     private String name;
     private String homeUniversity;
     private String attendingUniversity;
