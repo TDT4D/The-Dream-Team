@@ -1,25 +1,28 @@
 package com.github.dreamteam;
 
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.github.dreamteam.services.ProjectServiceImpl;
-import com.github.dreamteam.services.StudentService;
-import com.github.dreamteam.controllers.ProjectController;
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Optional;
+
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
-import java.util.List;
-import java.util.Optional;
+
+import com.github.dreamteam.controllers.ProjectController;
+import com.github.dreamteam.services.ProjectServiceImpl;
+import com.github.dreamteam.services.StudentService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ProjectControllerTests {
