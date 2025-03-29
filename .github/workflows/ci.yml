@@ -30,7 +30,7 @@ jobs:
         #continue-on-error: true
 
   local_deploy:
-    if: github.ref == 'refs/heads/staging'
+    if: github.ref == 'refs/heads/staging' && github.repository_owner == 'TDT4D'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
