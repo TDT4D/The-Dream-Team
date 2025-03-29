@@ -241,6 +241,7 @@ def similaritytest_helper(model, df):
     return df
 
 def similaritytest(df):
+    #from sentence_transformers import SentenceTransformer # type: ignore
     df = df[['whyProject','whyExperience', 'relation', 'description']]
     df.dropna(subset=['description'], inplace=True)
     df['whyProject'] = df['whyProject'].fillna("")
