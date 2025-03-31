@@ -1,7 +1,7 @@
 from data_handling import get_cleaner
 import json
 
-#ml>python -m scripts.modular_cleaning_test
+#ml>python -m scripts.modular_cleaning_script
 
 cleaners = ["data_cleaning_version2", "data_cleaning_version3"]
 
