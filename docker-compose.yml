@@ -158,6 +158,7 @@ services:
   ml:
     # The machine learning service used for ranking and team forming
     build: ./ml
+    working_dir: /home/appuser  # Set the working directory inside the container
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.ml.loadbalancer.server.port=${ML_PORT:-9696}"
