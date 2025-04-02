@@ -1,6 +1,5 @@
 from models import get_model
 from data_handling import get_cleaner
-import json
 
 #called from The-Dream-Team\ml>python -m scripts.model_test
 

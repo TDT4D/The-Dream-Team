@@ -2,7 +2,7 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 
 # luetaan dataa ja tehdään tauluja
 # sama kuin versio 2, mutta tiivistetty tagit uudella scoring systeemillä

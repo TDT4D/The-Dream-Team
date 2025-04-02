@@ -10,36 +10,48 @@ import org.testcontainers.utility.MountableFile;
 
 public class AbstractContainerBaseTest {
 
-    protected static final MongoDBContainer mongoDBContainer;
+  protected static final MongoDBContainer mongoDBContainer;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractContainerBaseTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractContainerBaseTest.class);
 
-    static {
-        mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:7.0.16"));
-        mongoDBContainer.start();
-        mongoDBContainer.copyFileToContainer(MountableFile.forClasspathResource("/mock_students.json"),
-                "/mock_students.json");
-        mongoDBContainer.copyFileToContainer(MountableFile.forClasspathResource("/mock_projects.json"),
-                "/mock_projects.json");
-        init();
+  static {
+    mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:7.0.16"));
+    mongoDBContainer.start();
+    mongoDBContainer.copyFileToContainer(
+        MountableFile.forClasspathResource("/mock_students.json"), "/mock_students.json");
+    mongoDBContainer.copyFileToContainer(
+        MountableFile.forClasspathResource("/mock_projects.json"), "/mock_projects.json");
+    init();
+  }
+
+  protected static final void init() {
+    try {
+      mongoDBContainer.execInContainer(
+          "mongoimport",
+          "-d",
+          "testdb",
+          "-c",
+          "students",
+          "--file",
+          "/mock_students.json",
+          "--jsonArray");
+      mongoDBContainer.execInContainer(
+          "mongoimport",
+          "-d",
+          "testdb",
+          "-c",
+          "projects",
+          "--file",
+          "/mock_projects.json",
+          "--jsonArray");
+    } catch (Exception e) {
+      LOGGER.error("Error while importing mock data into MongoDB: ", e);
     }
+  }
 
-    protected static final void init() {
-        try {
-            mongoDBContainer.execInContainer("mongoimport", "-d", "testdb", "-c", "students", "--file",
-                    "/mock_students.json",
-                    "--jsonArray");
-            mongoDBContainer.execInContainer("mongoimport", "-d", "testdb", "-c", "projects", "--file",
-                    "/mock_projects.json",
-                    "--jsonArray");
-        } catch (Exception e) {
-            LOGGER.error("Error while importing mock data into MongoDB: ", e);
-        }
-    }
-
-    @DynamicPropertySource
-    static void mongoDbProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-        registry.add("spring.data.mongodb.database", () -> "testdb");
-    }
+  @DynamicPropertySource
+  static void mongoDbProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+    registry.add("spring.data.mongodb.database", () -> "testdb");
+  }
 }

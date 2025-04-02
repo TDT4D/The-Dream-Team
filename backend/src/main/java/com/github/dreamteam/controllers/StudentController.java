@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/students")
 public class StudentController {
 
-    @Autowired
-    private StudentService service;
+  @Autowired private StudentService service;
 
-    // TODO: Delete?
+  // TODO: Delete?
 }

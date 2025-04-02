@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Query
+from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from data_handling import get_cleaner
 

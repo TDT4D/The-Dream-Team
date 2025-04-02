@@ -6,9 +6,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class BaseController {
 
-    @RequestMapping("/")
-    public String index() {
-        return "Greetings from Spring Boot!";
-    }
-
+  @RequestMapping("/")
+  public String index() {
+    return "Greetings from Spring Boot!";
+  }
 }
