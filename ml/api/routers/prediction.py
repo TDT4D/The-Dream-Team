@@ -2,23 +2,10 @@ from fastapi import APIRouter, BackgroundTasks, Query
 from fastapi.responses import JSONResponse
 from models import get_model
 from utils import storage
+from utils.api_utils import validate_model
 from typing import Optional
 
 router = APIRouter()
-
-
-def validate_model(model_type:str, model_name:str) -> bool:
-    """
-    Validates that the model_name matches the expected model_type.
-
-    Args:
-        model_type (str): The type of the model (e.g., "randomforest").
-        model_name (str): The name of the saved model (e.g., "randomforest_v1").
-
-    Returns:
-        bool: True if valid, False otherwise.
-    """
-    return model_name.startswith(f"{model_type}")
 
 #Should Work
 @router.post("/predict")

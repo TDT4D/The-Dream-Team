@@ -2,21 +2,9 @@ from fastapi import APIRouter, BackgroundTasks, Query
 from fastapi.responses import JSONResponse
 from models import get_model
 from data_handling import get_cleaner
+from utils.api_utils import validate_model
 
 router = APIRouter()
-
-def validate_model(model_type:str, model_name:str) -> bool:
-    """
-    Validates that the model_name matches the expected model_type.
-    - ModelName must start with (and include) modelType
-    Args:
-        model_type (str): The type of the model (e.g., "randomforest_v2").
-        model_name (str): The name of the saved model (e.g., "randomforest_v2_test").
-
-    Returns:
-        bool: True if valid, False otherwise.
-    """
-    return model_name.startswith(f"{model_type}")
 
 @router.post("/train")
 def start_training(

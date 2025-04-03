@@ -1,7 +1,7 @@
 from models import get_model
 import json
 
-#can be run via \ml>python -m scripts.model_modular_test
+#can be run via \ml>python -m scripts.modular_model_script
 #Models: randomforest_v2, meta_model
 
 MODEL_NAME = "randomforest_v2"
