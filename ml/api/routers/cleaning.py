@@ -31,6 +31,16 @@ def clean(
         if clean_data is None:
             raise ValueError(f"No data, data is: {clean_data}")
         
+        if isinstance(clean_data, list) and (len(clean_data) == 0 or all(not row for row in clean_data)):
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "message": "Data cleaned, but no usable data found.",
+                    "savedFile": f"{saveFile}.joblib",
+                    "data": clean_data
+                }
+            )
+
         return JSONResponse(
             status_code=200,
             content={
