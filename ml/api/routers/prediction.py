@@ -101,6 +101,7 @@ def get_scores(
         #Filter by projectId if provided
         if projectId is not None:
             filtered_scores = [entry for entry in scores if entry.get("projectId") == projectId]
+            
             if not filtered_scores:
                 return JSONResponse(
                     status_code=404,
@@ -124,6 +125,12 @@ def get_scores(
             {"projectId": entry["projectId"], "studentId": entry["studentId"], "Score": entry["Score"]}
             for entry in scores
         ]
+
+        if not filtered_scores:
+            return JSONResponse(
+                status_code=404,
+                content={"error": f"No scores found"}
+            )
 
         #Return all scores if no projectId is provided
         return JSONResponse(
