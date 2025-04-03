@@ -32,6 +32,6 @@ def load_test_json(filename: str):
     Returns:
         dict or list: Parsed JSON content
     """
-    test_data_path = Path(__file__).parent.parent / "tests" / "test_data"
+    test_data_path = Path(__file__).parent.parent / "data" / "test_data"
     with open(test_data_path / filename, "r", encoding="utf-8") as f:
         return json.load(f)
