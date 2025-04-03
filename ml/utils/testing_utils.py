@@ -2,6 +2,33 @@ import os
 import json
 from pathlib import Path
 
+def find_project_root(target_folder="ml"):
+    path = Path(__file__).resolve()
+    for parent in path.parents:
+        if parent.name == target_folder:
+            return parent
+    raise RuntimeError(f"Could not find '{target_folder}' in path hierarchy.")
+
+def get_all_absolute(directory: str, exclude: list = []) -> list:
+    """
+    Scans the specified directory under the project root ('ml') and returns all Python module names,
+    excluding __init__.py and non-Python files.
+
+    Args:
+        directory (str): Relative path to the module directory (e.g., 'models', 'team_building').
+        exclude (list[str]): List of module names (without .py) to exclude.
+
+    Returns:
+        List[str]: A list of Python module names (no extensions).
+    """
+    project_root = find_project_root()
+    base_path = project_root / directory
+
+    return [
+        f.stem for f in base_path.iterdir()
+        if f.suffix == ".py" and not f.name.startswith("__") and f.stem not in exclude
+    ]
+
 def get_all(directory, current_file, exclude=[]):
     """
     Scans the specified directory and returns all module names
