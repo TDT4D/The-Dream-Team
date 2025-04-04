@@ -1,11 +1,10 @@
 .project-select-element {
-    &>.select-button {
-        width: 100%;
-        border: 1px solid black;
-        border-radius: 0.25em;
-        cursor: pointer;
-        text-align: left;
-        padding: 2px;
-    }
-    
+  & > .select-button {
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 0.25em;
+    cursor: pointer;
+    text-align: left;
+    padding: 2px;
+  }
 }

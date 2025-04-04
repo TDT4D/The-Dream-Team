@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Query
+from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from data_handling import get_cleaner
 
@@ -27,6 +27,10 @@ def clean(
 
     try:
         clean_data = get_cleaner(cleaner).clean_data(data, saveFile)
+        
+        if clean_data is None:
+            raise ValueError(f"No data, data is: {clean_data}")
+        
         return JSONResponse(
             status_code=200,
             content={
@@ -35,6 +39,12 @@ def clean(
                     "data": clean_data
                 }
         )
+    except ValueError as ve:
+        return JSONResponse(
+            status_code=400,
+            content={"error": f"ValueError: {str(ve)}"}
+        )
+
     except Exception as e:
         return JSONResponse(
             status_code=500,

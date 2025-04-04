@@ -1,10 +1,9 @@
 fastapi
-Flask
-gunicorn
 joblib
 numpy
 packaging
 pandas
+pytest
 scikit-learn
 scipy
 uvicorn

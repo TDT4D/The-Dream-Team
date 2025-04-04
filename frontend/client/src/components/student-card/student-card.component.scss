@@ -1,45 +1,44 @@
 .student-card {
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    padding: 1rem;
-    
-    background-color: var(--light-uranian);
-    //background-image: linear-gradient(to top, rgba(var(--light-uranian), 0.8), rgba(var(--light-uranian),0.8));
-    box-shadow: var(--gray) 1px 1px 1px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 1rem;
 
-    cursor: pointer;
+  background-color: var(--light-uranian);
+  //background-image: linear-gradient(to top, rgba(var(--light-uranian), 0.8), rgba(var(--light-uranian),0.8));
+  box-shadow: var(--gray) 1px 1px 1px;
 
-    border-radius: 0.5rem;
-    border: solid 1px;
-    border-color: var(--light-blue);
-    overflow: hidden;
-    &:hover {
-        border: solid 3px var(--blue);
+  cursor: pointer;
+
+  border-radius: 0.5rem;
+  border: solid 1px;
+  border-color: var(--light-blue);
+  overflow: hidden;
+  &:hover {
+    border: solid 3px var(--blue);
+  }
+
+  & > .card-header {
+    display: flex;
+    gap: 3px;
+  }
+
+  & > .card-body {
+    & > .labels {
+      border: solid 1px rgb(75, 75, 75);
+      border-radius: 5px;
+      overflow: hidden;
+
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
     }
-
-    &>.card-header {
-        display: flex;
-        gap: 3px;
+    #applied {
+      background-color: var(--light-pink);
     }
-
-    &>.card-body {
-        &>.labels {
-            border: solid 1px rgb(75, 75, 75);
-            border-radius: 5px;
-            overflow: hidden;
-
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3px;
-        }
-        #applied {
-            background-color: var(--light-pink);
-        }
-        #selected {
-            background-color: var(--pistachio);
-        }
+    #selected {
+      background-color: var(--pistachio);
     }
-    
+  }
 }

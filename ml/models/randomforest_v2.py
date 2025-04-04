@@ -142,7 +142,7 @@ def predict(data="rawData", model_name="randomforest_v2", score_file="student_sc
 
     #Define feature set (excluding relation)
     X = df.drop(columns=['relation'])  # Remove target column
-    y = df['relation']  # Target column
+    # y = df['relation']  # Target column
 
     y_pred = model.predict(X)
 

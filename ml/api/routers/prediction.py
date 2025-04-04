@@ -58,7 +58,11 @@ def start_prediction(
         #Generate and save scores
         model = get_model(modelType)
         print("Model received")
-        model.predict(data, modelName, saveFile, cleaning)
+        scores = model.predict(data, modelName, saveFile, cleaning)
+
+        if scores is None:
+            raise ValueError(f"Scores are {scores}")
+        
 
         return JSONResponse(
             status_code=200,
@@ -68,6 +72,12 @@ def start_prediction(
             }
         )
 
+    except ValueError as ve:
+        return JSONResponse(
+            status_code=400,
+            content={"error": f"ValueError: {str(ve)}"}
+        )
+    
     except Exception as e:
         return JSONResponse(
             status_code=500,

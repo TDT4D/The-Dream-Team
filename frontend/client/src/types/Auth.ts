@@ -1,3 +1,3 @@
 export type AuthToken = {
-    Authorization: string
-}
+  Authorization: string;
+};

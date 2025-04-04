@@ -2,7 +2,8 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+
+from sklearn.preprocessing import LabelEncoder
 from scipy.spatial import distance
 try:
     from sentence_transformers import SentenceTransformer
@@ -183,16 +184,19 @@ def application_similarity(df):
             jbatch = row['chosenBatch']
             whyProject = row['whyProject']
             test_vec = model.encode([whyProject])[0]
+
             devider = 0
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
                     devider +=1
+          
                     row2 = df.iloc[j2]
                     whyProject2 = row2['whyProject']
                     temp = 1 - distance.cosine(test_vec, model.encode([whyProject2])[0])
                     similarity_score_avg_pro += temp
                     if temp > similarity_score_max_pro:
                         similarity_score_max_pro = temp
+
             if devider != 0:
                 similarity_score_avg_pro = similarity_score_avg_pro/devider
             df.loc[j, 'similarity_score_avg_whyProject'] = similarity_score_avg_pro
@@ -200,6 +204,7 @@ def application_similarity(df):
 
             whyExperience = row['whyExperience']
             test_vec = model.encode([whyExperience])[0]
+
             devider = 0
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
@@ -210,6 +215,7 @@ def application_similarity(df):
                     similarity_score_avg_exp += temp
                     if temp > similarity_score_max_exp:
                         similarity_score_max_exp = temp
+
             if devider != 0:
                 similarity_score_avg_exp = similarity_score_avg_exp /devider
             df.loc[
@@ -253,5 +259,5 @@ def was_already_chosen(df):
                         for i in temp:
                             df.at[i, 'was_selected'] = 1
     return df['was_selected']
-
-clean_data()
+  
+#clean_data()
