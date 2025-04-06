@@ -4,6 +4,7 @@ numpy
 packaging
 pandas
 pytest
+pytest-mock
 scikit-learn
 scipy
 uvicorn
