@@ -1,15 +1,12 @@
 fastapi
-Flask
-gunicorn
 joblib
 numpy
 packaging
 pandas
+pytest
 scikit-learn
 scipy
 uvicorn
 xgboost
 imbalanced-learn
 #sentence_transformers
-pytest
-pytest-mock
