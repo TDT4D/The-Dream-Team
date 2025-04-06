@@ -199,11 +199,11 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning: bool = T
     stacked_X = np.zeros((len(y), len(base_models)))
 
     # Base models training
-    for fold_idx, (train_idx, test_idx) in enumerate(skf.split(X, y)):
+    for _, (train_idx, test_idx) in enumerate(skf.split(X, y)):
         X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
-        y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+        y_train, _ = y.iloc[train_idx], y.iloc[test_idx]
 
-        for model_idx, (name, model) in enumerate(base_models.items()):
+        for model_idx, (_, model) in enumerate(base_models.items()):
             model.fit(X_train, y_train)
             stacked_X[test_idx, model_idx] = model.predict(X_test)
 
@@ -215,9 +215,9 @@ def meta_model_v1(load="rawData", save_name="student_scores", cleaning: bool = T
     probabilities_list = np.zeros(len(y))
 
     #Meta-model training
-    for fold_idx, (train_idx, test_idx) in enumerate(kf.split(stacked_X, y)):
+    for _, (train_idx, test_idx) in enumerate(kf.split(stacked_X, y)):
         X_meta_train, X_meta_test = stacked_X[train_idx], stacked_X[test_idx]
-        y_meta_train, y_meta_test = y.iloc[train_idx], y.iloc[test_idx]
+        y_meta_train, _ = y.iloc[train_idx], y.iloc[test_idx]
 
         meta_model.fit(X_meta_train, y_meta_train)
         meta_preds[test_idx] = meta_model.predict(X_meta_test)

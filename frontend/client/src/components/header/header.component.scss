@@ -1,55 +1,58 @@
 header {
+  display: flex;
+  padding-inline: 16px;
+  padding-block: 2px;
+  background-color: var(--snow);
+  border-bottom: 1px solid var(--uranian);
+  align-items: center;
+  justify-content: space-between;
+  width: auto;
+
+  nav {
+    width: 100%;
     display: flex;
-    padding-inline: 16px;
-    padding-block: 2px;
-    background-color: var(--snow);
-    border-bottom: 1px solid var(--uranian);
-    align-items: center;
     justify-content: space-between;
-    width: auto;
-
-    nav {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        #title {
-            display: flex;
-            align-items: center;
-        }
-        .logo {
-            width: 30px;
-            padding-right: 10px;
-        }
-        
-        .link, .login, .logout {
-            color: var(--black);
-            text-decoration: none;
-            cursor: pointer;
-            &:hover {
-                color: var(--blue);
-            }
-        }
-
-        .login, .logout {
-            margin-left: auto;
-            border-radius: 0.5em;
-            border: solid 1px;
-            padding: 7px;
-            color: var(--black);
-            background-color: rgba(165, 165, 165, 0);
-            cursor: pointer;
-        }
-
-        ul {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            list-style: none;
-            
-            > li {
-                margin-left: 10px;
-            }
-        }
+    align-items: center;
+    #title {
+      display: flex;
+      align-items: center;
     }
+    .logo {
+      width: 30px;
+      padding-right: 10px;
+    }
+
+    .link,
+    .login,
+    .logout {
+      color: var(--black);
+      text-decoration: none;
+      cursor: pointer;
+      &:hover {
+        color: var(--blue);
+      }
+    }
+
+    .login,
+    .logout {
+      margin-left: auto;
+      border-radius: 0.5em;
+      border: solid 1px;
+      padding: 7px;
+      color: var(--black);
+      background-color: rgba(165, 165, 165, 0);
+      cursor: pointer;
+    }
+
+    ul {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+
+      > li {
+        margin-left: 10px;
+      }
+    }
+  }
 }

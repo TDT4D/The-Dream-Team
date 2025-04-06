@@ -1,41 +1,43 @@
 .container {
-    margin-left: auto;
-    margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 
-    max-width: 1920px;
+  max-width: 1920px;
 
-    h1 {
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-        text-shadow: gray 1px 1px 1px;
+  h1 {
+    font-family:
+      "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans",
+      Arial, sans-serif;
+    text-shadow: gray 1px 1px 1px;
+  }
+
+  & > .head {
+    margin-left: 20px;
+    margin-right: 20px;
+
+    display: flex;
+    align-items: center;
+
+    & > .build-team {
+      margin-left: auto;
+      padding: 1em;
+      border-radius: 0.5em;
+      border: 1px solid var(--blue);
+      background-color: var(--uranian);
+      cursor: pointer;
+      &:hover {
+        background-color: var(--dark-uranian);
+        border: 3px solid var(--blue);
+      }
     }
+  }
 
-    &>.head {
-        margin-left: 20px;
-        margin-right: 20px;
-
-        display: flex;
-        align-items: center;
-
-        &>.build-team {
-            margin-left: auto;
-            padding: 1em;
-            border-radius: 0.5em;
-            border: 1px solid var(--blue);
-            background-color: var(--uranian);
-            cursor: pointer;
-            &:hover {
-                background-color: var(--dark-uranian);
-                border: 3px solid var(--blue)
-            }
-        }
-    }
-
-    &>.columns {
-        display: flex;
-        padding-inline: 16px;
-        padding-block: 8px;
-        align-items: start;
-        justify-content: space-between;
-        width: auto;
-    }
+  & > .columns {
+    display: flex;
+    padding-inline: 16px;
+    padding-block: 8px;
+    align-items: start;
+    justify-content: space-between;
+    width: auto;
+  }
 }

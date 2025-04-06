@@ -2,10 +2,10 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 
 # luetaan dataa ja tehdään tauluja
-# sama kuin versio 2, mutta tiivistetty tagit uudella scoring systeemillä
+# sama kuin versio 1, mutta tiivistetty tagit uudella scoring systeemillä
 # systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
 def clean_data(load_name="rawData", save_name="cleaned_data"):
 
@@ -49,7 +49,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
         else:
             dftemp = pd.read_json(StringIO(temp))
             dfapp = pd.concat([dfapp, dftemp])
-    dfapp = dfapp[['projectId', 'studentId', 'relation']]
+    dfapp = dfapp[['chosenBatch','projectId', 'studentId', 'relation']]
     dfapp.loc[dfapp["relation"] == 'Dropout', "relation"] = 'Selected'
 
     # yhdistetään hakemukset ja opiskelijat
@@ -59,14 +59,12 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     # (kaikkia projekteja ei mainittu projekteissa)
     final_merge_df = pd.merge(merged_df, dfpro, on='projectId', how='left')
 
-    #final_merge_df_copy = final_merge_df[['tags','themes', 'degreeLevelType', 'studiesField', 'relation']]
-    #cleaned_data_copy = final_merge_df_copy.to_dict(orient="records")
-    #storage.save_json(cleaned_data_copy, 'test')
-
     final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
-    # tagien tiivistys
+    # condensing tags
     bigdict = tag_per_studyfield(final_merge_df)
     final_merge_df=tag_condenser(final_merge_df, bigdict)
+    final_merge_df['was_selected'] = was_already_chosen(final_merge_df)
+    final_merge_df.drop('chosenBatch',inplace=True, axis=1)
 
     final_merge_df, encoders = alternative_encode(
         final_merge_df)
@@ -77,8 +75,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     final_merge_df = final_merge_df.astype(float)
 
     cleaned = final_merge_df.to_dict(orient="records")
-    
-    # tallennetaan käytettävä data
+
     storage.save_json(cleaned, save_name)
 
     return cleaned
@@ -209,4 +206,40 @@ def alternative_encode(final_merge_df):
 
     return final_merge_df, encoders
 
-#clean_data_ev3()
+def was_already_chosen(df):
+    df = df[['studentId', 'chosenBatch', 'relation']]
+    df['was_selected'] = 0
+    length = df.shape[0]
+    previd = 0
+    prevbatch = 0
+    temp = []
+    rel = []
+    first = True
+    for row in df.itertuples():
+        if first:
+            temp.append(row.Index)
+            rel.append(row.relation)
+            first = False
+            previd = row.studentId
+            prevbatch = row.chosenBatch
+        else:
+            if (row.studentId == previd) and (row.chosenBatch == prevbatch):
+                temp.append(row.Index)
+                rel.append(row.relation)
+            else:
+                if 'Selected' in rel:
+                    for i in temp:
+                        df.at[i, 'was_selected'] = 1
+                temp.clear()
+                rel.clear()
+                temp.append(row.Index)
+                rel.append(row.relation)
+                previd = row.studentId
+                prevbatch = row.chosenBatch
+                if row.Index == length-1:
+                    if 'Selected' in rel:
+                        for i in temp:
+                            df.at[i, 'was_selected'] = 1
+    return df['was_selected']
+
+clean_data()

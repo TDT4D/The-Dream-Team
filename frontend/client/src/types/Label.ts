@@ -1,13 +1,13 @@
 export const enum LabelType {
-    Applied,
-    Selected
+  Applied,
+  Selected,
 }
 
 export type LabelContent = {
-    content: string
-}
+  content: string;
+};
 
 export type Label = {
-    isType: LabelType
-    contains: LabelContent
-}
+  isType: LabelType;
+  contains: LabelContent;
+};
