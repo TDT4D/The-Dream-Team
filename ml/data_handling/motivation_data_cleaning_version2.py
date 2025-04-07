@@ -2,7 +2,7 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 from scipy.spatial import distance
 try:
     from sentence_transformers import SentenceTransformer #type: ignore
