@@ -1,24 +1,25 @@
-
 .column {
-    width: 30%;
+  width: 30%;
 
-    background-color: var(--snow);
-    box-shadow: 2px 2px rgba(0, 0, 0, 0.15);
-    
-    padding: 10px;
-    
-    border: solid 1px var(--light-blue);
+  background-color: var(--snow);
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.15);
+
+  padding: 10px;
+
+  border: solid 1px var(--light-blue);
+  border-radius: 0.5rem;
+
+  & > .column-name {
+    font-size: larger;
+    padding: 0.5rem;
+    font-family:
+      "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans",
+      Arial, sans-serif;
+  }
+
+  & > .drag-area {
+    margin-top: 5px;
+    min-height: 10em;
     border-radius: 0.5rem;
-
-    &>.column-name {
-        font-size: larger;
-        padding: 0.5rem;
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    }
-
-    &>.drag-area {
-        margin-top: 5px;
-        min-height: 10em;
-        border-radius: 0.5rem;
-    }
+  }
 }

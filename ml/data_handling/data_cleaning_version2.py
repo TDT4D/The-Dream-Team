@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 from utils import storage
 from io import StringIO
 

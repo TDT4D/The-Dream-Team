@@ -1,0 +1,30 @@
+name: DreamTeam backend tests
+
+on: # yamllint disable-line rule:truthy
+  push:
+  pull_request:
+    paths:
+      - backend/**
+      - db/**
+
+jobs:
+  test_backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "maven"
+
+      - name: Build with Maven
+        working-directory: ./backend
+        run: mvn -Dskiptests -B package --file pom.xml
+
+      - name: Run tests
+        working-directory: ./backend
+        run: ./mvnw test

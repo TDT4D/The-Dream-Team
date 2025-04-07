@@ -2,7 +2,8 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+
+from sklearn.preprocessing import LabelEncoder
 from scipy.spatial import distance
 try:
     from sentence_transformers import SentenceTransformer
@@ -73,6 +74,8 @@ def clean_data(load_name="rawData", save_name="cleaned_data_motivation"):
     final_merge_df["similarity_score_max_whyProject"] = temporary_df["similarity_score_max_whyProject"]
     final_merge_df["similarity_score_avg_whyExperience"] = temporary_df["similarity_score_avg_whyExperience"]
     final_merge_df["similarity_score_max_whyExperience"] = temporary_df["similarity_score_max_whyExperience"]
+
+    final_merge_df['was_selected'] = was_already_chosen(final_merge_df)
 
     final_merge_df.drop(
         ['whyProject','whyExperience', 'chosenBatch'], axis=1, inplace=True)
@@ -181,8 +184,12 @@ def application_similarity(df):
             jbatch = row['chosenBatch']
             whyProject = row['whyProject']
             test_vec = model.encode([whyProject])[0]
+
+            devider = 0
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
+                    devider +=1
+          
                     row2 = df.iloc[j2]
                     whyProject2 = row2['whyProject']
                     temp = 1 - distance.cosine(test_vec, model.encode([whyProject2])[0])
@@ -190,25 +197,67 @@ def application_similarity(df):
                     if temp > similarity_score_max_pro:
                         similarity_score_max_pro = temp
 
-            similarity_score_avg_pro = similarity_score_avg_pro/len(locations)
+            if devider != 0:
+                similarity_score_avg_pro = similarity_score_avg_pro/devider
             df.loc[j, 'similarity_score_avg_whyProject'] = similarity_score_avg_pro
             df.loc[j, 'similarity_score_max_whyProject'] = similarity_score_max_pro
 
             whyExperience = row['whyExperience']
             test_vec = model.encode([whyExperience])[0]
+
+            devider = 0
             for j2 in locations:
                 if (j2 != j) and (df.iloc[j2]['chosenBatch'] == jbatch):
+                    devider += 1
                     row2 = df.iloc[j2]
                     whyExperience2 = row2['whyExperience']
                     temp = 1 - distance.cosine(test_vec, model.encode([whyExperience2])[0])
                     similarity_score_avg_exp += temp
                     if temp > similarity_score_max_exp:
                         similarity_score_max_exp = temp
-            similarity_score_avg_exp = similarity_score_avg_exp / len(locations)
+
+            if devider != 0:
+                similarity_score_avg_exp = similarity_score_avg_exp /devider
             df.loc[
                 j, 'similarity_score_avg_whyExperience'] = similarity_score_avg_exp
             df.loc[
                 j, 'similarity_score_max_whyExperience'] = similarity_score_max_exp
     return df
 
+def was_already_chosen(df):
+    df = df[['studentId', 'chosenBatch', 'relation']]
+    df['was_selected'] = 0
+    length = df.shape[0]
+    previd = 0
+    prevbatch = 0
+    temp = []
+    rel = []
+    first = True
+    for row in df.itertuples():
+        if first:
+            temp.append(row.Index)
+            rel.append(row.relation)
+            first = False
+            previd = row.studentId
+            prevbatch = row.chosenBatch
+        else:
+            if (row.studentId == previd) and (row.chosenBatch == prevbatch):
+                temp.append(row.Index)
+                rel.append(row.relation)
+            else:
+                if 'Selected' in rel:
+                    for i in temp:
+                        df.at[i, 'was_selected'] = 1
+                temp.clear()
+                rel.clear()
+                temp.append(row.Index)
+                rel.append(row.relation)
+                previd = row.studentId
+                prevbatch = row.chosenBatch
+                if row.Index == length-1:
+                    if 'Selected' in rel:
+                        for i in temp:
+                            df.at[i, 'was_selected'] = 1
+    return df['was_selected']
+  
 #clean_data()

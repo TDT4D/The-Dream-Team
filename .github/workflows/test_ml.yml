@@ -1,8 +1,11 @@
 name: DreamTeam ML tests
 
-on:
+on: # yamllint disable-line rule:truthy
   push:
   pull_request:
+    paths:
+      - ml/**
+      - db/**
 
 jobs:
   test_ml:
@@ -10,11 +13,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
 
       - name: Install dependencies
         working-directory: ./ml
@@ -22,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           #pip install -r requirements-full.txt
-      
+
       - name: Run ML tests
         working-directory: ./ml
         run: pytest -v tests/

@@ -2,7 +2,7 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 
 # Default cleaner (copy of data_cleaning_version3)
 def clean_data(load_name="rawData", save_name="cleaned_data"):

@@ -2,7 +2,7 @@ import json
 import pandas as pd
 from io import StringIO
 from utils import storage
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 from scipy.spatial import distance
 try:
     from sentence_transformers import SentenceTransformer #type: ignore
@@ -16,7 +16,7 @@ except ModuleNotFoundError:
 # sama kuin versio 3, mutta lisätty samanlaisuuden testaus projektin kuvauksen
 # ja hakemusten whyProject sekä whyExperience kohtien kanssa.
 # systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
-def clean_data(load_name="rawData", save_name="cleaned_data_old"):
+def clean_data(load_name="rawData", save_name="cleaned_data"):
 
     #luetaan data
     bronze_data = storage.load_json(load_name)
@@ -58,7 +58,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data_old"):
         else:
             dftemp = pd.read_json(StringIO(temp))
             dfapp = pd.concat([dfapp, dftemp])
-    dfapp = dfapp[['projectId', 'studentId','whyProject','whyExperience', 'relation']]
+    dfapp = dfapp[['chosenBatch','projectId', 'studentId','whyProject','whyExperience', 'relation']]
     dfapp.loc[dfapp["relation"] == 'Dropout', "relation"] = 'Selected'
 
     # yhdistetään hakemukset ja opiskelijat
@@ -70,15 +70,16 @@ def clean_data(load_name="rawData", save_name="cleaned_data_old"):
 
     final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
 
-    # tagien tiivistys
+    # condensing tags
     bigdict = tag_per_studyfield(final_merge_df)
     final_merge_df=tag_condenser(final_merge_df, bigdict)
+    final_merge_df['was_selected'] = was_already_chosen(final_merge_df)
 
     # samanlaisuuden testaus ja vaihetaan samanlaisuus scoreksi
     temporary_df = similaritytest(final_merge_df)
     final_merge_df['whyProject'] = temporary_df['whyProject']
     final_merge_df['whyExperience'] = temporary_df['whyExperience']
-    final_merge_df = final_merge_df[['projectId','studentId','whyProject','whyExperience','relation','degreeLevelType','studiesField','themes','tags']]
+    final_merge_df = final_merge_df[['projectId','studentId','whyProject','whyExperience','relation','degreeLevelType','studiesField','themes','tags', 'was_selected']]
 
     final_merge_df, encoders = alternative_encode(
         final_merge_df)
@@ -252,4 +253,40 @@ def similaritytest(df):
 
     return similaritytest_helper(model, df)
 
-#clean_data()
+def was_already_chosen(df):
+    df = df[['studentId', 'chosenBatch', 'relation']]
+    df['was_selected'] = 0
+    length = df.shape[0]
+    previd = 0
+    prevbatch = 0
+    temp = []
+    rel = []
+    first = True
+    for row in df.itertuples():
+        if first:
+            temp.append(row.Index)
+            rel.append(row.relation)
+            first = False
+            previd = row.studentId
+            prevbatch = row.chosenBatch
+        else:
+            if (row.studentId == previd) and (row.chosenBatch == prevbatch):
+                temp.append(row.Index)
+                rel.append(row.relation)
+            else:
+                if 'Selected' in rel:
+                    for i in temp:
+                        df.at[i, 'was_selected'] = 1
+                temp.clear()
+                rel.clear()
+                temp.append(row.Index)
+                rel.append(row.relation)
+                previd = row.studentId
+                prevbatch = row.chosenBatch
+                if row.Index == length-1:
+                    if 'Selected' in rel:
+                        for i in temp:
+                            df.at[i, 'was_selected'] = 1
+    return df['was_selected']
+
+clean_data()

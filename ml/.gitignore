@@ -5,6 +5,8 @@
 *.json
 *.joblib
 
+#Allow test file with made up data
+!data/cleaned_data_test.json
 
 #Data
 data/example.txt
