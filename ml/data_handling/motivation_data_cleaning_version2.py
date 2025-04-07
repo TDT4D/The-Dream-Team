@@ -5,7 +5,7 @@ from utils import storage
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from scipy.spatial import distance
 try:
-    from sentence_transformers import SentenceTransformer
+    from sentence_transformers import SentenceTransformer #type: ignore
 except ModuleNotFoundError:
     import sys
     def sentence_transformers(reqModel: str) -> None:
@@ -282,4 +282,4 @@ def keyword_search(df):
 
     return df['keyword_found']
 
-clean_data()
+#clean_data() Note: please remember to remove or comment this out before PR... it took me 1h to find this...

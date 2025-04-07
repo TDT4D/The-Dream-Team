@@ -289,4 +289,4 @@ def was_already_chosen(df):
                             df.at[i, 'was_selected'] = 1
     return df['was_selected']
 
-clean_data()
+#clean_data()
