@@ -129,7 +129,7 @@ def get_scores(
         if not filtered_scores:
             return JSONResponse(
                 status_code=404,
-                content={"error": f"No scores found"}
+                content={"error": "No scores found"}
             )
 
         #Return all scores if no projectId is provided

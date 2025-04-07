@@ -176,7 +176,7 @@ def t_predict(data="rawData", model_name="randomforest_v2_t", score_file="studen
     #Avoid redundant cleaning
     if cleaning:
         clean = get_cleaner("default_cleaner").clean_data(data, "t_predict_clean")
-        if clean == None: #Temporary fix to pass tests
+        if clean is None: #Temporary fix to pass tests
             return None
         data = "t_predict_clean" #Change to proper file name
 

@@ -18,7 +18,7 @@ Note:
 
 from fastapi.testclient import TestClient
 from api.main import app
-from utils.testing_utils import load_test_json
+
 
 client = TestClient(app)
 

@@ -13,7 +13,6 @@ Note:
 
 from utils import storage
 from pathlib import Path
-import os
 
 # Setup paths to test data
 TEST_DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "test_data"
