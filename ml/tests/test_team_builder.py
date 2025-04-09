@@ -73,14 +73,11 @@ def test_build_team_invalid_data_format(mocker):
 
 # A scenario where the dataset is empty
 def test_build_team_empty_data(mocker):
-    mocker.patch("team_building.team_builder.storage.load_json", return_value=mock_data)
-    mock_save = mocker.patch("team_building.team_builder.storage.save_json")
+    """Test that an empty JSON file results in an empty team."""
+    mocker.patch("team_building.team_builder.storage.load_json", return_value=[])
 
-
-    result = build_team(n=2)
-
+    result = build_team(3, project_id=998)
     assert result == {"projectId": 998, "team": []}
-    mock_save.assert_called_once_with(result, "team_example")
 
 def test_build_team_invalid_n(mocker):
     """Test that invalid values of `n` raise an error or return an empty team."""
