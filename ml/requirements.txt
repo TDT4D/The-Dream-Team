@@ -11,9 +11,4 @@ scipy
 uvicorn
 xgboost
 imbalanced-learn
-<<<<<<< HEAD
 #sentence_transformers
-=======
-#sentence_transformers
-
->>>>>>> aa213155f4e261e7f06624b52195c09c822ef59b
