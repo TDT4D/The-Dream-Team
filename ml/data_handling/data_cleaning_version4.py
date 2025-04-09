@@ -5,11 +5,7 @@ from utils import storage
 from sklearn.preprocessing import LabelEncoder
 from scipy.spatial import distance
 try:
-<<<<<<< HEAD
-    from sentence_transformers import SentenceTransformer
-=======
     from sentence_transformers import SentenceTransformer #type: ignore
->>>>>>> aa213155f4e261e7f06624b52195c09c822ef59b
 except ModuleNotFoundError:
     import sys
     def sentence_transformers(reqModel: str) -> None:
@@ -84,22 +80,14 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     bigdict = tag_per_studyfield(final_merge_df)
     final_merge_df=tag_condenser(final_merge_df, bigdict)
     final_merge_df['was_selected'] = was_already_chosen(final_merge_df)
-<<<<<<< HEAD
     final_merge_df['locations'] = location_match(final_merge_df)
     final_merge_df.rename(columns={'locations': 'location_match'}, inplace=True)
-
-=======
->>>>>>> aa213155f4e261e7f06624b52195c09c822ef59b
 
     # samanlaisuuden testaus ja vaihetaan samanlaisuus scoreksi
     temporary_df = similaritytest(final_merge_df)
     final_merge_df['whyProject'] = temporary_df['whyProject']
     final_merge_df['whyExperience'] = temporary_df['whyExperience']
-<<<<<<< HEAD
     final_merge_df = final_merge_df[['projectId','studentId','whyProject','whyExperience','relation','degreeLevelType','studiesField','themes','tags', 'was_selected', 'location_match']]
-=======
-    final_merge_df = final_merge_df[['projectId','studentId','whyProject','whyExperience','relation','degreeLevelType','studiesField','themes','tags', 'was_selected']]
->>>>>>> aa213155f4e261e7f06624b52195c09c822ef59b
 
     final_merge_df, encoders = alternative_encode(
         final_merge_df)
@@ -309,7 +297,6 @@ def was_already_chosen(df):
                             df.at[i, 'was_selected'] = 1
     return df['was_selected']
 
-<<<<<<< HEAD
 def location_match(df):
     # checks if applicant is located "near" the project city
     # 0 if not 1 if is and 2 if it can't be determined
@@ -469,7 +456,4 @@ def location_match(df):
             else:
                 df.at[row.Index,'locations'] = 2
     return df['locations']
-
-=======
->>>>>>> aa213155f4e261e7f06624b52195c09c822ef59b
 #clean_data()
