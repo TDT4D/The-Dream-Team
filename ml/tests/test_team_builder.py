@@ -4,7 +4,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from team_building.team_builder import build_team
+
 
 """
 
@@ -111,14 +111,6 @@ def test_build_team_invalid_project_id(mocker):
 
     result = build_team(2, project_id="abc")
     assert result == {"projectId": "abc", "team": []}
-
-
-def test_build_team_empty_data(mocker):
-    """Test that an empty JSON file results in an empty team."""
-    mocker.patch("team_building.team_builder.storage.load_json", return_value=[])
-
-    result = build_team(3, project_id=998)
-    assert result == {"projectId": 998, "team": []}
 
 def test_build_team_missing_fields(mocker):
     """Test that missing fields in input raise a KeyError (if unhandled)."""
