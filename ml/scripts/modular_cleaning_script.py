@@ -3,24 +3,24 @@ import json
 
 #ml>python -m scripts.modular_cleaning_script
 
-cleaners = ["data_cleaning_version2", "data_cleaning_version3"]
+cleaners = ["data_cleaning_version4", "motivation_data_cleaning_version2"]
 
-print("initiate test for data cleaning")
+print("initiate data cleaning")
 
-print("Clean with v2")
+print("Clean with v4")
 cleaner = get_cleaner(cleaners[0])
 
-data = cleaner.clean_data("rawData", "clean_v2_modular_test")
+data = cleaner.clean_data("rawData", "clean_v4")
 
 print("Cleaning done")
 print(json.dumps(data[:3], indent=4, ensure_ascii=False))
 
 
-print("Clean with v3")
+print("Clean with motivation v2")
 
 cleaner = get_cleaner(cleaners[1])
 
-data = cleaner.clean_data("rawData", "clean_v3_modular_test")
+data = cleaner.clean_data("rawData", "clean_motivation_v2")
 
 print("Cleaning done")
 print(json.dumps(data[:3], indent=4, ensure_ascii=False))
