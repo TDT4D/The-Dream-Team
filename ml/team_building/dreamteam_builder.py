@@ -98,17 +98,47 @@ def build_team(project_id: Optional[int] = None,
         #Suggest as many teams for all projects as possible
         suggested_teams = suggest_teams_for_all_projects(data)
 
-        project_ids_with_teams = {team["projectId"] for team in suggested_teams}
+        project_ids_with_teams = {team["projectId"] for team in suggested_teams['teams']}
         print(f"Projects with teams formed: {len(project_ids_with_teams)}")
         print(f"Project IDs: {sorted(project_ids_with_teams)}")
 
+        """
+        Suggested teams example:
+        {
+            "teams": final_teams,
+            "project_failure_reasons": project_failure_reasons,
+        }
+            final_teams:
+            [
+                {
+                    "projectId": 1047.0,
+                    "team": [
+                        {
+                            "projectId": 1047.0,
+                            "studentId": 21816.0,
+                            "whyProject": 0.5065285563468933,
+                            "whyExperience": 0.37186917662620544,
+                            "location_match": 2.0,
+                            "field": 12,
+                            "score": 71.91999053955078,
+                            "motivation_score": 84.96797180175781,
+                            "final_score": 68.04236508607865,
+                            "justification":...
+                        },...
+                    ],
+                    "avg_score": 64.25695798993111,
+                    "justification": [
+                        "Team includes students from 4 unique fields."
+                    ]
+                },
+            ]
+        """
 
         return suggested_teams
     
     except Exception as e:
         print(f"Error occured, {e}")
         return None
-
 
 def merge_project_data(applicants, scores, moti_scores):
     """
@@ -250,7 +280,7 @@ def is_valid_team(
         team, 
         score_threshold = 50, 
         unique_fields = 2, 
-        only_locals = True, 
+        only_locals = False, 
         max_score_gap = 30,
         min_team_avg = 57
 ):
@@ -298,7 +328,8 @@ def suggest_teams_for_all_projects(
         data,
         min_score = 50,
         team_sizes = (4, 3, 5),
-        only_locals = False
+        only_locals = False,
+        verbose = False
 ):
     
     used_students = set()
@@ -306,6 +337,26 @@ def suggest_teams_for_all_projects(
 
     # Step 1: Count project applications per student
     application_count = defaultdict(int)
+    rejection_reasons = defaultdict(list)
+    applicants_by_project = defaultdict(list)
+
+    #=======================DeBugging and Justifications===========================
+    # Count applicants and track rejections
+    for applicant in data:
+        pid = applicant['projectId']
+        sid = applicant['studentId']
+        applicants_by_project[pid].append(applicant)
+
+        reason_list = []
+        if applicant['final_score'] < min_score:
+            reason_list.append("low score")
+        if only_locals and applicant['location_match'] == 0:
+            reason_list.append("non-local")
+        
+        if reason_list:
+            rejection_reasons[pid].append((sid, reason_list))
+    #=======================DeBugging and Justifications===========================
+
     for applicant in data:
         application_count[applicant['studentId']] += 1
 
@@ -328,10 +379,12 @@ def suggest_teams_for_all_projects(
     project_pool = {pid: [] for pid in all_project_ids}
 
     # Step 3: Assign single-project applicants first
-    #project_pool = defaultdict(list) #List of "project_1": [applicant1,...],
     for pid, applicants in single_project_applicants.items():
         project_pool[pid].extend(applicants)
 
+    # Optional debug section
+    if verbose:
+        print_rejection_explanations(applicants_by_project, project_pool, rejection_reasons)
 
     # Step 4: Add multi-project applicants to where they help most
     assigned_to_project = set()
@@ -369,14 +422,8 @@ def suggest_teams_for_all_projects(
             project_pool[best_pid].append(best_applicant)
             assigned_to_project.add(sid)
 
-
-    #
-
-    print("\n--- Applicant pool per project (after filtering) ---")
-    for pid, pool in project_pool.items():
-        print(f"Project {int(pid)}: {len(pool)} applicants")
-
-    #
+    if verbose:
+        print_applicant_pool_summary(project_pool)
 
     # Step 5: Build Optimal teams
     assigned_to_team = set()
@@ -394,9 +441,8 @@ def suggest_teams_for_all_projects(
             try:
                 suggestions = suggest_teams_for_project(applicants, pid, size)
                 if suggestions is None:
-                    print("=========================================")
-                    print(f"None retuned for project {pid} with size {size}")
-                    print("=========================================\n")
+                    if verbose:
+                        print(f"\nNo valid team found for project {pid} with size {size}")
                     raise ValueError
                 team = suggestions["best_overall"]
                 team_ids = {m['studentId'] for m in team}
@@ -417,19 +463,22 @@ def suggest_teams_for_all_projects(
             except ValueError:
                 continue  # Not enough applicants or no valid team found
 
-    all_projects = {entry['projectId'] for entry in data}
-    projects_in_pool = set(project_pool.keys())
 
-    missing_projects = all_projects - projects_in_pool
+    project_failure_reasons = build_project_failure_reasons(
+        applicants_by_project, project_pool, final_teams
+    )
 
-    print(f"\n==== Project Coverage Debug ====")
-    print(f"Total unique projects in data: {len(all_projects)}")
-    print(f"Projects with applicants in pool: {len(projects_in_pool)}")
-    print(f"Projects missing from pool: {len(missing_projects)}")
-    print(f"Missing project IDs: {sorted(missing_projects)}")
+    if verbose:
+        print_failure_summary(project_failure_reasons)
 
-    return final_teams
+    #return final_teams
 
+    
+    return {
+    "teams": final_teams,
+    "project_failure_reasons": project_failure_reasons,
+    }
+    
 def generate_team_justification(team):
     fields = {member['field'] for member in team}
     justification = []
@@ -461,17 +510,6 @@ def min_individual_score(team):
 
 def field_diversity(team):
     return len(set(member['field'] for member in team))
-
-def penalize_team(team, high_score_threshold=90):
-    # Penalize based on how many 90+ scores are in the team
-    high_scorers = sum(1 for member in team if member['final_score'] >= high_score_threshold)
-    
-    if high_scorers > 1:
-        return high_scorers * 5  # Penalty per "star" used
-    return 0
-
-def single_project_bonus(team, app_counts):
-    return sum(5 for member in team if app_counts.get(member['studentId'], 1) == 1)
 
 def diversity_gain(applicant, current_applicants):
     # Adds a diversity "score" if applicant brings a new field
@@ -507,3 +545,39 @@ def pick_team_sizes(num_applicants):
     # If nothing fits exactly, just fill with as many 4s as possible
     return [4] * (num_applicants // 4)
 
+def print_applicant_pool_summary(project_pool):
+    print("\n--- Applicant pool per project (after filtering) ---")
+    for pid, pool in project_pool.items():
+        print(f"Project {int(pid)}: {len(pool)} applicants")
+
+def print_rejection_explanations(applicants_by_project, project_pool, rejection_reasons):
+    print("\n==== Projects with 0 applicants or all rejected ====")
+    for pid in sorted(applicants_by_project.keys()):
+        total = len(applicants_by_project[pid])
+        accepted = len(project_pool.get(pid, []))
+
+        if total == 0:
+            print(f"Project {int(pid)}: No students applied.")
+        elif accepted == 0:
+            print(f"Project {int(pid)}: All {total} applicants rejected.")
+            for sid, reasons in rejection_reasons[pid]:
+                print(f"  - Student {int(sid)} rejected due to: {', '.join(reasons)}")
+
+def build_project_failure_reasons(applicants_by_project, project_pool, final_teams):
+    reasons = {}
+    for pid in sorted(applicants_by_project.keys()):
+        all_applicants = applicants_by_project[pid]
+        valid_applicants = project_pool.get(pid, [])
+
+        if len(all_applicants) == 0:
+            reasons[pid] = "No students applied."
+        elif len(valid_applicants) == 0:
+            reasons[pid] = f"All {len(all_applicants)} applicants were rejected (e.g., low scores, non-local)."
+        elif pid not in [t['projectId'] for t in final_teams]:
+            reasons[pid] = f"{len(valid_applicants)} valid applicants, but no valid team could be formed (e.g., team constraints not met)."
+    return reasons
+
+def print_failure_summary(reasons):
+    print("\n==== Failed Team Formation Reasons ====")
+    for pid, reason in reasons.items():
+        print(f"Project {int(pid)}: {reason}")

@@ -40,9 +40,11 @@ teams = dreamteam_builder.build_team()
 
 print("Teams::::::::::::::::\n")
 
-if teams is not None:
-    print(json.dumps(teams, indent=4))
 
+if teams is not None:
+    print(json.dumps(teams['teams'], indent=4))
+    #print("Failures:")
+    #print(json.dumps(teams['project_failure_reasons'], indent=4))
 else:
     print(f"NO TEAMS, teams = {teams}")
 
