@@ -8,6 +8,8 @@ import json
 
 #dreamteam_builder.build_team()
 
+"""
+#Individual dream team
 teams = dreamteam_builder.build_team(project_id=1060)
 
 print("Teams::::::::::::::::\n")
@@ -31,6 +33,19 @@ if teams is not None:
 
 else:
     print(f"NO TEAMS, teams = {teams}")
+
+"""
+
+teams = dreamteam_builder.build_team()
+
+print("Teams::::::::::::::::\n")
+
+if teams is not None:
+    print(json.dumps(teams, indent=4))
+
+else:
+    print(f"NO TEAMS, teams = {teams}")
+
 
 """
     Team compositions

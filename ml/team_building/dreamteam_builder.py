@@ -52,6 +52,9 @@ def build_team(project_id: Optional[int] = None,
         #data = sorted(data, key=lambda x: x['final_score'], reverse=True)
         #print(json.dumps(data[:10], indent=4))
 
+        projects = sorted({entry["projectId"] for entry in data})
+        print(f"Projects in dataset ({len(projects)} total)")
+
         """
         Example data so far:
         [
@@ -70,6 +73,7 @@ def build_team(project_id: Optional[int] = None,
 
         """
 
+        #Suggest teams for a single project
         if not all_teams:
             project_applicants = [x for x in data if x['projectId'] == project_id]
             print("Project applicants: ", len(project_applicants))
@@ -91,9 +95,16 @@ def build_team(project_id: Optional[int] = None,
             
             return project_teams
         
+        #Suggest as many teams for all projects as possible
+        suggested_teams = suggest_teams_for_all_projects(data)
+
+        project_ids_with_teams = {team["projectId"] for team in suggested_teams}
+        print(f"Projects with teams formed: {len(project_ids_with_teams)}")
+        print(f"Project IDs: {sorted(project_ids_with_teams)}")
 
 
-        return 
+        return suggested_teams
+    
     except Exception as e:
         print(f"Error occured, {e}")
         return None
@@ -276,6 +287,172 @@ def is_valid_team(
     
     return True
 
+def is_valid_individual(applicant, min_score=50, only_locals=False):
+    if applicant['final_score'] < min_score:
+        return False
+    if only_locals and applicant['location_match'] == 0:
+        return False
+    return True
+
+def suggest_teams_for_all_projects(
+        data,
+        min_score = 50,
+        team_sizes = (4, 3, 5),
+        only_locals = False
+):
+    
+    used_students = set()
+    final_teams = []
+
+    # Step 1: Count project applications per student
+    application_count = defaultdict(int)
+    for applicant in data:
+        application_count[applicant['studentId']] += 1
+
+    # Step 2: Group valid applicants by project
+    single_project_applicants = defaultdict(list)
+    multi_project_applicants = defaultdict(list)
+
+    for applicant in data:
+        sid = applicant['studentId']
+        pid = applicant['projectId']
+        if is_valid_individual(applicant, min_score=min_score, only_locals=only_locals):
+            if application_count[sid] == 1:
+                single_project_applicants[pid].append(applicant)
+            else:
+                multi_project_applicants[pid].append(applicant)
+
+
+    # Step 2.5: Initialize project pool with all project IDs (even if empty)
+    all_project_ids = {entry['projectId'] for entry in data}
+    project_pool = {pid: [] for pid in all_project_ids}
+
+    # Step 3: Assign single-project applicants first
+    #project_pool = defaultdict(list) #List of "project_1": [applicant1,...],
+    for pid, applicants in single_project_applicants.items():
+        project_pool[pid].extend(applicants)
+
+
+    # Step 4: Add multi-project applicants to where they help most
+    assigned_to_project = set()
+    student_to_multi_apps = defaultdict(list)
+
+    for pid, applicants in multi_project_applicants.items():
+        for applicant in applicants:
+            student_to_multi_apps[applicant['studentId']].append(applicant)
+
+
+    for sid, student_apps in student_to_multi_apps.items():
+        if sid in assigned_to_project or sid in used_students:
+            continue
+
+        best_score = -1
+        best_pid = None
+        best_applicant = None
+
+        for applicant in student_apps:
+            pid = applicant['projectId']
+            pool = project_pool[pid]
+            gain = diversity_gain(applicant, pool)
+            ratio = diversity_ratio(pool)
+            clean_div = len(pool) % 4 == 0
+
+            penalize = clean_div and ratio > 0.25
+            score = gain - (1 if penalize else 0)
+
+            if score >= best_score:
+                best_score = score
+                best_pid = pid
+                best_applicant = applicant
+
+        if best_pid and best_applicant:
+            project_pool[best_pid].append(best_applicant)
+            assigned_to_project.add(sid)
+
+
+    #
+
+    print("\n--- Applicant pool per project (after filtering) ---")
+    for pid, pool in project_pool.items():
+        print(f"Project {int(pid)}: {len(pool)} applicants")
+
+    #
+
+    # Step 5: Build Optimal teams
+    assigned_to_team = set()
+    for pid, applicants in project_pool.items():
+        # Remove students already used elswhere
+        applicants = [a for a in applicants if a['studentId'] not in assigned_to_team]
+
+        team_sizes_to_try = pick_team_sizes(len(applicants))
+
+        for size in team_sizes_to_try:
+            # Filter again in case the list shrank
+            if len(applicants) < size:
+                continue
+
+            try:
+                suggestions = suggest_teams_for_project(applicants, pid, size)
+                if suggestions is None:
+                    print("=========================================")
+                    print(f"None retuned for project {pid} with size {size}")
+                    print("=========================================\n")
+                    raise ValueError
+                team = suggestions["best_overall"]
+                team_ids = {m['studentId'] for m in team}
+
+                #Ensure uniqueness
+                if not team_ids.intersection(assigned_to_team):
+                    assigned_to_team.update(team_ids)
+                    final_teams.append({
+                    "projectId": pid,
+                    "team": team,
+                    "avg_score": avg_score(team),
+                    "justification": generate_team_justification(team)
+                    })
+                
+                # Remove assigned students from applicant pool
+                applicants = [a for a in applicants if a['studentId'] not in team_ids]
+            
+            except ValueError:
+                continue  # Not enough applicants or no valid team found
+
+    all_projects = {entry['projectId'] for entry in data}
+    projects_in_pool = set(project_pool.keys())
+
+    missing_projects = all_projects - projects_in_pool
+
+    print(f"\n==== Project Coverage Debug ====")
+    print(f"Total unique projects in data: {len(all_projects)}")
+    print(f"Projects with applicants in pool: {len(projects_in_pool)}")
+    print(f"Projects missing from pool: {len(missing_projects)}")
+    print(f"Missing project IDs: {sorted(missing_projects)}")
+
+    return final_teams
+
+def generate_team_justification(team):
+    fields = {member['field'] for member in team}
+    justification = []
+
+    justification.append(
+        f"Team includes students from {len(fields)} unique fields."
+    )
+    
+    for member in team:
+        reasons = []
+        if member['score'] >= 85:
+            reasons.append(f"is strong fit ({int(member['score'])})")
+        if member['motivation_score'] >= 85:
+            reasons.append(f"has high motivation ({int(member['motivation_score'])})")
+        if member['location_match'] == 1.0:
+            reasons.append("is local")
+        if member['final_score'] >= 85:
+            reasons.append(f"High overall score ({int(member['final_score'])})")
+        
+        member['justification'] = "Student " + ", ".join(reasons) + "."
+
+    return justification
+
 def avg_score(team):
     return sum(member['final_score'] for member in team) / len(team)
 
@@ -284,4 +461,49 @@ def min_individual_score(team):
 
 def field_diversity(team):
     return len(set(member['field'] for member in team))
+
+def penalize_team(team, high_score_threshold=90):
+    # Penalize based on how many 90+ scores are in the team
+    high_scorers = sum(1 for member in team if member['final_score'] >= high_score_threshold)
+    
+    if high_scorers > 1:
+        return high_scorers * 5  # Penalty per "star" used
+    return 0
+
+def single_project_bonus(team, app_counts):
+    return sum(5 for member in team if app_counts.get(member['studentId'], 1) == 1)
+
+def diversity_gain(applicant, current_applicants):
+    # Adds a diversity "score" if applicant brings a new field
+    fields = set(a['field'] for a in current_applicants)
+    return 1 if applicant['field'] not in fields else 0
+
+def diversity_ratio(applicants):
+    field_counts = defaultdict(int)
+    for a in applicants:
+        field_counts[a['field']] += 1
+    if not applicants:
+        return 0
+    return len(field_counts) / len(applicants)
+
+def pick_team_sizes(num_applicants):
+    from math import floor
+
+    # Try all combinations of 4s and 5s first, avoid 3s unless required
+    for fours in range(floor(num_applicants / 4), -1, -1):
+        for fives in range((num_applicants - 4 * fours) // 5 + 1):
+            remaining = num_applicants - (4 * fours + 5 * fives)
+            if remaining == 0:
+                return [4] * fours + [5] * fives
+
+    # Only if a perfect 4+5 combo is not possible, introduce 3s
+    for fours in range(floor(num_applicants / 4), -1, -1):
+        for fives in range((num_applicants - 4 * fours) // 5 + 1):
+            for threes in range((num_applicants - 4 * fours - 5 * fives) // 3 + 1):
+                total = 4 * fours + 5 * fives + 3 * threes
+                if total == num_applicants:
+                    return [3]*threes + [4]*fours + [5]*fives
+
+    # If nothing fits exactly, just fill with as many 4s as possible
+    return [4] * (num_applicants // 4)
 
