@@ -2,6 +2,7 @@ from utils import storage
 from typing import Optional
 from collections import defaultdict
 from itertools import combinations
+from utils import storage
 
 import json
 
@@ -93,6 +94,7 @@ def build_team(project_id: Optional[int] = None,
             if project_teams is None:
                 raise ValueError(f"No teams could be formed for project {project_id}.")
             
+            storage.save_json(project_teams, save_name)
             return project_teams
         
         #Suggest as many teams for all projects as possible
@@ -133,6 +135,8 @@ def build_team(project_id: Optional[int] = None,
                 },
             ]
         """
+
+        storage.save_json(suggested_teams, save_name)
 
         return suggested_teams
     
