@@ -90,10 +90,11 @@ def dream_team(
     
     """
     Builds the Dream Team
-    - If projectId provided:
+
+    - **If `projectId` is provided:**
         - Team suggestions for a single project
-        -return:
-        list of lists of suggested teams:
+        - **Returns:**
+        
             {
             "best_overall": best_team, #average teams score highest
             "perfect_team": perfect_team, #Individual scores are highest
@@ -101,17 +102,17 @@ def dream_team(
             "all_teams": valid_teams  #All valid teams
             }
 
-    - otherwise:
+    - **Otherwise (no `projectId`):**
         - Gives suggestions for all teams
-        return:
+        - **Return:**
         list of suggested teams for all projects:
-        {
-            "teams": final_teams for all projects that have valid teams
-            "project_failure_reasons": Justifications why project doesn't have a team
-        }
+            {
+                "teams": final_teams for all projects that have valid teams
+                "project_failure_reasons": Justifications why project doesn't have a team
+            }
 
 
-            final_teams (= the teams):
+            - **`final_teams` structure:**
             [
                 {
                     "projectId": 1047.0,

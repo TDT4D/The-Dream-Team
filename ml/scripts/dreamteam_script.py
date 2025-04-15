@@ -1,4 +1,5 @@
 from team_building import dreamteam_builder
+from team_building import get_team_builder
 import json
 
 #called from The-Dream-Team\ml>python -m scripts.team_test
@@ -75,6 +76,22 @@ if teams is not None:
 else:
     print(f"NO TEAMS, teams = {teams}")
 
+
+
+#Test with builder import
+
+builder = get_team_builder("dreamteam_builder")
+teams = builder.build_team(save_name="dream_team_with_builder")
+
+print("Teams::::::::::::::::\n")
+
+
+if teams is not None:
+    print(json.dumps(teams['teams'], indent=4))
+    #print("Failures:")
+    #print(json.dumps(teams['project_failure_reasons'], indent=4))
+else:
+    print(f"NO TEAMS, teams = {teams}")
 
 
 """
