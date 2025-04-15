@@ -168,7 +168,21 @@ def merge_project_data(applicants, scores, moti_scores):
     """
     #index scores and moti_scores by (projectId, studentId)
     score_lookup = {(s['projectId'], s['studentId']): s['Score'] for s in scores}
-    moti_lookup = {(m['projectId'], m['studentId']): m['Score'] for m in moti_scores}
+    #moti_lookup = {(m['projectId'], m['studentId']): m['Score'] for m in moti_scores}
+
+    possible_keys = ['Score', 'score', 'Motivation', 'motivation']
+
+    def extract_score(m):
+        for key in possible_keys:
+            if key in m:
+                return m[key]
+        raise KeyError(f"No valid score key found in {m}")
+
+    moti_lookup = {
+        (m['projectId'], m['studentId']): extract_score(m)
+        for m in moti_scores
+    }
+
 
     #group applicants by projectId
     projects = defaultdict(list)
