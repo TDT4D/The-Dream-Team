@@ -100,6 +100,10 @@ def build_team(project_id: Optional[int] = None,
         #Suggest as many teams for all projects as possible
         suggested_teams = suggest_teams_for_all_projects(data)
 
+        if suggested_teams is None:
+                raise ValueError(f"No suggested teams something went wrong.")
+            
+
         project_ids_with_teams = {team["projectId"] for team in suggested_teams['teams']}
         print(f"Projects with teams formed: {len(project_ids_with_teams)}")
         print(f"Project IDs: {sorted(project_ids_with_teams)}")

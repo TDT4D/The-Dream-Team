@@ -49,6 +49,34 @@ else:
     print(f"NO TEAMS, teams = {teams}")
 
 
+
+#Individual dream team
+teams = dreamteam_builder.build_team(project_id=1060, save_name="dream_team_project")
+
+print("Teams INDIVIDUAL::::::::::::::::\n")
+
+if teams is not None:
+    print("\nBest team")
+    print(json.dumps(teams['best_overall'], indent=4))
+    print("\nPerfect team")
+    print(json.dumps(teams['perfect_team'], indent=4))
+    print("\nDiverse teams")
+    for i, team in enumerate(teams['diverse_teams'], start=1):
+        print(f"\nDiverse Team {i}:")
+        print(json.dumps(team, indent=4))
+    
+    print("\nAll valid teams:")
+    most = teams['all_teams'][:2]
+    print(f"total teams: {len(teams['all_teams'])}")
+    for i, team in enumerate(most, start=1):
+        print(f"\nValid Team {i}:")
+        print(json.dumps(team, indent=4))
+
+else:
+    print(f"NO TEAMS, teams = {teams}")
+
+
+
 """
     Team compositions
     {
