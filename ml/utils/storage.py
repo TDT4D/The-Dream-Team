@@ -6,8 +6,8 @@ import joblib
 """For loading and saving data (locally)"""
 
 this_dir  = Path(__file__).resolve().parent
-load_dir = this_dir.parent/"data"   #Directory where to load data
-save_dir = this_dir.parent/"data"   #Directory to save data
+load_dir = this_dir.parent/"data"/"saved_data"  # Directory where to load data
+save_dir = this_dir.parent/"data"/"saved_data"  # Directory to save data
 
 #Model storage path
 model_dir = this_dir.parent/"data"/"saved_models"   #Save/load ml_models
