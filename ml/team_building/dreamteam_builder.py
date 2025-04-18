@@ -393,7 +393,7 @@ def suggest_teams_for_all_projects(
             if application_count[sid] == 1:
                 single_project_applicants[pid].append(applicant)
             else:
-                multi_project_applicants[pid].append(applicant)
+                multi_project_applicants[sid].append(applicant)
 
 
     # Step 2.5: Initialize project pool with all project IDs (even if empty)
@@ -408,41 +408,37 @@ def suggest_teams_for_all_projects(
     if verbose:
         print_rejection_explanations(applicants_by_project, project_pool, rejection_reasons)
 
-    # Step 4: Add multi-project applicants to where they help most
-    assigned_to_project = set()
-    student_to_multi_apps = defaultdict(list)
 
-    for pid, applicants in multi_project_applicants.items():
-        for applicant in applicants:
-            student_to_multi_apps[applicant['studentId']].append(applicant)
+    # Refactored Step 4: Figures out which projects are doomed (cannot reach min team size)
+    project_sizes = {pid: len(apps) for pid, apps in project_pool.items()}
 
+    potential_adds = defaultdict(int)
+    for sid, apps in multi_project_applicants.items():
+        for app in apps:
+            potential_adds[app['projectId']] += 1
 
-    for sid, student_apps in student_to_multi_apps.items():
-        if sid in assigned_to_project or sid in used_students:
+    doomed_projects = {
+        pid for pid in project_pool
+        if project_sizes.get(pid, 0) + potential_adds.get(pid, 0) < min(team_sizes)
+    }
+
+    assigned_students = set()
+
+    for sid, apps in multi_project_applicants.items():
+        viable_apps = [app for app in apps if app['projectId'] not in doomed_projects]
+
+        if not viable_apps:
             continue
 
-        best_score = -1
-        best_pid = None
-        best_applicant = None
+        viable_apps.sort(key=lambda a: project_sizes[a['projectId']])
 
-        for applicant in student_apps:
-            pid = applicant['projectId']
-            pool = project_pool[pid]
-            gain = diversity_gain(applicant, pool)
-            ratio = diversity_ratio(pool)
-            clean_div = len(pool) % 4 == 0
-
-            penalize = clean_div and ratio > 0.25
-            score = gain - (1 if penalize else 0)
-
-            if score >= best_score:
-                best_score = score
-                best_pid = pid
-                best_applicant = applicant
-
-        if best_pid and best_applicant:
-            project_pool[best_pid].append(best_applicant)
-            assigned_to_project.add(sid)
+        for app in viable_apps:
+            pid = app['projectId']
+            if project_sizes[pid] < 4:
+                project_pool[pid].append(app)
+                project_sizes[pid] += 1
+                assigned_students.add(sid)
+                break
 
     if verbose:
         print_applicant_pool_summary(project_pool)
