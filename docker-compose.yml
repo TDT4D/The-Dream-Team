@@ -1,6 +1,6 @@
 # =============================== NOTE ===============================
 # Dependencies for our services atm are the following:
-# Frontend  depends on    Backend 
+# Frontend  depends on    Backend
 # Backend   depends on    ML,     DB
 # ML        depends on    -
 # DB        depends on    -
@@ -8,13 +8,13 @@
 # Added traefik as a reverse proxy. At the moment traefik maps the
 # following paths to the following services:
 #   localhost       -> frontend
-#   localhost/api   -> backend 
+#   localhost/api   -> backend
 #   localhost/ml    -> ml
-# 
+#
 # Thus in the future we could remove all the portforwarding from these
 # services and let traefik handle it all. Thus e.g. easy TLS-certs etc.
 # for all services.
-# 
+#
 # At the moment the services can be found from (browser works also)
 # Frontend  - curl http://localhost
 #             curl http://localhost:3000
@@ -47,8 +47,8 @@ services:
       - "--accesslog=true"
       - "--entryPoints.websecure.address=:443"
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.http.redirections.entrypoint.to=web"         # TODO: HTTPS
-      - "--entrypoints.websecure.http.redirections.entrypoint.scheme=http"    # TODO: HTTPS
+      - "--entrypoints.websecure.http.redirections.entrypoint.to=web" # TODO: HTTPS
+      - "--entrypoints.websecure.http.redirections.entrypoint.scheme=http" # TODO: HTTPS
       # For the future:
       # TODO: HTTPS - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       # TODO: HTTPS - "--certificatesresolvers.myresolver.acme.email=firstname.lastname@domain.com"
@@ -65,14 +65,14 @@ services:
         published: 443
         target: 443
     #volumes:
-      #- /var/run/docker.sock:/var/run/docker.sock
-      # TODO: HTTPS - letsencrypt:/letsencrypt
+    #- /var/run/docker.sock:/var/run/docker.sock
+    # TODO: HTTPS - letsencrypt:/letsencrypt
     networks:
       - docker-socket-proxy
       - dream-team
-    #depends_on: TODO? 
+    #depends_on: TODO?
     #  - socketproxy
-      
+
   backend:
     # Backend service for handling requests to ml and db
     build: ./backend
@@ -122,11 +122,11 @@ services:
       - dream-team
     # expose:
     #   - 27017
-    volumes: 
+    volumes:
       - db-data:/data/db
       - ./db/init:/docker-entrypoint-initdb.d/:ro
     healthcheck:
-      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -137,7 +137,10 @@ services:
 
   frontend:
     # Frontend service for demo purposes
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - DEMO_MODE=true
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_PORT:-3000}"

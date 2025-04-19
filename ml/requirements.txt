@@ -12,3 +12,4 @@ uvicorn
 xgboost
 imbalanced-learn
 #sentence_transformers
+

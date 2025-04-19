@@ -12,6 +12,10 @@ RUN npm install
 # Copy other files
 COPY client .
 
+# Environment variable for demo mode
+ARG DEMO_MODE
+ENV VITE_DEMO_MODE=${DEMO_MODE:-false}
+
 # Set API endpoint env variable
 ENV VITE_API_ENDPOINT=http://localhost/api
 

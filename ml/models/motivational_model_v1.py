@@ -12,6 +12,7 @@ from sklearn.metrics import classification_report
 from pathlib import Path
 
 MODEL_NAME = "motivation_model"
+data_dir = Path(__file__).resolve().parent / "data"
 
 def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
     """
@@ -25,8 +26,13 @@ def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
     - Generates scores for motivation to storage
 
     Returns:
-        dict: A dictionary containing test predictions and their scores.
+        bool: Confirmation of model save.
     """
+
+    # Check if data file is found
+    if not (data_dir / load).exists():
+        return None
+
     if cleaning:
         data = get_cleaner("default_cleaner").clean_data(load)
     else:
@@ -41,8 +47,9 @@ def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
     if isinstance(data, str):
         print(f"ERROR: Expected data but received a file name: {data}")
         return None
-    df = pd.DataFrame(data)  # Convert to DataFrame
 
+
+    df = pd.DataFrame(data)  # Convert to DataFrame
     print("Columns in cleaned data:", df.columns)  # Debugging
 
     # Identify One-Hot Encoded `relation_*` Columns
@@ -63,19 +70,17 @@ def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
     X = df.drop(columns=['relation'])  # Remove target column
     y = df['relation']  # Target column
 
-
-    # Jaetaan data
-    # Luokitellaan: kaikki paitsi luokka 3 → 0, luokka 3 → 1
-    # 1. Luokitusluokan binarisaatio
+    # Modify y to combine every class to 0 except Droputs to class 1
     y_binary = y.apply(lambda x: 1 if x == 3 else 0)
 
-    # 2. Jako koulutus- ja testidataan
+    # Split data for trainging and testing
     X_train, X_test, y_train, y_test = train_test_split(X, y_binary, test_size=0.2, random_state=42, stratify=y)
 
-    # 3. Epätasapainon käsittely
+    # SMOTEENN tested to be best out of different SMOTE's, because of unbalanced data
     smoteenn = SMOTEENN(random_state=42)
     X_train_res, y_train_res = smoteenn.fit_resample(X_train, y_train)
 
+    # Create pipeline with standardscaler and Randomforest
     pipeline = Pipeline([
         ('scaler', StandardScaler()),
         ('classifier', RandomForestClassifier(
@@ -86,12 +91,13 @@ def train(load="rawData", model_name=MODEL_NAME, cleaning:bool=True):
         ))
     ])
 
+    # Train, predict results and print accuracy
     pipeline.fit(X_train_res, y_train_res)
-    # Ennustaminen testidatalla
     y_pred = pipeline.predict(X_test)
 
     print("More detailed info about model:\n")
     print(classification_report(y_test, y_pred))
+
     if storage.save_model(pipeline, model_name):
         print(f"Model '{model_name}' trained and saved succesfully")
         return True
@@ -114,6 +120,10 @@ def predict(load="rawData", model_name=MODEL_NAME, score_file="motivation_studen
         dict: A dictionary containing predictions and scores.
     """
 
+    # Check if data file is found
+    if not (data_dir / load).exists():
+        return None
+
     # load the model
     stacking_model = storage.load_model(model_name)
 
@@ -125,6 +135,7 @@ def predict(load="rawData", model_name=MODEL_NAME, score_file="motivation_studen
         data = motivation_data_cleaning_version2.clean_data(load)
     else:
         data = storage.load_json(load)
+        
     # Check if data was loaded correctly
     if data is None or len(data) == 0:
         print("ERROR: No data available for training.")

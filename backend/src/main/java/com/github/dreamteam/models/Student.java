@@ -35,4 +35,5 @@ public class Student {
   private String whyJoinDemola;
   private String whyRole;
   private List<ApplicationData> applications;
+  private String fakeName; // Purely for demo purposes
 }

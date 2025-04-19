@@ -5,7 +5,7 @@ import { Student } from "../../types/Student";
 
 /* Components, services & etc. */
 import { callAPI, USE_SERVER } from "../api/api.service";
-import { defaultStudents } from "./default-students";
+import { defaultStudentsForEachProject } from "./default-students";
 
 export const getStudents = (
   projectID: Project["id"],
@@ -16,5 +16,5 @@ export const getStudents = (
     return [];
   };
 
-    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token).catch(errorHandler) : Promise.resolve(defaultStudents);
+    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token).catch(errorHandler) : Promise.resolve(defaultStudentsForEachProject(projectID));
 }

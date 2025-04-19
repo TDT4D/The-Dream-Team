@@ -12,8 +12,11 @@
   & > .score {
     padding: 2px 2px 2px 5px;
     background-color: rgb(198, 230, 125);
+    position: relative;
+    display: inline-block;
   }
-  & > .team {
+  
+  & > .motivation {
     padding: 2px 5px 2px 2px;
     background-color: rgb(125, 158, 230);
   }

@@ -1,10 +1,17 @@
 .project-select-element {
-  & > .select-button {
-    width: 100%;
-    border: 1px solid black;
-    border-radius: 0.25em;
-    cursor: pointer;
-    text-align: left;
-    padding: 2px;
-  }
+    &>.select-button {
+        width: 100%;
+        border: 1px solid var(--moonstone);
+        background-color: var(--snow);
+        border-radius: 0.25em;
+        cursor: pointer;
+        text-align: left;
+        padding: 5px;
+        margin: 2px;
+        font-size: 1em;
+        &:hover {
+            border: solid 2px var(--blue);
+        }
+    }
+    
 }

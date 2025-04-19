@@ -1,0 +1,50 @@
+.sort-dropdown {
+    & > .drop {
+        margin-left: 10px;
+        font-size: 1em;
+        display: flex;
+        gap: 3px;
+        border: solid 1px var(--moonstone);
+        border-radius: 0.3em;
+        background-color: var(--snow);
+        cursor: pointer;
+        min-height: 1vw;
+        padding: 10px;
+        &:hover {
+            border: solid 2px var(--blue);
+        }
+        .icon {
+            margin-left: auto;
+            width: 20px;
+            height: 20px;
+        }
+    }
+}
+
+.method-dropdown {
+    margin-left: auto;
+    width: 175px;
+    border: solid 1px var(--moonstone);
+    border-radius: 1em;
+    background-color: var(--snow);
+    cursor: pointer;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    &>.method {
+        width: 100%;
+        border: 1px solid var(--moonstone);
+        background-color: var(--snow);
+        border-radius: 0.25em;
+        cursor: pointer;
+        text-align: left;
+        padding: 5px;
+        margin: 2px;
+        font-size: 1em;
+        &:hover:enabled {
+            border: solid 2px var(--blue);
+        }
+    }
+}

@@ -27,6 +27,11 @@ const Header = ({ title }: HeaderProps) => {
                     <li>
                         <Link className="link" to="/">Home</Link>
                     </li>
+                    {
+                        isLoggedIn && <li>
+                            <Link className="link" to="/train">Train</Link>
+                        </li>
+                    }
                 </ul>
                 {
                     !isLoggedIn ?

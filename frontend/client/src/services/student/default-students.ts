@@ -1,4 +1,9 @@
+/* Types */
+import { Project } from "../../types/Project";
 import { Student } from "../../types/Student";
+
+/* Components, services & etc. */
+import { defaultProjects } from "../project/default-projects";
 
 export const defaultStudents: Array<Student> = [
   {
@@ -92,3 +97,23 @@ export const defaultStudents: Array<Student> = [
     applications: [],
   },
 ];
+
+export const hashCode = (str: string): number => {
+  let h: number = 0;
+  [...str].forEach(c => {
+    h = 31 * h + c.charCodeAt(0);
+    h ^= h >> 16;
+    h &= 0xFFFFFFFF;
+  });
+  return h & ~0x80000000;
+}
+
+export const defaultStudentsForEachProject = (projectId: Project["id"]) => {
+  const projectAsString = defaultProjects.filter(p => p.id === projectId).map(p => JSON.stringify(p))[0];
+
+  const students: Student[] = [];
+  defaultStudents.forEach(student => {
+    if ( hashCode(JSON.stringify(student) + projectAsString) >= 0x3fffffff ) students.push(student)
+  });
+  return students;
+}

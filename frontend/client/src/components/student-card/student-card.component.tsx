@@ -21,7 +21,9 @@ type StudentCardProps = {
     columnId: number
 }
 
-const StudentCard = ({ student, columnId }: StudentCardProps) => {    
+const StudentCard = ({ student, columnId }: StudentCardProps) => {
+    const displayName = import.meta.env.VITE_DEMO_MODE ? student.fakeName! : student.name;
+
     const dragId: DragID = {
         columnId,
         cardId: student.id
@@ -47,7 +49,7 @@ const StudentCard = ({ student, columnId }: StudentCardProps) => {
             style={style}>
         <CardHeader className="card-header">
             <span>
-                { student.name }
+                { displayName }
             </span>
             <Score score={student.score}/>
         </CardHeader>

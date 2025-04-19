@@ -17,3 +17,4 @@ github_conf
 
 #Allow test file with made up data
 !ml/data/cleaned_data_test.json
+!ml/data/cleaned_data_motivation_test.json

@@ -1,0 +1,22 @@
+.info {
+    width: fit-content;
+    border: 0cap;
+    background-color: rgba(0,0,0,0);
+    cursor: pointer;
+    &>.info-icon {
+      height: 30px;
+    }
+}
+
+.score-info {
+    border: 1px solid var(--moonstone);
+    background-color: var(--snow);
+    border-radius: 0.25em;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 1.125em;
+    .score-example {
+        padding: 20px;
+    }
+}

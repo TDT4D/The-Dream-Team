@@ -12,83 +12,215 @@ except ModuleNotFoundError:
         print(f"SentenceTransformer package not imported! Tried loading model {reqModel}", file=sys.stderr)
         raise
 
-# luetaan dataa ja tehdään tauluja
-# sama kuin versio 3, mutta lisätty samanlaisuuden testaus projektin kuvauksen
-# ja hakemusten whyProject sekä whyExperience kohtien kanssa.
-# systeemi on kokeilullinen ja sen tuomaa hyötyä pitää testata.
+# start here
 def clean_data(load_name="rawData", save_name="cleaned_data"):
+    # This function reads the data and does proper editing to it.
+    # it is similar to data_cleaning version 3,
+    # but a new similaritytest function has been added which calculates the
+    # similarity between the project description and
+    # applicant's whyProject and whyExperience fields
 
-    #luetaan data
+    #reading data and checking if it has the necessary fields
     bronze_data = storage.load_json(load_name)
 
     if not bronze_data:
         print("ERROR: Failed to load data.")
         return None
 
-    # studyfieldit joita ei valittu yhteenkään projektiin eivät ole mukana lopullisessa json tiedostossa
-    
+    keys1 = bronze_data.keys()
+
+    if 'students' not in keys1:
+        print("ERROR: The field 'students' is missing from data.")
+        return None
+    if 'projects' not in keys1:
+        print("ERROR: The field 'projects' is missing from data.")
+        return None
+
     official_fields = ['Performing arts','Visual arts', 'History', 'Languages and literature', 'Law','Philosophy', 'Theology',
                        'Anthropology','Economics','Geography','Political science','Psychology','Sociology','Social Work',
                        'Biology','Chemistry','Earth science','Space sciences','Physics','Computer Science','Mathematics','Business',
                        'Engineering and technology','Medicine and health'
                        ]
 
-    # tehdään opiskelijoiden talu ja muokataan sitä paremmaks
+    def check_fields(needed_fields, df, name):
+        for field in needed_fields:
+            if field not in df.columns:
+                print(
+                    "ERROR: The field '" + field + "' is missing from "
+                    +name+" data.")
+                return False
+        return True
+
+    # making the student table
     temp = json.dumps(bronze_data['students'])
     df = pd.read_json(StringIO(temp))
+
+    needed_fields_student = ['id','city', 'degreeLevelType', 'studiesField']
+
+    if not check_fields(needed_fields_student, df, 'students'):
+        return None
+
     dfstu= df[['id','city', 'degreeLevelType', 'studiesField']]
     dfstu.loc[dfstu["degreeLevelType"] == 'Other', "degreeLevelType"] = 'Other_degree'
     dfstu.loc[~dfstu["studiesField"].isin(official_fields), "studiesField"] = 'Other_field'
     dfstu = dfstu[['id','city', 'degreeLevelType', 'studiesField']]
+    dfstu = dfstu[['id','city', 'degreeLevelType', 'studiesField']]
     dfstu.rename(columns={'id':'studentId'}, inplace=True)
 
-    # tehdään projektien talu ja muokataan sitä paremmaks
+    # making the projects table
     temp = json.dumps(bronze_data['projects'])
     dfpro = pd.read_json(StringIO(temp))
 
-    # temporary check so that the older data works
+    needed_fields_project = ['id','description','locations', 'themes', 'tags']
+
+    # if locations is missing we can add it by adding a column with empty lists
     if 'locations' not in dfpro.columns:
         dfpro['locations'] = [[] for _ in range(len(dfpro))]
+
+    if not check_fields(needed_fields_project, dfpro, 'projects'):
+        return None
 
     dfpro = dfpro[['id','description','locations', 'themes', 'tags']]
     dfpro.rename(columns={'id':'projectId'}, inplace=True)
 
-    # haetaan kaikki hakemukset (applications) ja tehdään niistä yksi taulu
+    # making the applications table
+    needed_fields_application = ['chosenBatch','projectId', 'studentId',
+                                 'whyProject','whyExperience', 'relation']
     first = True
     for application_set in df['applications']:
         temp = json.dumps(application_set)
         if first:
             first = False
             dfapp = pd.read_json(StringIO(temp))
+
+            if not check_fields(needed_fields_application, dfapp, 'applications'):
+                return None
         else:
             dftemp = pd.read_json(StringIO(temp))
             dfapp = pd.concat([dfapp, dftemp])
-    dfapp = dfapp[['chosenBatch','projectId', 'studentId','whyProject','whyExperience', 'relation']]
+
+    dfapp = dfapp[['chosenBatch','projectId', 'studentId','whyProject',
+                   'whyExperience', 'relation']]
+
     dfapp.loc[dfapp["relation"] == 'Dropout', "relation"] = 'Selected'
 
-    # yhdistetään hakemukset ja opiskelijat
+    # combining applications and students to one table
     merged_df = pd.merge(dfapp, dfstu, on='studentId')
 
-    # yhdistetään aikaisempitaulu ja projektit viimeiseksi tauluksi
-    # (kaikkia projekteja ei mainittu projekteissa)
+    # combining the previous table with projects
     final_merge_df = pd.merge(merged_df, dfpro, on='projectId', how='left')
 
+    # making the data more usable
     final_merge_df['tags'] = final_merge_df['tags'].apply(lambda d: d if isinstance(d, list) else [])
+    final_merge_df['themes'] = final_merge_df['themes'].apply(lambda d: d if isinstance(d, list) else [])
     final_merge_df['locations'] = final_merge_df['locations'].apply(lambda d: d if isinstance(d, list) else [])
+    final_merge_df['whyProject'] = final_merge_df['whyProject'].fillna("")
+    final_merge_df['whyExperience'] = final_merge_df['whyExperience'].fillna("")
+
+    old_size = final_merge_df.shape[0]
+    final_merge_df.dropna(subset=['degreeLevelType'], inplace=True)
+    new_size = final_merge_df.shape[0]
+    if new_size < old_size:
+        per = (1 - new_size / old_size) * 100
+        print("WARNING: some rows were dropped from table, because "
+              "'degreeLevelType' didn't have a value in that row."
+              "the dropped rows accounted for " + str(per) + "% of the current"
+                                                             " dataframe.")
+
+    old_size = final_merge_df.shape[0]
+    final_merge_df.dropna(subset=['chosenBatch'], inplace=True)
+    new_size = final_merge_df.shape[0]
+    if new_size < old_size:
+        per = (1 - new_size / old_size) * 100
+        print("WARNING: some rows were dropped from table, because "
+              "'chosenBatch' didn't have a value in that row."
+              "the dropped rows accounted for " + str(
+            per) + "% of the current dataframe.")
+
+    # checking if the data is usable
+    def is_list_ok(final_merge_df, name1, name2):
+        for value_list in final_merge_df[name1]:
+            if isinstance(value_list, list):
+                for value in value_list:
+                    if not isinstance(value, str):
+                        print("ERROR: A "+name2+" was not of type string")
+                        return False
+            else:
+                print(
+                    "ERROR: The field '"+name1+"' had a value that was not a list.")
+                return False
+        return True
+
+    def is_number_ok(final_merge_df, name1):
+        for value in final_merge_df[name1]:
+            if not isinstance(value, int):
+                if not value.is_integer():
+                    print("ERROR: A " + name1 + " was not of correct type")
+                    return False
+        return True
+
+    def is_string_ok(final_merge_df, name1):
+        for value in final_merge_df[name1]:
+            if not isinstance(value, str):
+                print("ERROR: A " + name1 + " was not of type string")
+                return False
+        return True
+
+    if not is_list_ok(final_merge_df, 'tags', 'tag'):
+        return None
+    if not is_list_ok(final_merge_df, 'themes', 'theme'):
+        return None
+    if not is_list_ok(final_merge_df, 'locations', 'location'):
+        return None
+    if not is_number_ok(final_merge_df, 'studentId'):
+        return None
+    if not is_number_ok(final_merge_df, 'projectId'):
+        return None
+    if not is_number_ok(final_merge_df, 'chosenBatch'):
+        return None
+    if not is_string_ok(final_merge_df, 'relation'):
+        return None
+    if not is_string_ok(final_merge_df, 'degreeLevelType'):
+        return None
+    if not is_string_ok(final_merge_df, 'studiesField'):
+        return None
+    if not is_string_ok(final_merge_df, 'whyProject'):
+        return None
+    if not is_string_ok(final_merge_df, 'whyExperience'):
+        return None
+    if not is_string_ok(final_merge_df, 'description'):
+        return None
+    for value in final_merge_df['city']:
+        if not isinstance(value, str):
+            # if value can be removed in the future, but for now city is not
+            # a mandatory field
+            if value:
+                print("ERROR: A 'city' was not of type string")
+                return None
 
     # condensing tags
     bigdict = tag_per_studyfield(final_merge_df)
     final_merge_df=tag_condenser(final_merge_df, bigdict)
+
+    # checking if student was selected in the same batch
+    final_merge_df['was_selected'] = 0
     final_merge_df['was_selected'] = was_already_chosen(final_merge_df)
+
+    # matching locations with projects
     final_merge_df['locations'] = location_match(final_merge_df)
+
+    # cleaning up the tabel
     final_merge_df.rename(columns={'locations': 'location_match'}, inplace=True)
 
-    # samanlaisuuden testaus ja vaihetaan samanlaisuus scoreksi
+    # similarity testing
     temporary_df = similaritytest(final_merge_df)
     final_merge_df['whyProject'] = temporary_df['whyProject']
     final_merge_df['whyExperience'] = temporary_df['whyExperience']
+
+    # cleaning up the tabel
     final_merge_df = final_merge_df[['projectId','studentId','whyProject','whyExperience','relation','degreeLevelType','studiesField','themes','tags', 'was_selected', 'location_match']]
 
+    # encoding and saving
     final_merge_df, encoders = alternative_encode(
         final_merge_df)
 
@@ -98,8 +230,7 @@ def clean_data(load_name="rawData", save_name="cleaned_data"):
     final_merge_df = final_merge_df.astype(float)
 
     cleaned = final_merge_df.to_dict(orient="records")
-    
-    # tallennetaan käytettävä data
+
     storage.save_json(cleaned, save_name)
 
     return cleaned
@@ -120,29 +251,39 @@ def one_hot_encode(fdf):
     return fdf
 
 def tag_condenser(df, bigdict):
-    # score lasketaan (tag%+...+tag%)*pp,
-    # missä tag%=tagin esiintymä studifieldissä
-    # ja pp=projektin esiintymisprosentti valituista
-    r = 0
+    # The score is calculated as follows (tag%+...+tag%)*pp,
+    # where tag%=the appearance rate of a tag in studyfield
+    # and pp=the appearance rate of a studyfield in projects
     for row in df.itertuples():
         score = 0
-        if not df['tags'][r]:
-            df.loc[r, 'tags'] = score
+
+        if not df['tags'][row.Index]:
+            df.loc[row.Index, 'tags'] = score
+
         else:
-            for i in df['tags'][r]:
+
+            for i in df['tags'][row.Index]:
                 skip = False
+
                 if row.studiesField in bigdict:
+
                     if i not in bigdict[row.studiesField]:
+
                         score += 0
                     else:
+
                         score += bigdict[row.studiesField][i]
                 else:
                     skip = True
+
             if not skip:
-                df.loc[r, 'tags'] = score * bigdict[row.studiesField]['percentage_of_chosen']
+
+                df.loc[row.Index, 'tags'] = score * bigdict[row.studiesField][
+                    'percentage_of_chosen']
             else:
-                df.loc[r, 'tags'] = 0
-        r += 1
+
+                df.loc[row.Index, 'tags'] = 0
+
     return df
 
 def tag_per_studyfield(df):
@@ -153,8 +294,6 @@ def tag_per_studyfield(df):
     r = df2.shape[0]
     df2 = df2[['tags', 'studiesField']]
 
-    #halutaan kaikki prosenttilaskuun mukaan, mutta dicitiin vain ei tyhjät
-
     t2 = df2['studiesField'].value_counts()
     t2dict = t2.to_dict()
     appearance = {}
@@ -162,9 +301,8 @@ def tag_per_studyfield(df):
         appearance.update({i: t2dict[i] / r})
     if not empty:
         df2 = df2[df2.astype(str)['tags'] != '[]']
-    #studyfield_selection(df2)
 
-    # kaikista valituista sudyfieldeistä, mitkä oli niiden tag prosentit
+    # of all selected studyfields what are their tag percentages
     bigdict = {}
     if empty:
         for row in df2.itertuples():
@@ -230,8 +368,7 @@ def alternative_encode(final_merge_df):
     return final_merge_df, encoders
 
 def similaritytest_helper(model, df):
-    r = 0
-    indexes = df.index
+    # helper function for similarity test
     for row in df.itertuples():
         sentences = [row.whyProject, row.whyExperience]
 
@@ -240,30 +377,29 @@ def similaritytest_helper(model, df):
         desc_vec = model.encode([desc])[0]
 
         whyProject_score = 1 - distance.cosine(desc_vec, model.encode([sentences[0]])[0])
-        df.loc[indexes[r], 'whyProject'] = whyProject_score
+        df.loc[row.Index, 'whyProject'] = whyProject_score
 
         whyExperience_score = 1 - distance.cosine(desc_vec,model.encode([sentences[1]])[0])
-        df.loc[indexes[r], 'whyExperience'] = whyExperience_score
-
-        r +=1
+        df.loc[row.Index, 'whyExperience'] = whyExperience_score
 
     return df
 
 def similaritytest(df):
-    #from sentence_transformers import SentenceTransformer # type: ignore
-    df = df[['whyProject','whyExperience', 'relation', 'description']]
-    df.dropna(subset=['description'], inplace=True)
-    df['whyProject'] = df['whyProject'].fillna("")
-    df['whyExperience'] = df['whyExperience'].fillna("")
+    # calculates the similarity between project description and
+    # applicant's whyProject and whyExperience fields
+    # it gives the similarity result as a decimal (percentage)
 
-    #SBERT
+    df = df[['whyProject','whyExperience', 'relation', 'description']]
+
+    #SBERT pretrained model (used for similarity calculations)
     model = SentenceTransformer('all-MiniLM-L6-v2')
 
     return similaritytest_helper(model, df)
 
 def was_already_chosen(df):
+    # checks if a student was already chosen in the same batch
+
     df = df[['studentId', 'chosenBatch', 'relation']]
-    df['was_selected'] = 0
     length = df.shape[0]
     previd = 0
     prevbatch = 0
@@ -284,7 +420,7 @@ def was_already_chosen(df):
             else:
                 if 'Selected' in rel:
                     for i in temp:
-                        df.at[i, 'was_selected'] = 1
+                        df.loc[i, 'was_selected'] = 1
                 temp.clear()
                 rel.clear()
                 temp.append(row.Index)
@@ -294,7 +430,7 @@ def was_already_chosen(df):
                 if row.Index == length-1:
                     if 'Selected' in rel:
                         for i in temp:
-                            df.at[i, 'was_selected'] = 1
+                            df.loc[i, 'was_selected'] = 1
     return df['was_selected']
 
 def location_match(df):
@@ -443,7 +579,7 @@ def location_match(df):
                                 was_here = True
                                 break
 
-                if was_here == False:
+                if not was_here:
                     df.at[row.Index, 'locations'] = 0
             else:
                 df.at[row.Index, 'locations'] = 2
@@ -456,4 +592,5 @@ def location_match(df):
             else:
                 df.at[row.Index,'locations'] = 2
     return df['locations']
+
 #clean_data()

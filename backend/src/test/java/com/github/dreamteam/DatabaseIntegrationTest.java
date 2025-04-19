@@ -69,7 +69,8 @@ public class DatabaseIntegrationTest extends AbstractContainerBaseTest {
                     false,
                     "",
                     "Test Love AI",
-                    "Test Project fits my goals")));
+                    "Test Project fits my goals")),
+            "Test Fake Name");
 
     mockProject =
         new Project(

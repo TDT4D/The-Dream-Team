@@ -4,10 +4,12 @@ import { Navigate, Outlet, RouteObject, RouterProvider, createBrowserRouter } fr
 /* Components, services & etc. */
 import { useAuth } from "../auth/auth.provider";
 
+/* Pages */
 import Base from "../../pages/base/base.page";
 import Sort from "../../pages/sort/sort.page";
 import Select from '../../pages/select/select.page';
 import Error from "../../pages/error/error.page";
+import Training from "../../pages/training/training.page";
 
 
 const publicRoutes: RouteObject[] = [
@@ -37,6 +39,10 @@ export const Routes = () => {
                     path: "/sort/:id",
                     element: <Sort />,
                 },
+                {
+                    path: "/train",
+                    element: <Training />
+                }
             ],
         },
     ];

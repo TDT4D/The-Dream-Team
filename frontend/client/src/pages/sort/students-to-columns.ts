@@ -23,7 +23,6 @@ export const addInitialStudentLocations = (projectId: Project["id"], students: S
 }
 
 export const addStudentLocationsViaML = async (projectId: Project["id"], students: Student[], token: AuthToken): Promise<StudentWithLocation[]> => {
-    // TODO: Update this function after figured out getStudentStatus' func. signature
     if (!token) throw new Error("No token in when getting project team!");
 
     const team = await getTeam(projectId, token);
