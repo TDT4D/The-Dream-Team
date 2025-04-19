@@ -162,7 +162,7 @@ def dream_team(
             )
 
         if not dream_team:
-            raise ValueError(f"Error while building the dream team.")
+            raise ValueError("Error while building the dream team.")
 
         return JSONResponse(
             status_code=200,

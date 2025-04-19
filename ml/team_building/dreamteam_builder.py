@@ -2,22 +2,8 @@ from utils import storage
 from typing import Optional
 from collections import defaultdict
 from itertools import combinations
-from utils import storage
 
-import json
-
-"""
-Data files:
-clean_v4
-clean_motivation_v2
-
-meta_model_scores
-stacking_model_scores
-
-motivational_model_v1_scores
-stacking_model_moti_scores
-
-"""
+#import json
 
 
 def build_team(project_id: Optional[int] = None,
@@ -102,7 +88,7 @@ def build_team(project_id: Optional[int] = None,
         suggested_teams = suggest_teams_for_all_projects(data)
 
         if suggested_teams is None:
-                raise ValueError(f"No suggested teams something went wrong.")
+                raise ValueError("No suggested teams something went wrong.")
             
 
         project_ids_with_teams = {team["projectId"] for team in suggested_teams['teams']}
@@ -260,7 +246,11 @@ def calculate_location_score(val):
     else:
         return 0.0
 
-def suggest_teams_for_project(project_applicants, project_id, size, top_n: Optional[int] = None):
+def suggest_teams_for_project(project_applicants, 
+                              project_id, 
+                              size, 
+                              include_all = False,
+                              top_n: Optional[int] = None):
     """
         Creates a team suggestions for an individual project
     """
@@ -290,8 +280,10 @@ def suggest_teams_for_project(project_applicants, project_id, size, top_n: Optio
         "best_overall": best_team,
         "perfect_team": perfect_team,
         "diverse_teams": diverse_teams[:3],  #top 3 diverse suggestions
-        # "all_teams": valid_teams  #Other valid teams (includes other suggestions as well)
         }
+
+        if include_all:
+            team_suggestions["all_teams"] = valid_teams
     
         return team_suggestions
     
@@ -459,7 +451,7 @@ def suggest_teams_for_all_projects(
                     continue
 
                 try:
-                    suggestions = suggest_teams_for_project(remaining, pid, size)
+                    suggestions = suggest_teams_for_project(remaining, pid, size, True)
                     if not suggestions or not suggestions["all_teams"]:
                         continue #no valid teams
                     
