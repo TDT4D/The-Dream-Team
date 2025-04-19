@@ -4,7 +4,7 @@ from collections import defaultdict
 from itertools import combinations
 from utils import storage
 
-#import json
+import json
 
 """
 Data files:
@@ -78,6 +78,7 @@ def build_team(project_id: Optional[int] = None,
         if not all_teams:
             project_applicants = [x for x in data if x['projectId'] == project_id]
             print("Project applicants: ", len(project_applicants))
+            #print(json.dumps(project_applicants, indent=4))
 
             project_teams = suggest_teams_for_project(project_applicants, project_id, team_size)
             
@@ -349,12 +350,11 @@ def is_valid_individual(applicant, min_score=50, only_locals=False):
 def suggest_teams_for_all_projects(
         data,
         min_score = 50,
-        team_sizes = (4, 3, 5),
+        team_sizes = [4, 5, 3],
         only_locals = False,
         verbose = False
 ):
     
-    used_students = set()
     final_teams = []
 
     # Step 1: Count project applications per student
@@ -434,7 +434,7 @@ def suggest_teams_for_all_projects(
 
         for app in viable_apps:
             pid = app['projectId']
-            if project_sizes[pid] < 4:
+            if project_sizes[pid] < min(team_sizes):
                 project_pool[pid].append(app)
                 project_sizes[pid] += 1
                 assigned_students.add(sid)
@@ -443,44 +443,54 @@ def suggest_teams_for_all_projects(
     if verbose:
         print_applicant_pool_summary(project_pool)
 
-    # Step 5: Build Optimal teams
+
+    # Refactored Step 5:
     assigned_to_team = set()
+    
     for pid, applicants in project_pool.items():
-        # Remove students already used elswhere
         applicants = [a for a in applicants if a['studentId'] not in assigned_to_team]
+        remaining = applicants[:]
 
-        team_sizes_to_try = pick_team_sizes(len(applicants))
+        while len(remaining) >= 3:
+            team_built = False
 
-        for size in team_sizes_to_try:
-            # Filter again in case the list shrank
-            if len(applicants) < size:
-                continue
+            for size in team_sizes:
+                if len(remaining) < size:
+                    continue
 
-            try:
-                suggestions = suggest_teams_for_project(applicants, pid, size)
-                if suggestions is None:
-                    if verbose:
-                        print(f"\nNo valid team found for project {pid} with size {size}")
-                    raise ValueError
-                team = suggestions["best_overall"]
-                team_ids = {m['studentId'] for m in team}
+                try:
+                    suggestions = suggest_teams_for_project(remaining, pid, size)
+                    if not suggestions or not suggestions["all_teams"]:
+                        continue #no valid teams
+                    
+                    valid_teams = sorted(
+                    suggestions["all_teams"],
+                    key=lambda t: (-len(t), -field_diversity(t), -avg_score(t))
+                    )
 
-                #Ensure uniqueness
-                if not team_ids.intersection(assigned_to_team):
+                    team = valid_teams[0]
+                    team_ids = {m['studentId'] for m in team}
+
+                    if team_ids.intersection(assigned_to_team):
+                        break
+
                     assigned_to_team.update(team_ids)
                     final_teams.append({
-                    "projectId": pid,
-                    "team": team,
-                    "avg_score": avg_score(team),
-                    "justification": generate_team_justification(team)
+                        "projectId": pid,
+                        "team": team,
+                        "avg_score": avg_score(team),
+                        "justification": generate_team_justification(team)
                     })
-                
-                # Remove assigned students from applicant pool
-                applicants = [a for a in applicants if a['studentId'] not in team_ids]
-            
-            except ValueError:
-                continue  # Not enough applicants or no valid team found
 
+                    remaining = [a for a in remaining if a['studentId'] not in team_ids]
+                    team_built = True
+                    break #Stop trying other team sizes
+
+                except ValueError:
+                    continue #Not enough applicants for this size or no valid teams
+            
+            if not team_built:
+                break #no valid teams could be built with remaining people
 
     project_failure_reasons = build_project_failure_reasons(
         applicants_by_project, project_pool, final_teams
@@ -489,12 +499,14 @@ def suggest_teams_for_all_projects(
     if verbose:
         print_failure_summary(project_failure_reasons)
 
-    #return final_teams
 
-    
+    all_students = {a['studentId'] for a in data if is_valid_individual(a, min_score, only_locals)}
+    unassigned = all_students - assigned_to_team
+
     return {
     "teams": final_teams,
     "project_failure_reasons": project_failure_reasons,
+    "unassigned": list(unassigned),
     }
     
 def generate_team_justification(team):
