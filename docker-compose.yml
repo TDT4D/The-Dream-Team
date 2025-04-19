@@ -176,6 +176,9 @@ services:
         target: ${ML_PORT:-9696}
     networks:
       - dream-team
+    volumes:
+      - ./ml/data/saved_data:/home/appuser/data/saved_data
+      - ./ml/data/saved_models:/home/appuser/data/saved_models
 
 # The network for communication between services
 networks:

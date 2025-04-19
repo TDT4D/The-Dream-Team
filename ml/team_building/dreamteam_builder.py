@@ -290,7 +290,7 @@ def suggest_teams_for_project(project_applicants, project_id, size, top_n: Optio
         "best_overall": best_team,
         "perfect_team": perfect_team,
         "diverse_teams": diverse_teams[:3],  #top 3 diverse suggestions
-        "all_teams": valid_teams  #Other valid teams (includes other suggestions as well)
+        # "all_teams": valid_teams  #Other valid teams (includes other suggestions as well)
         }
     
         return team_suggestions
