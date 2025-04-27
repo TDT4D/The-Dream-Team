@@ -16,5 +16,9 @@ export const getStudents = (
     return [];
   };
 
-    return USE_SERVER ? callAPI<Student[]>(`/projects/${projectID}/students`, token).catch(errorHandler) : Promise.resolve(defaultStudentsForEachProject(projectID));
-}
+  return USE_SERVER
+    ? callAPI<Student[]>(`/projects/${projectID}/students`, token).catch(
+        errorHandler,
+      )
+    : Promise.resolve(defaultStudentsForEachProject(projectID));
+};
