@@ -7,12 +7,17 @@ import { StudentWithLocation } from "../../types/Student";
 
 // NOTE: This is basically dark magic and I don't wanna explain this ever. But this should work :)
 
-export const handleDragEnd = (students: StudentWithLocation[], setStudents: Function) => {
-    return (dragging: DragID, target: DragID) => {
-    const card = students.filter((student) => student.student.id === dragging.cardId!)[0];
+export const handleDragEnd = (
+  students: StudentWithLocation[],
+  setStudents: Function,
+) => {
+  return (dragging: DragID, target: DragID) => {
+    const card = students.filter(
+      (student) => student.student.id === dragging.cardId!,
+    )[0];
 
     setStudents(() =>
-    students
+      students
         .map(createNewStudentWithLoc(dragging, target, card.row))
         .map(handleOtherRowUpdates(dragging, target, card.row)),
     );
@@ -56,28 +61,38 @@ const handleOtherRowUpdates = (
   };
 };
 
-const createNewStudentWithLoc = (dragging: DragID, target: DragID, old_row: number) => {
-    return (current: StudentWithLocation, _: number, arr: StudentWithLocation[]): StudentWithLocation => {
-        // Case: Not the card we are moving
-        if (current.student.id != dragging.cardId!) return { ...current };
-        
-        // Case: We are moving to a column
-        if (target.cardId === undefined) {
-            const row = arr.filter(w => w.column === target.columnId).length;
-            return { student: current.student, column: target.columnId, row }
-        }
-        // Case: We are moving on to a card in a different column
-        const targetRow = arr.filter(w => w.student.id === target.cardId)[0].row;
-        const row = targetRow + Number(dragging.columnId != target.columnId || targetRow < old_row);
-        return { student: current.student, column: target.columnId, row }
+const createNewStudentWithLoc = (
+  dragging: DragID,
+  target: DragID,
+  old_row: number,
+) => {
+  return (
+    current: StudentWithLocation,
+    _: number,
+    arr: StudentWithLocation[],
+  ): StudentWithLocation => {
+    // Case: Not the card we are moving
+    if (current.student.id != dragging.cardId!) return { ...current };
+
+    // Case: We are moving to a column
+    if (target.cardId === undefined) {
+      const row = arr.filter((w) => w.column === target.columnId).length;
+      return { student: current.student, column: target.columnId, row };
     }
-}
+    // Case: We are moving on to a card in a different column
+    const targetRow = arr.filter((w) => w.student.id === target.cardId)[0].row;
+    const row =
+      targetRow +
+      Number(dragging.columnId != target.columnId || targetRow < old_row);
+    return { student: current.student, column: target.columnId, row };
+  };
+};
 
 export const parseDragIDs = (dragEnd: DragEndEvent): ParsedDragIDs => {
-    const { active, over } = dragEnd;
+  const { active, over } = dragEnd;
 
-    return {
-        dragging: JSON.parse(active.id as string) as DragID,
-        target: !over ? undefined : JSON.parse(over.id as string) as DragID
-    }
-}
+  return {
+    dragging: JSON.parse(active.id as string) as DragID,
+    target: !over ? undefined : (JSON.parse(over.id as string) as DragID),
+  };
+};
