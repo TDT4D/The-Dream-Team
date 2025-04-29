@@ -1,0 +1,68 @@
+services:
+  traefik:
+    volumes:
+      - ./traefik_users.htpasswd:/etc/traefik/.htpasswd:ro
+      # - letsencrypt:/letsencrypt
+    # command:
+    #   - "--entryPoints.web.address=:80"
+    #   - "--entryPoints.websecure.address=:443"
+    #   # - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+    #   # - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    #   - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+    #   - "--certificatesresolvers.myresolver.acme.email=example@email.com" # TODO: email
+    #   - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+
+  backend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.backend.loadbalancer.server.port=${BACKEND_PORT:-8080}"
+      - "traefik.http.routers.backend.rule=Host(`localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.middlewares=backend-strip"
+      - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/api"
+      - "traefik.http.routers.backend.entrypoints=web"
+      # Deployment extras
+      - "traefik.http.routers.backend-dep.rule=Host(`backend.the-dream-team.demola.fi`)"
+      - "traefik.http.routers.backend-dep.entrypoints=websecure"
+      - "traefik.http.routers.backend-dep.middlewares=basic-auth"
+      - "traefik.http.middlewares.basic-auth.basicauth.usersfile=/etc/traefik/.htpasswd"
+      # JavaDoc redirect on apidoc subdomain
+      - "traefik.http.routers.apidoc.rule=Host(`apidoc.the-dream-team.demola.fi`)"
+      - "traefik.http.routers.apidoc.entrypoints=websecure"
+      - "traefik.http.routers.apidoc.middlewares=redirect-to-docs,basic-auth"
+      - "traefik.http.middlewares.redirect-to-docs.redirectregex.regex=^http?://apidoc\\.the-dream-team\\.demola\\.fi/?$$"
+      - "traefik.http.middlewares.redirect-to-docs.redirectregex.replacement=http://apidoc.the-dream-team.demola.fi/docs/index.html"
+
+  frontend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_PORT:-3000}"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`) && !PathPrefix(`/ml`) && !PathPrefix(`/api`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      # Deployment extras
+      - "traefik.http.routers.frontend-dep.rule=Host(`the-dream-team.demola.fi`)"
+      - "traefik.http.routers.frontend-dep.entrypoints=web"
+      - "traefik.http.routers.frontend-dep.middlewares=basic-auth"
+      - "traefik.http.middlewares.basic-auth.basicauth.usersfile=/etc/traefik/.htpasswd"
+
+  ml:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.ml.loadbalancer.server.port=${ML_PORT:-9696}"
+      - "traefik.http.routers.ml.rule=Host(`localhost`) && PathPrefix(`/ml`)"
+      - "traefik.http.routers.ml.middlewares=ml-strip"
+      - "traefik.http.middlewares.ml-strip.stripprefix.prefixes=/ml"
+      - "traefik.http.routers.ml.entrypoints=web"
+      # Deployment extras
+      - "traefik.http.routers.ml-dep.rule=Host(`ml.the-dream-team.demola.fi`)"
+      - "traefik.http.routers.ml-dep.entrypoints=web"
+      - "traefik.http.routers.ml-dep.middlewares=basic-auth"
+      - "traefik.http.middlewares.basic-auth.basicauth.usersfile=/etc/traefik/.htpasswd"
+      # FastAPI redirect on mldoc subdomain
+      - "traefik.http.routers.ml-docs.rule=Host(`mldoc.the-dream-team.demola.fi`)"
+      - "traefik.http.routers.ml-docs.entrypoints=web"
+      - "traefik.http.routers.ml-docs.middlewares=redirect-to-ml-docs,basic-auth"
+      - "traefik.http.middlewares.redirect-to-ml-docs.redirectregex.regex=^http?://mldoc\\.the-dream-team\\.demola\\.fi/?$$"
+      - "traefik.http.middlewares.redirect-to-ml-docs.redirectregex.replacement=http://ml.the-dream-team.demola.fi/docs"
+
+# volumes:
+#   letsencrypt:
