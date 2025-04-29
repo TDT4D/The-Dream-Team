@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.github.dreamteam"},{"l":"com.github.dreamteam.controllers"},{"l":"com.github.dreamteam.exceptions"},{"l":"com.github.dreamteam.models"},{"l":"com.github.dreamteam.repositories"},{"l":"com.github.dreamteam.services"}];updateSearchResults();

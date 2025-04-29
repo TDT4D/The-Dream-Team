@@ -1,0 +1,6 @@
+com.github.dreamteam
+com.github.dreamteam.controllers
+com.github.dreamteam.exceptions
+com.github.dreamteam.models
+com.github.dreamteam.repositories
+com.github.dreamteam.services
