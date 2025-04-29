@@ -1,0 +1,5 @@
+outs:
+- md5: c0196d9cb28e0a78538c23c626acadcf
+  size: 616687
+  hash: md5
+  path: motivation_default.json

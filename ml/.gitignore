@@ -15,7 +15,9 @@ data/example.txt
 !/data/test_data/
 !data/test_data/*
 
-#ML Models
+# Allow saved data/models to be stored through dvc
+!data/saved_data/*.dvc
+!data/saved_models/*.dvc
 
 
 #Python cache files

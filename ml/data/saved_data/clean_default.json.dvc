@@ -1,0 +1,5 @@
+outs:
+- md5: 6ee5a11bab80368a0b6c5efbae8e3131
+  size: 1036989
+  hash: md5
+  path: clean_default.json

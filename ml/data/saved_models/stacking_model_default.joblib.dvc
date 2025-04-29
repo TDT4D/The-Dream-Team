@@ -1,0 +1,5 @@
+outs:
+- md5: 4ec3d86efd2e7e16168771e7098df5b3
+  size: 7418565
+  hash: md5
+  path: stacking_model_default.joblib

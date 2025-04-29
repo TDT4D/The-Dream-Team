@@ -1,0 +1,5 @@
+outs:
+- md5: 1d4cc2d32ed813b4394c411c8889814e
+  size: 1033418
+  hash: md5
+  path: score_default.json
