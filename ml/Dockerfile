@@ -5,7 +5,8 @@ ENV LC_ALL C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 
-ARG ML_REQ=requirements.txt
+ARG ML_REQ
+ENV ML_REQ={ML_REQ:-"requirements.txt"}
 
 FROM base AS installer
 RUN pip install pipenv
