@@ -3,8 +3,3 @@ export enum ColumnType {
   Potential = 1,
   Selected = 2,
 }
-
-export const enum ColumnCreation {
-  Initial,
-  Request,
-}
